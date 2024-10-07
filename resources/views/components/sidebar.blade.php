@@ -34,13 +34,6 @@
             </a>
         </li>
 
-        <li class="{{ request()->is('') ? 'active' : '' }} ajax-link">
-            <a href="{{ url('') }}">
-                <i class="fas fa-file-contract"></i> <!-- Documents Icon -->
-                <span class="menu-text">Templates</span>
-            </a>
-        </li>
-
         <li class="{{ request()->is('partnerships') ? 'active' : '' }} ajax-link">
             <a href="{{ url('partnerships') }}">
                 <i class="fas fa-handshake-simple"></i> <!-- Documents Icon -->
@@ -62,14 +55,23 @@
             </a>
         </li>
 
+        <li class="{{ request()->is('settings') ? 'active' : '' }} ajax-link">
+            <a href="{{ url('settings') }}">
+                <i class="fas fa-gear"></i> <!-- Documents Icon -->
+                <span class="menu-text">Settings</span>
+            </a>
+        </li>
+
+        <li class="{{ request()->is('') ? 'active' : '' }} ajax-link">
+            <a href="{{ url('') }}">
+                <i class="fas fa-right-from-bracket"></i> <!-- Documents Icon -->
+                <span class="menu-text">Logout</span>
+            </a>
+        </li>
     </ul>
     <div class="sidebar-footer">
         <button class="toggle-sidebar" onclick="toggleSidebar()">
-            <span>&#x21D0;</span> <!-- Or use an icon -->
+            <i class="fas fa-left-long"></i> 
         </button>
-        <a href="#">
-            <i class="fas fa-cog"></i> <!-- Settings Icon -->
-            <span class="menu-text">Settings</span>
-        </a>
     </div>
 </div>

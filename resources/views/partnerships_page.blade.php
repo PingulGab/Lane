@@ -13,35 +13,35 @@
                 <!-- Cards Section -->
                 <div class="partnerships-cards-section">
                     <div class="partnerships-card">
-                        <img src="path-to-icon.png" alt="Icon">
+                        <img src="{{ Vite::asset('resources/images/dashboard_page/dashboard_partnerships.png')}}" alt="Icon">
                         <div class="partnerships-card-content">
-                            <p>Num</p>
+                            <h2>100</h2>
                             <p>Partnerships</p>
                         </div>
                     </div>
                     <div class="partnerships-card">
-                        <img src="path-to-icon.png" alt="Icon">
+                        <img src="{{ Vite::asset('resources/images/dashboard_page/dashboard_pending.png')}}" alt="Icon">
                         <div class="partnerships-card-content">
-                            <p>Num</p>
-                            <p>Partnerships</p>
+                            <h2>Num</h2>
+                            <p>Pending Partnerships</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="partnerships-cards-section">
                     <div class="partnerships-card">
-                        <img src="path-to-icon.png" alt="Icon">
+                        <img src="{{ Vite::asset('resources/images/dashboard_page/dashboard_international.png')}}" alt="Icon">
                         <div class="partnerships-card-content">
-                            <p>Num</p>
-                            <p>Partnerships</p>
+                            <h2>Num</h2>
+                            <p>International Partners</p>
                         </div>
                     </div>
 
                     <div class="partnerships-card">
-                        <img src="path-to-icon.png" alt="Icon">
+                        <img src="{{ Vite::asset('resources/images/dashboard_page/dashboard_local.png')}}" alt="Icon">
                         <div class="partnerships-card-content">
-                            <p>Num</p>
-                            <p>Partnerships</p>
+                            <h2>Num</h2>
+                            <p>Local Partners</p>
                         </div>
                     </div>
                 </div>
@@ -49,14 +49,14 @@
         </div>
 
         <div class="partnerships-container-area2">
-            <!-- Active Partnerships -->
-            <div class="partnerships-active-partnerships">
-                <div class="partnerships-active-partnerships-header">
+            <!-- Near Validity Period Partnerships -->
+            <div class="partnerships-validity-partnerships">
+                <div class="partnerships-validity-partnerships-header">
                     <h1>Active Partnerships</h1>
                 </div>
                 <div class="partnerships-validity-period-container">
                     <div class="partnerships-validity-period-header">
-                        <table>
+                        <table class="partnerships-validity-table">
                             <thead>
                                 <tr>
                                     <th>Partner Name</th>
@@ -68,10 +68,10 @@
                     </div>
 
                     <div class="partnerships-validity-period-table-content">
-                        <table>
+                        <table class="partnerships-validity-table">
                             <tbody>
                                 <tr>
-                                    <td>Partner 1</td>
+                                    <td>x</td>
                                     <td>MOA_Ex</td>
                                     <td>May 1, 2024</td>
                                 </tr>
@@ -106,7 +106,7 @@
 
         <div class="partnerships-table-container">
             <div class="partnerships-header">
-
+                <h1> List of Partners </h1>
             </div>
             
             <!-- Search Bar -->
@@ -128,45 +128,88 @@
                         <th> </th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Microsoft 1</td>
-                        <td><img src="" alt="Icon"/> CCS </td>
-                        <td>MONTH DD, YYYY</td>
-                        <td>MONTH DD, YYYY</td>
-                        <td><button class="documents-view-btn">View</button></td>
-                    </tr>
-                    <tr>
-                        <td>Microsoft 2</td>
-                        <td><img src="" alt="Icon"/> CCS </td>
-                        <td>MONTH DD, YYYY</td>
-                        <td>MONTH DD, YYYY</td>
-                        <td><button class="documents-view-btn">View</button></td>
-                    </tr>
-                    <tr>
-                        <td>Google</td>
-                        <td><img src="" alt="Icon"/> CCS </td>
-                        <td>MONTH DD, YYYY</td>
-                        <td>MONTH DD, YYYY</td>
-                        <td><button class="documents-view-btn">View</button></td>
-                    </tr>
-                    <tr>
-                        <td>Facebook</td>
-                        <td><img src="" alt="Icon"/> CCS </td>
-                        <td>MONTH DD, YYYY</td>
-                        <td>MONTH DD, YYYY</td>
-                        <td><button class="documents-view-btn">View</button></td>
-                    </tr>
-                    <tr>
-                        <td>Instagram</td>
-                        <td><img src="" alt="Icon"/> CCS </td>
-                        <td>MONTH DD, YYYY</td>
-                        <td>MONTH DD, YYYY</td>
-                        <td><button class="documents-view-btn">View</button></td>
-                    </tr>
-                    <!-- Add more rows as needed -->
-                </tbody>
             </table>
+            <div class="partnerships-table-content">
+                <table class="partnerships-table">
+                    <tbody>
+                        <tr>
+                            <td>Microsoft 1</td>
+                            <td>
+                                <div class="partnerships-table-col-affiliation">
+                                    <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="Icon"/>
+                                    <p> CCS </p> 
+                                </div>
+                            </td>
+                            <td>MONTH DD, YYYY</td>
+                            <td>MONTH DD, YYYY</td>
+                            <td><button class="view-btn">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft 1</td>
+                            <td>
+                                <div class="partnerships-table-col-affiliation">
+                                    <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="Icon"/>
+                                    <p> CCS </p> 
+                                </div>
+                            </td>
+                            <td>MONTH DD, YYYY</td>
+                            <td>MONTH DD, YYYY</td>
+                            <td><button class="view-btn">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft 1</td>
+                            <td>
+                                <div class="partnerships-table-col-affiliation">
+                                    <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="Icon"/>
+                                    <p> CCS </p> 
+                                </div>
+                            </td>
+                            <td>MONTH DD, YYYY</td>
+                            <td>MONTH DD, YYYY</td>
+                            <td><button class="view-btn">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft 1</td>
+                            <td>
+                                <div class="partnerships-table-col-affiliation">
+                                    <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="Icon"/>
+                                    <p> CCS </p> 
+                                </div>
+                            </td>
+                            <td>MONTH DD, YYYY</td>
+                            <td>MONTH DD, YYYY</td>
+                            <td><button class="view-btn">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft 1</td>
+                            <td>
+                                <div class="partnerships-table-col-affiliation">
+                                    <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="Icon"/>
+                                    <p> CCS </p> 
+                                </div>
+                            </td>
+                            <td>MONTH DD, YYYY</td>
+                            <td>MONTH DD, YYYY</td>
+                            <td><button class="view-btn">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>Microsoft 1</td>
+                            <td>
+                                <div class="partnerships-table-col-affiliation">
+                                    <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="Icon"/>
+                                    <p> CCS </p> 
+                                </div>
+                            </td>
+                            <td>MONTH DD, YYYY</td>
+                            <td>MONTH DD, YYYY</td>
+                            <td><button class="view-btn">View</button></td>
+                        </tr>
+                        
+                        <!-- Add more rows as needed -->
+                    </tbody>
+                </table>
+            </div>
+            
         </div>
 </div>
 

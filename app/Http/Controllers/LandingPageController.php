@@ -10,4 +10,9 @@ class LandingPageController extends Controller
     {
         return view('landing_page');
     }
+
+    public function authenticateUser() 
+    {
+        return redirect()->route('dashboard'); 
+    }
 }

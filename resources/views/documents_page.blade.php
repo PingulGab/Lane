@@ -33,7 +33,6 @@
             <!-- Action Buttons -->
             <div class="documents-action-buttons">
                 <button class="documents-generate-btn">Generate</button>
-                <button class="documents-templates-btn">Templates</button>
             </div>
         </div>
     </div>
@@ -68,7 +67,7 @@
                         <td>May 11, 2024</td>
                         <td>CCS</td>
                         <td><span class="status-pending">Pending</span></td>
-                        <td><button class="documents-view-btn">View</button></td>
+                        <td><button class="view-btn">View</button></td>
                     </tr>
                     <tr>
                         <td>MOA_Oracle.docx</td>
@@ -76,7 +75,7 @@
                         <td>May 10, 2024</td>
                         <td>CCS</td>
                         <td><span class="status-pending">Pending</span></td>
-                        <td><button class="documents-view-btn">View</button></td>
+                        <td><button class="view-btn">View</button></td>
                     </tr>
                     <tr>
                         <td>CCNA_Terms.docx</td>
@@ -84,7 +83,7 @@
                         <td>April 25, 2024</td>
                         <td>CCS</td>
                         <td><span class="status-revision">Revision</span></td>
-                        <td><button class="documents-view-btn">View</button></td>
+                        <td><button class="view-btn">View</button></td>
                     </tr>
                     <tr>
                         <td>JBL_MOA.docx</td>
@@ -92,7 +91,7 @@
                         <td>March 30, 2024</td>
                         <td>CON</td>
                         <td><span class="status-approved">Approved</span></td>
-                        <td><button class="documents-view-btn">View</button></td>
+                        <td><button class="view-btn">View</button></td>
                     </tr>
                     <tr>
                         <td>AcSciPartnership.docx</td>
@@ -100,7 +99,7 @@
                         <td>March 21, 2024</td>
                         <td>CED</td>
                         <td><span class="status-approved">Approved</span></td>
-                        <td><button class="documents-view-btn">View</button></td>
+                        <td><button class="view-btn">View</button></td>
                     </tr>
                     <!-- Add more rows as needed -->
                 </tbody>

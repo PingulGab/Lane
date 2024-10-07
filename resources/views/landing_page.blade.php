@@ -24,7 +24,8 @@
             <div class='loginContainer'>
                 <img src='{{ Vite::asset('resources/images/lane_logo_base.png')}}'
                 class='laneLogo'/>
-                    <form  action='' class='centerColumn'>
+                    <form action='{{route('authenticateUser')}}' class='centerColumn' method="POST">
+                        @csrf
                         <input id='username' name='username' class='loginInput' type='text' placeholder="Username">
                         <input id='password' name='password' class='loginInput' type='password' placeholder="Password">
                         <input type='submit' value='Login' class='loginSubmit'>

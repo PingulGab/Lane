@@ -67,49 +67,61 @@
                         <tr>
                             <td>1</td>
                             <td>JBL San Fernando</td>
-                            <td>Mar. 10, 2024</td>
+                            <td>MM/DD/YY</td>
+                            <td><button class="statistics-view-btn">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Sanggunian ng KabataanKabataan dsa Kabataan Kabataan</td>
+                            <td>MM/DD/YY</td>
                             <td><button class="statistics-view-btn">View</button></td>
                         </tr>
                         <tr>
                             <td>2</td>
                             <td>Sanggunian ng Kabataan</td>
-                            <td>Mar. 21, 2024</td>
+                            <td>MM/DD/YY</td>
                             <td><button class="statistics-view-btn">View</button></td>
                         </tr>
                         <tr>
                             <td>2</td>
                             <td>Sanggunian ng Kabataan</td>
-                            <td>Mar. 21, 2024</td>
+                            <td>MM/DD/YY</td>
                             <td><button class="statistics-view-btn">View</button></td>
                         </tr>
                         <tr>
                             <td>2</td>
                             <td>Sanggunian ng Kabataan</td>
-                            <td>Mar. 21, 2024</td>
+                            <td>MM/DD/YY</td>
                             <td><button class="statistics-view-btn">View</button></td>
                         </tr>
                         <tr>
                             <td>2</td>
                             <td>Sanggunian ng Kabataan</td>
-                            <td>Mar. 21, 2024</td>
+                            <td>MM/DD/YY</td>
                             <td><button class="statistics-view-btn">View</button></td>
                         </tr>
                         <tr>
                             <td>2</td>
                             <td>Sanggunian ng Kabataan</td>
-                            <td>Mar. 21, 2024</td>
+                            <td>MM/DD/YY</td>
                             <td><button class="statistics-view-btn">View</button></td>
                         </tr>
                         <tr>
                             <td>2</td>
                             <td>Sanggunian ng Kabataan</td>
-                            <td>Mar. 21, 2024</td>
+                            <td>MM/DD/YY</td>
                             <td><button class="statistics-view-btn">View</button></td>
                         </tr>
                         <tr>
                             <td>2</td>
                             <td>Sanggunian ng Kabataan</td>
-                            <td>Mar. 21, 2024</td>
+                            <td>MM/DD/YY</td>
+                            <td><button class="statistics-view-btn">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Sanggunian ng Kabataan</td>
+                            <td>MM/DD/YY</td>
                             <td><button class="statistics-view-btn">View</button></td>
                         </tr>
                     </tbody>
@@ -124,7 +136,7 @@
         <input type="text" class="statistics-search-bar" placeholder="Search">
         <div class="statistics-department-list">
             <div class="statistics-department">
-                <img src="path-to-logo.png" alt="Logo">
+                <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="Logo">
                 <div class="statistics-department-details">
                     <h1> Department Name </h1>
                     <div class="statistics-department-details-numbers">
@@ -133,23 +145,27 @@
                         <p> 2nd num </p>
                     </div>
                 </div>
-
             </div>
             <div class="statistics-department">
-                <img src="path-to-logo.png" alt="Logo">
-                <div class="statistics-department-details-numbers">
-                    <p> 1st num </p>
-                    <p id="statistics-separator"> | </p>
-                    <p> 2nd num </p>
+                <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="Logo">
+                <div class="statistics-department-details">
+                    <h1> Department Name </h1>
+                    <div class="statistics-department-details-numbers">
+                        <p> 1st num </p>
+                        <p id="statistics-separator"> | </p>
+                        <p> 2nd num </p>
+                    </div>
                 </div>
             </div>
             <div class="statistics-department">
-                <img src="path-to-logo.png" alt="Logo">
-                <p>College of Nursing</p>
-                <div class="statistics-department-details-numbers">
-                    <p> 1st num </p>
-                    <p id="statistics-separator"> | </p>
-                    <p> 2nd num </p>
+                <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="Logo">
+                <div class="statistics-department-details">
+                    <h1> Department Name </h1>
+                    <div class="statistics-department-details-numbers">
+                        <p> 1st num </p>
+                        <p id="statistics-separator"> | </p>
+                        <p> 2nd num </p>
+                    </div>
                 </div>
             </div>
             <!-- Add more departments as needed -->

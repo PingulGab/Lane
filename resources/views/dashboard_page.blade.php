@@ -11,35 +11,35 @@
                 <!-- Cards Section -->
                 <div class="dashboard-cards-section">
                     <div class="dashboard-card">
-                        <img src="path-to-icon.png" alt="Icon">
+                        <img src="{{ Vite::asset('resources/images/dashboard_page/dashboard_partnerships.png')}}" alt="Icon">
                         <div class="dashboard-card-content">
-                            <p>Num</p>
+                            <h2>100</h2>
                             <p>Partnerships</p>
                         </div>
                     </div>
                     <div class="dashboard-card">
-                        <img src="path-to-icon.png" alt="Icon">
+                        <img src="{{ Vite::asset('resources/images/dashboard_page/dashboard_pending.png')}}" alt="Icon">
                         <div class="dashboard-card-content">
-                            <p>Num</p>
-                            <p>Partnerships</p>
+                            <h2>Num</h2>
+                            <p>Pending Partnerships</p>
                         </div>
                     </div>
                 </div>
         
                 <div class="dashboard-cards-section">
                     <div class="dashboard-card">
-                        <img src="path-to-icon.png" alt="Icon">
+                        <img src="{{ Vite::asset('resources/images/dashboard_page/dashboard_international.png')}}" alt="Icon">
                         <div class="dashboard-card-content">
-                            <p>Num</p>
-                            <p>Partnerships</p>
+                            <h2>Num</h2>
+                            <p>International Partners</p>
                         </div>
                     </div>
         
                     <div class="dashboard-card">
-                        <img src="path-to-icon.png" alt="Icon">
+                        <img src="{{ Vite::asset('resources/images/dashboard_page/dashboard_local.png')}}" alt="Icon">
                         <div class="dashboard-card-content">
-                            <p>Num</p>
-                            <p>Partnerships</p>
+                            <h2>Num</h2>
+                            <p>Local Partners</p>
                         </div>
                     </div>
                 </div>
@@ -69,14 +69,15 @@
                             <td>Document1.pdf</td>
                             <td>2024-09-02</td>
                             <td>Department A</td>
-                            <td>Approved</td>
+                            <td><span class="status-approved">Approved</span></td>
+                            <td><button class="view-btn">View</button></td>
                         </tr>
                         <tr>
                             <td>Report2.docx</td>
                             <td>2024-08-29</td>
                             <td>Department B</td>
-                            <td>Pending</td>
-                            <td>View</td>
+                            <td><span class="status-pending">Pending</span></td>
+                            <td><button class="view-btn">View</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -88,7 +89,7 @@
 
                 <div class="dashboard-department-statistics-content">
                     <div class="dashboard-department-statistics-heading">
-                        <img src="" alt="Img">
+                        <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="Img">
                         <div class="dashboard-department-statistics-details">
                             <h1> Department Name </h1>
                             <div class="dashboard-department-statistics-details-numbers">

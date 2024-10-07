@@ -24,6 +24,46 @@
         margin: 0;
     }
 
+    .status-pending {
+        background-color: var(--Warning);
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        text-align: center;
+        display: inline-block;
+    }
+    
+    .status-revision {
+        background-color: #2A67DE;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        text-align: center;
+        display: inline-block;
+    }
+    
+    .status-approved {
+        background-color: var(--PositiveCTA);
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        text-align: center;
+        display: inline-block;
+    }
+    
+    /* View Button */
+    .view-btn {
+        background-color: #274156;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+    }
+
 /* ! Global Styles */
     .centerColumn {
         display: flex;
@@ -327,10 +367,15 @@
         margin: 0;
     }
 
+    .dashboard-card-content h2{
+        margin: 0px;
+        padding: 0px;
+    }
+
     .dashboard-card img {
-        width: 40px;
-        height: 40px;
-        margin-bottom: 10px;
+        width: 50px;
+        height: 50px;
+        margin-right: 10px;
     }
 
     /* Track Documents Section */
@@ -463,6 +508,11 @@
         flex-direction: column;
     }
 
+    .dashboard-department-statistics-content img {
+        height: 50px;
+        width: 50px;
+    }
+
     .dashboard-department-statistics-heading {
         display: flex;
         flex-direction: row;
@@ -473,10 +523,12 @@
     .dashboard-department-statistics-details h1{
         margin: 0;
         font-size: 18px;
+        color: var(--BlackAlt);
     }
     .dashboard-department-statistics-details p {
         margin: 0;
         font-size: 14px;
+        color: var(--BlackAlt_Light);
     }
 
     .dashboard-department-statistics-details-numbers {
@@ -601,47 +653,6 @@
     border-bottom: none;
 }
 
-/* Status Badges */
-.status-pending {
-    background-color: #f0ad4e;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    text-align: center;
-    display: inline-block;
-}
-
-.status-revision {
-    background-color: #5bc0de;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    text-align: center;
-    display: inline-block;
-}
-
-.status-approved {
-    background-color: #5cb85c;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    text-align: center;
-    display: inline-block;
-}
-
-/* View Button */
-.documents-view-btn {
-    background-color: #274156;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-}
-
 .documents-table-container {
     background-color: #fff;
     padding-top: 15px;
@@ -668,7 +679,6 @@
 
 .partnerships-cards-section-container {
     align-items: center;
-    justify-content: center;
     display: flex;
     flex-direction: column;
 }
@@ -692,6 +702,12 @@
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.partnerships-card img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+
 .partnerships-card-content{
     display: flex;
     flex-direction: column;
@@ -702,14 +718,29 @@
     margin: 0;
 }
 
+.partnerships-card-content h2{
+    margin: 0px;
+    padding: 0px;
+}
+
 .partnerships-table-container {
     background-color: #fff;
     padding-top: 15px;
     padding-bottom: 15px;
     border-radius: 15px;
-    text-align: center;
     flex-grow: 1;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.partnerships-table-col-affiliation {
+    display: flex;
+    align-items: center;
+}
+
+.partnerships-table img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
 }
 
 .partnerships-search-table {
@@ -738,27 +769,50 @@
     cursor: pointer;
 }
 
+.partnerships-table-content {
+    max-height: 400px;
+    overflow: auto;
+}
+
 .partnerships-table {
     width: 100%;
     border-collapse: collapse;
-    background-color: #fff;
-    overflow: hidden;
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
 }
 
-.partnerships-table th, .partnerships-table td {
+.partnerships-table thead {
+    display: table;
+    table-layout: fixed;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+}
+
+.partnerships-table thead th {
+    background-color: #f0f0f0;
+    border-top: 2px solid #d1d1d1;
+    border-bottom: 2px solid #d1d1d1;
     padding: 10px;
     text-align: left;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-    padding-left: 20px;
+    font-weight: normal;
+    color: var(--BlackAlt);
 }
 
-.partnerships-table th {
-    background-color: #f0f0f0;
-    font-weight: bold;
-    color: var(--BlackAlt)
+.partnerships-table td {
+    border-bottom: 1px solid #ddd;
+}
+
+.partnerships-table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.partnerships-table tbody td {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .partnerships-table tr:last-child td {
@@ -779,66 +833,68 @@
 
 .partnerships-container-area1 {
     flex: 3; /* Takes up 2/3 of the container's width */
-    margin-right: 10px;
-    padding: 20px;
+    margin-right: 20px;
 }
 
 .partnerships-container-area2 {
     flex: 1; /* Takes up 1/3 of the container's width */
-    padding: 20px;
+    margin-left: 20px;
 }
 
-.partnerships-active-partnerships {
+.partnerships-validity-partnerships {
     margin-bottom: 20px;
     background-color: #FFFFFF;
     border-radius: 10px;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
-    max-height: 250px;
+    min-height: 200px;
+    min-width: 500px;
 }
 
-.partnerships-active-partnerships-header {
+.partnerships-validity-partnerships-header {
     padding: 15px;
     padding-bottom: 0px;
 }
 
-.partnerships-active-partnerships-header h1{
+.partnerships-validity-partnerships-header h1{
     font-size: 18px;
 }
 
-.partnerships-active-partnerships table {
+.partnerships-validity-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.partnerships-active-partnerships thead {
+.partnerships-validity-table thead {
     display: table;
-    width: 100%;
     table-layout: fixed;
     position: sticky;
     top: 0;
     z-index: 1;
-}
-
-.partnerships-active-partnerships tbody tr {
-    display: table; /* Set tbody rows to table to align with thead */
     width: 100%;
-    table-layout: fixed;
 }
 
-.partnerships-active-partnerships thead th {
+.partnerships-validity-table thead th {
     background-color: #f0f0f0;
-    border-top: 2px solid #d1d1d1;
-    border-bottom: 2px solid #d1d1d1;
+    border-top: 1px solid #d1d1d1;
+    border-bottom: 1px solid #d1d1d1;
     padding: 10px;
     text-align: left;
     font-weight: normal;
 }
 
-.partnerships-active-partnerships tbody td{
-    padding-left: 10px !important;
-    padding: 20px;
+.partnerships-validity-table td {
+    border-bottom: 1px solid #ddd;
 }
 
+.partnerships-validity-table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.partnerships-validity-table tbody td{
+    padding: 20px;
+}
 
 .partnerships-validity-period-table-content {    
     max-height: 125px;
@@ -995,6 +1051,14 @@
     overflow: auto;
 }
 
+.statistics-table thead th:first-child {
+    width: 50px;
+}
+
+.statistics-table tbody td:first-child {
+    width: 50px;
+}
+
 .statistics-table thead {
     display: table;
     table-layout: fixed;
@@ -1020,14 +1084,16 @@
 }
 
 .statistics-table tbody td {
-    padding: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .statistics-table th, .statistics-table td {
     padding: 10px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
-    border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
 }
 
@@ -1084,6 +1150,7 @@
 .statistics-department img {
     width: 50px;
     height: 50px;
+    margin-right: 10px;
 }
 
 .statistics-department-details h1{
@@ -1333,9 +1400,8 @@
 
 /* Logo inside the card */
 .affiliates-card-logo {
-    width: 80px;  /* Adjust logo size */
-    height: 80px;
-    margin-bottom: 10px;
+    width: 100px;  /* Adjust logo size */
+    height: 100px;
     border-radius: 10px;
     object-fit: cover;
 }
@@ -1400,8 +1466,13 @@
 
 .affiliates-card-logo-container {
     flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .affiliates-card-title-container {
     flex: 1;
 }
+
+/* ! Settings Page */

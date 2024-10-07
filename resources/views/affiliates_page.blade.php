@@ -91,6 +91,44 @@
             <div class="affiliates-card">
                 <div class="affiliates-card-header">
                     <div class="affiliates-card-logo-container">
+                        <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="CAMP Logo" class="affiliates-card-logo">
+                    </div>
+                    <div class="affiliates-card-title-container">
+                        <h3>CAMP</h3>
+                        <p>College of Allied and Medical Professions</p>
+                    </div>
+                </div>
+                <p><strong>Contact Person:</strong> Juan Miguel Karlos Dela Cruz</p>
+                <p><strong>Email:</strong> delacruz.juan@auf.edu.ph</p>
+                <p><strong>Department Email:</strong> camp@auf.edu.ph</p>
+                <div class="affiliates-card-buttons">
+                    <button class="affiliates-delete-btn"><i class="fas fa-trash"></i></button>
+                    <button class="affiliates-edit-btn">Edit</button>
+                    <button class="affiliates-view-btn">View</button>
+                </div>
+            </div>
+            <div class="affiliates-card">
+                <div class="affiliates-card-header">
+                    <div class="affiliates-card-logo-container">
+                        <img src="path-to-logo" alt="CAMP Logo" class="affiliates-card-logo">
+                    </div>
+                    <div class="affiliates-card-title-container">
+                        <h3>CAMP</h3>
+                        <p>College of Allied and Medical Professions</p>
+                    </div>
+                </div>
+                <p><strong>Contact Person:</strong> Juan Miguel Karlos Dela Cruz</p>
+                <p><strong>Email:</strong> delacruz.juan@auf.edu.ph</p>
+                <p><strong>Department Email:</strong> camp@auf.edu.ph</p>
+                <div class="affiliates-card-buttons">
+                    <button class="affiliates-delete-btn"><i class="fas fa-trash"></i></button>
+                    <button class="affiliates-edit-btn">Edit</button>
+                    <button class="affiliates-view-btn">View</button>
+                </div>
+            </div>
+            <div class="affiliates-card">
+                <div class="affiliates-card-header">
+                    <div class="affiliates-card-logo-container">
                         <img src="path-to-logo" alt="CAMP Logo" class="affiliates-card-logo">
                     </div>
                     <div class="affiliates-card-title-container">
