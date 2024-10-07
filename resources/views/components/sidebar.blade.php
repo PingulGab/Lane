@@ -27,8 +27,8 @@
             </a>
         </li>
 
-        <li class="{{ request()->is('') ? 'active' : '' }} ajax-link">
-            <a href="{{ url('') }}">
+        <li class="{{ request()->is('generate-moa') ? 'active' : '' }} ajax-link">
+            <a href="{{ url('generate-moa') }}">
                 <i class="fas fa-file-circle-plus"></i> <!-- Documents Icon -->
                 <span class="menu-text">Generate</span>
             </a>
