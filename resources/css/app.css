@@ -65,6 +65,10 @@
     }
 
 /* ! Global Styles */
+.hidden {
+    display:none;
+}
+
     .centerColumn {
         display: flex;
         align-items: center;

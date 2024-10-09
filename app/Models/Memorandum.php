@@ -6,29 +6,33 @@ use Illuminate\Database\Eloquent\Model;
 
 class Memorandum extends Model
 {
-    protected $table = 'memorandums'; // Specify the table name
+    protected $table = 'memorandums';
+    // Add the new fields to the fillable array
+    protected $fillable = [
+        'partner_name',
+        'contact_person',  // New field for contact person
+        'contact_email',   // New field for contact email
+        'whereas_clauses',
+        'articles'
+    ];
 
-    protected $fillable = ['partner_name', 'whereas_clauses', 'articles'];
-
-    // Accessor to automatically decode JSON to array for whereas_clauses
+    // Decode the JSON fields automatically when retrieving from the database
     public function getWhereasClausesAttribute($value)
     {
-        return json_decode($value, true) ?: [];
+        return json_decode($value, true);
     }
 
-    // Accessor to automatically decode JSON to array for articles
     public function getArticlesAttribute($value)
     {
-        return json_decode($value, true) ?: [];
+        return json_decode($value, true);
     }
 
-    // Mutator to encode whereas_clauses as JSON when setting
+    // Encode the JSON fields automatically when saving to the database
     public function setWhereasClausesAttribute($value)
     {
         $this->attributes['whereas_clauses'] = json_encode($value);
     }
 
-    // Mutator to encode articles as JSON when setting
     public function setArticlesAttribute($value)
     {
         $this->attributes['articles'] = json_encode($value);
