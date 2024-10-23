@@ -47,6 +47,7 @@
     <h1>ANGELES UNIVERSITY FOUNDATION (PHILIPPINES)</h1>
     <h1>AND</h1>
     <h1>{{ strtoupper($partner_name) }}</h1>
+    <h1>{{ strtoupper($contact_email) }}</h1>
 
     <br><br>
 
@@ -78,7 +79,7 @@
 
     <p class="indented-paragraph">
         <span class="bold"> {{ strtoupper($partner_name) }} </span>, a time-honored and well-acclaimed institution of higher learning duly organized and existing under the laws of the People’s Republic of China, with principal address at No.1 Keji Road, Shangjie, Minhou, Fuzhou, Fujian, People’s Republic of China, herein represented by its President, 
-        <span class="bold">{{ strtoupper($contact_person) }}</span> (hereafter referred to as <span class="bold">"{PartnerName_Abbreviation}"</span>).
+        <span class="bold"> {{ strtoupper($contact_person) }}</span> (hereafter referred to as <span class="bold">"{PartnerName_Abbreviation}"</span>).
     </p>
 
     {{-- Witnesseth That Section --}}

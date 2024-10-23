@@ -173,7 +173,7 @@ class MemorandumController extends Controller
         }
         
         $dompdf = new Dompdf();
-        $html = view('generate_moa.pdf_view', [
+        $html = view('generate_moa.memorandum_pdf_view', [
             'partner_name' => $memorandum->partner_name,
             'contact_person' => $memorandum->contact_person,
             'contact_email' => $memorandum->contact_email,
@@ -185,7 +185,7 @@ class MemorandumController extends Controller
         Storage::put('public/' . $fileName . '.pdf', $dompdf->output());
     
         // Redirect to the view page after generating the document
-        return redirect()->route('viewDocument', ['id' => $memorandum->id]);
+        return redirect()->route('viewMemorandum', ['id' => $memorandum->id]);
     }    
 
     public function viewDocument($id)
@@ -219,6 +219,8 @@ class MemorandumController extends Controller
         // Validate the input data
         $validatedData = $request->validate([
             'partner_name' => 'required|string|max:255',
+            'contact_person' => 'required|string|max:255',
+            'contact_email' => 'required|string|max:255',
             'whereas_clauses' => 'nullable|array',
             'whereas_clauses.*' => 'required|string|max:1000',
             'articles' => 'nullable|array',
@@ -230,6 +232,8 @@ class MemorandumController extends Controller
     
         // Update the memorandum fields
         $memorandum->partner_name = $validatedData['partner_name'];
+        $memorandum->contact_person = $validatedData['contact_person'];
+        $memorandum->contact_email = $validatedData['contact_email'];
         $memorandum->whereas_clauses = json_encode($validatedData['whereas_clauses']);
         $memorandum->articles = json_encode($validatedData['articles']);
         $memorandum->save();
@@ -268,8 +272,10 @@ class MemorandumController extends Controller
     
         // Generate the updated PDF using DOMPDF
         $dompdf = new \Dompdf\Dompdf();
-        $html = view('generate_moa.pdf_view', [
+        $html = view('generate_moa.memorandum_pdf_view', [
             'partner_name' => $memorandum->partner_name,
+            'contact_person' => $memorandum->contact_person,
+            'contact_email' => $memorandum->contact_email,
             'whereasClauses' => json_decode($memorandum->whereas_clauses),
             'articles' => json_decode($memorandum->articles)
         ])->render();
@@ -280,6 +286,6 @@ class MemorandumController extends Controller
         Storage::disk('public')->put($fileName . '.pdf', $dompdf->output());
     
         // Redirect back to the view page with the updated files
-        return redirect()->route('viewDocument', ['id' => $memorandum->id]);
+        return redirect()->route('viewMemorandum', ['id' => $memorandum->id]);
     }    
 }

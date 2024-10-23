@@ -7,7 +7,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
-    <x-sidebar :isMinimized="false" />
+    <x-sidebar :isMinimized="false"/>
 
     <div class="content-wrapper" id='main-content'>
         @yield('content')

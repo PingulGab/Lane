@@ -93,6 +93,30 @@
         padding: 20px;
     }
 
+/* ! Navigation Bar Style */
+/* Add this CSS for submenu functionality */
+.submenu {
+    list-style: none;
+    margin: 0;
+    padding-left: 20px;
+}
+
+.submenu li {
+    padding: 5px 0;
+}
+
+.submenu-icon {
+    float: right;
+}
+
+.generate-menu.active .submenu {
+    display: block; /* Show submenu when active */
+}
+
+.generate-menu.active .submenu-icon {
+    transform: rotate(180deg); /* Rotate icon when submenu is visible */
+}
+
 /* ! Landing Page Style */
     .laneLogo {
         width: 75%;
