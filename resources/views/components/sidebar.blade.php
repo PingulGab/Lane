@@ -47,8 +47,8 @@
                 <li class="{{ request()->is('endorsement-form/create') ? 'active' : '' }} ajax-link">
                     <a href="{{ url('endorsement-form/create') }}">Endorsement Form</a>
                 </li>
-                <li class="{{ request()->is('partnerships') ? 'active' : '' }} ajax-link">
-                    <a href="{{ url('generate-other') }}">Generate Link</a>
+                <li class="{{ request()->is('generate-link') ? 'active' : '' }} ajax-link">
+                    <a href="{{ url('generate-link') }}">Generate Link</a>
                 </li>
             </ul>
         </li>

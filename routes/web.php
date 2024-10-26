@@ -4,16 +4,19 @@ use App\Http\Controllers\AffiliatesPageController;
 use App\Http\Controllers\DashboardPageController;
 use App\Http\Controllers\DocumentsPageController;
 use App\Http\Controllers\EndorsementFormController;
+use App\Http\Controllers\GenerateLinkController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\PartnershipsPageController;
 use App\Http\Controllers\ProposalFormController;
+use App\Http\Controllers\ProspectivePartnerResultController;
 use App\Http\Controllers\SettingsPageController;
 use App\Http\Controllers\StatisticsPageController;
 use App\Http\Controllers\MemorandumController;
+use App\Http\Controllers\ProspectivePartnerFormController;
+use App\Http\Middleware\CheckLinkAccess;
 use Illuminate\Support\Facades\Route;
 
 /* Routes for Common Navigation */
-
 Route::get('/login', [LandingPageController::class, 'landing'])->name('landing');
 Route::get('/dashboard', [DashboardPageController::class, 'dashboard'])->name('dashboard');
 Route::get('/partnerships', [PartnershipsPageController::class, 'partnerships'])->name('partnerships');
@@ -21,6 +24,26 @@ Route::get('/documents', [DocumentsPageController::class, 'documents'])->name('d
 Route::get('/statistics', [StatisticsPageController::class, 'statistics'])->name('statistics');
 Route::get('/affiliates', [AffiliatesPageController::class, 'affiliates'])->name('affiliates');
 Route::get('/settings', [SettingsPageController::class, 'settings'])->name('settings');
+
+/* Affiliates */
+Route::get('/affiliates', [AffiliatesPageController::class, 'index'])->name('affiliatesIndex');
+Route::get('/affiliates/create', [AffiliatesPageController::class, 'create'])->name('affiliatesCreate');
+Route::post('/affiliates', [AffiliatesPageController::class, 'store'])->name('affiliatesStore');
+Route::post('/affiliates/{affiliates}/reset-password', [AffiliatesPageController::class, 'resetPassword'])->name('affiliatesResetPassword');
+
+/* Links */
+Route::get('/generate-link', [GenerateLinkController::class, 'viewGenerate'])->name('generate-link');
+Route::post('/generateLinkMethod', [GenerateLinkController::class, 'generateLink'])->name('generateLinkMethod');
+Route::get('/link/{link}', [GenerateLinkController::class, 'showLink'])->name('show-link');
+Route::post('/link/{link}', [GenerateLinkController::class, 'validatePassword'])->name('validate-link-password');
+Route::delete('/link/{id}', [GenerateLinkController::class, 'deleteLink'])->name('delete-link');
+
+/* Prospetice Partner Forms and Result Link */
+// Route for displaying and submitting the form (requires checkLinkAccess middleware)
+Route::post('/form/{link}', [ProspectivePartnerFormController::class, 'submitForm'])->name('submitForm');
+
+// Route for viewing the result (requires authentication middleware)
+Route::get('/result/{link}', [ProspectivePartnerResultController::class, 'showResult'])->name('DeparmentResults');
 
 /* Routes for Proposal Form Creation */
 Route::get('/proposal-form/create', [ProposalFormController::class, 'create'])->name('createProposal');

@@ -3,6 +3,44 @@
 @section('title', 'LANE - Dashboard')
 
 @section('content')
+<div class="container">
+    <h1>Manage College Accounts</h1>
+
+    <a href="{{ route('affiliatesCreate') }}" class="btn btn-primary mb-3">Create New College</a>
+
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>College Name</th>
+                <th>Contact Person</th>
+                <th>Email</th>
+                <th>Username</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($affiliates as $affiliate)
+            <tr>
+                <td>{{ $affiliate->affiliate_name }}</td>
+                <td>{{ $affiliate->affiliate_contact_person }}</td>
+                <td>{{ $affiliate->affiliate_email }}</td>
+                <td>{{ $affiliate->username }}</td>
+                <td>
+                    <form action="{{ route('affiliatesResetPassword', $affiliate) }}" method="POST" onsubmit="return confirm('Reset password for {{ $affiliate->affiliate_name }}?');">
+                        @csrf
+                        <button type="submit" class="btn btn-warning">Reset Password</button>
+                    </form>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
 <div class="affiliates-container">
 
     <!-- Affiliates Header -->
