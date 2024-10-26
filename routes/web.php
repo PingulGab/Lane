@@ -13,22 +13,35 @@ use App\Http\Controllers\SettingsPageController;
 use App\Http\Controllers\StatisticsPageController;
 use App\Http\Controllers\MemorandumController;
 use App\Http\Controllers\ProspectivePartnerFormController;
+use App\Http\Controllers\UserController;
 use App\Http\Middleware\CheckLinkAccess;
 use Illuminate\Support\Facades\Route;
 
-/* Routes for Common Navigation */
-Route::get('/login', [LandingPageController::class, 'landing'])->name('landing');
-Route::get('/dashboard', [DashboardPageController::class, 'dashboard'])->name('dashboard');
-Route::get('/partnerships', [PartnershipsPageController::class, 'partnerships'])->name('partnerships');
-Route::get('/documents', [DocumentsPageController::class, 'documents'])->name('documents');
-Route::get('/statistics', [StatisticsPageController::class, 'statistics'])->name('statistics');
-Route::get('/affiliates', [AffiliatesPageController::class, 'affiliates'])->name('affiliates');
-Route::get('/settings', [SettingsPageController::class, 'settings'])->name('settings');
+/* Login Route */
+Route::get('/register', [UserController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [UserController::class, 'register']);
+
+Route::get('/login', [UserController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [UserController::class, 'login']);
+
+Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+
+Route::middleware(['auth', 'role:Superadmin,Employee'])->group(function () {
+    
+    /* Routes for Common Navigation */
+    Route::get('/dashboard', [DashboardPageController::class, 'dashboard'])->name('dashboard');
+    Route::get('/partnerships', [PartnershipsPageController::class, 'partnerships'])->name('partnerships');
+    Route::get('/documents', [DocumentsPageController::class, 'documents'])->name('documents');
+    Route::get('/statistics', [StatisticsPageController::class, 'statistics'])->name('statistics');
+    Route::get('/settings', [SettingsPageController::class, 'settings'])->name('settings');
+});
+
+
 
 /* Affiliates */
 Route::get('/affiliates', [AffiliatesPageController::class, 'index'])->name('affiliatesIndex');
-Route::get('/affiliates/create', [AffiliatesPageController::class, 'create'])->name('affiliatesCreate');
 Route::post('/affiliates', [AffiliatesPageController::class, 'store'])->name('affiliatesStore');
+Route::get('/affiliates/create', [AffiliatesPageController::class, 'create'])->name('affiliatesCreate');
 Route::post('/affiliates/{affiliates}/reset-password', [AffiliatesPageController::class, 'resetPassword'])->name('affiliatesResetPassword');
 
 /* Links */
@@ -73,6 +86,3 @@ Route::post('/endorsement-form/{id}/update', [EndorsementFormController::class, 
 Route::get('/', function () {
     return redirect('/login');
 });
-
-//Post
-Route::post('/login', [LandingPageController::class, 'authenticateUser'])->name('authenticateUser');
