@@ -17,9 +17,13 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'username',
-        'email',
-        'password',
+        'name', 
+        'username', 
+        'email', 
+        'password', 
+        'contact_number', 
+        'role', 
+        'isActive'
     ];
 
     /**
@@ -40,6 +44,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'is_active' => 'boolean',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];

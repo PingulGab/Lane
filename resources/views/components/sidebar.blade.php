@@ -82,10 +82,13 @@
         </li>
 
         <li class="{{ request()->is('') ? 'active' : '' }} ajax-link">
-            <a href="{{ url('') }}">
-                <i class="fas fa-right-from-bracket"></i>
-                <span class="menu-text">Logout</span>
-            </a>
+            <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                @csrf
+                <button type="submit" >
+                    <i class="fas fa-right-from-bracket"></i>
+                    <span class="menu-text">Logout</span>
+                </button>
+            </form>
         </li>
     </ul>
     <div class="sidebar-footer">

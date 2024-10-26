@@ -24,11 +24,18 @@
             <div class='loginContainer'>
                 <img src='{{ Vite::asset('resources/images/lane_logo_base.png')}}'
                 class='laneLogo'/>
-                    <form action='{{route('authenticateUser')}}' class='centerColumn' method="POST">
+                
+                    <form action='{{route('login')}}' class='centerColumn' method="POST">
                         @csrf
                         <input id='username' name='username' class='loginInput' type='text' placeholder="Username">
+                            @error('username')
+                            <div class="error">{{ $message }}</div>
+                            @enderror
                         <input id='password' name='password' class='loginInput' type='password' placeholder="Password">
-                        <input type='submit' value='Login' class='loginSubmit'>
+                            @error('password')
+                            <div class="error">{{ $message }}</div>
+                            @enderror
+                        <button type='submit' value='Login' class='loginSubmit'> Login </button>
                     </form>
                 </div>
             </div>
