@@ -36,7 +36,7 @@
         @foreach ($links as $link)
         <li>
             <strong>{{ $link->name }}</strong>: 
-            <a href="{{ route('show-link', $link->link) }}">{{ url('/link/' . $link->link) }}</a>
+            <a href="{{ route('prospectPartnerViewLink', $link->link) }}">{{ url('/link/' . $link->link) }}</a>
             <form method="POST" action="{{ route('delete-link', $link->id) }}">
                 @csrf
                 @method('DELETE')
@@ -69,7 +69,7 @@ btn.onclick = function(event) {
     var formData = new FormData(document.getElementById('generateLinkForm'));
 
     // Make an AJAX POST request
-    fetch("{{ route('generateLinkMethod') }}", {
+    fetch("{{ route('storeNewLink') }}", {
         method: "POST",
         headers: {
             'X-CSRF-TOKEN': csrfToken,

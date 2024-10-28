@@ -1,11 +1,12 @@
 <?php
 
+use App\Http\Controllers\AffiliatesLoginController;
 use App\Http\Controllers\AffiliatesPageController;
 use App\Http\Controllers\DashboardPageController;
 use App\Http\Controllers\DocumentsPageController;
 use App\Http\Controllers\EndorsementFormController;
-use App\Http\Controllers\GenerateLinkController;
 use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\LinkController;
 use App\Http\Controllers\PartnershipsPageController;
 use App\Http\Controllers\ProposalFormController;
 use App\Http\Controllers\ProspectivePartnerResultController;
@@ -13,22 +14,26 @@ use App\Http\Controllers\SettingsPageController;
 use App\Http\Controllers\StatisticsPageController;
 use App\Http\Controllers\MemorandumController;
 use App\Http\Controllers\ProspectivePartnerFormController;
-use App\Http\Controllers\UserController;
-use App\Http\Middleware\CheckLinkAccess;
 use Illuminate\Support\Facades\Route;
 
-/* Login Route */
-Route::get('/register', [UserController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [UserController::class, 'register']);
+//! Redirects the user to "/login" when the "/" is entered.
+Route::get('/', function () {
+    return redirect('/login');
+});
 
-Route::get('/login', [UserController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [UserController::class, 'login']);
+//! Register, Login, and Logout Routes
+// TODO: Remove the REGISTER route, methods, and pages after testing.
+Route::get('/register', [LandingPageController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [LandingPageController::class, 'register']);
 
-Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+Route::get('/login', [LandingPageController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LandingPageController::class, 'login']);
+Route::post('/logout', [LandingPageController::class, 'logout'])->name('logout');
 
+//! Route for BOTH Superadmin and Employee
 Route::middleware(['auth', 'role:Superadmin,Employee'])->group(function () {
     
-    /* Routes for Common Navigation */
+    //! Common Navigation Routes (Sidebar Routes)
     Route::get('/dashboard', [DashboardPageController::class, 'dashboard'])->name('dashboard');
     Route::get('/partnerships', [PartnershipsPageController::class, 'partnerships'])->name('partnerships');
     Route::get('/documents', [DocumentsPageController::class, 'documents'])->name('documents');
@@ -36,34 +41,39 @@ Route::middleware(['auth', 'role:Superadmin,Employee'])->group(function () {
     Route::get('/settings', [SettingsPageController::class, 'settings'])->name('settings');
     Route::get('/affiliates', [AffiliatesPageController::class, 'affiliates'])->name('affiliates');
 
-    /* Affiliates - Create Affiliate*/
-    Route::get('/affiliates/create',[AffiliatesPageController::class, 'showCreatePage'])->name('showCreatePage');
-    Route::post('/affiliatesCreateMethod', [AffiliatesPageController::class, 'createAffiliate'])->name('affiliatesCreateMethod');
+    //! Affiliates Child Pages and Methods
+    Route::get('/affiliates/new',[AffiliatesPageController::class, 'showNewAffiliateForm'])->name('showNewAffiliateForm');
+    Route::post('/affiliates', [AffiliatesPageController::class, 'storeNewAffiliate'])->name('storeNewAffiliate');
 
-
-    /* Links */
-    Route::get('/generate-link', [GenerateLinkController::class, 'viewGenerate'])->name('generate-link');
-    Route::post('/generateLinkMethod', [GenerateLinkController::class, 'generateLink'])->name('generateLinkMethod');
-    Route::delete('/link/{id}', [GenerateLinkController::class, 'deleteLink'])->name('delete-link');
+    //! Generate Link and Methods (Located in Sidebar)
+    Route::get('/links', [LinkController::class, 'viewLink'])->name('viewLink');
+    Route::post('/links/new', [LinkController::class, 'storeNewLink'])->name('storeNewLink');
+    Route::delete('/links/delete/{id}', [LinkController::class, 'deleteLink'])->name('delete-link');
 });
 
+//! Routes for: Entering Password on Generated Link
+Route::get('/partner/application/{link}', [ProspectivePartnerFormController::class, 'prospectPartnerViewLink'])->name('prospectPartnerViewLink');
+Route::post('/partner/application/{link}', [ProspectivePartnerFormController::class, 'validateProspectPartnerPassword'])->name('validateProspectPartnerPassword');
 
-Route::get('/link/{link}', [GenerateLinkController::class, 'showLink'])->name('show-link');
-Route::post('/link/{link}', [GenerateLinkController::class, 'validatePassword'])->name('validate-link-password');
+//! Routes for: Submission of the Prospective Partner's Form.
+Route::post('/partner/application/{link}/submitted', [ProspectivePartnerFormController::class, 'submitProspectPartnerForm'])->name('submitProspectPartnerForm');
 
-/* Prospetice Partner Forms and Result Link */
-Route::post('/form/{link}', [ProspectivePartnerFormController::class, 'submitForm'])->name('submitForm');
+//! Route for: Prospective Partner Viewing the Submitted Form
+Route::get('/partner/application/{link}/view', [ProspectivePartnerFormController::class, 'prospectPartnerViewSubmittedForm'])->name('prospectPartnerViewSubmittedForm');
+Route::post('/partner/application/{link}/view', [ProspectivePartnerFormController::class, 'validatePasswordSubmittedForm'])->name('validatePasswordSubmittedForm');
 
-// Route for viewing the result (requires authentication middleware)
-Route::get('/result/{link}', [ProspectivePartnerResultController::class, 'showResult'])->name('DeparmentResults')->middleware(['checkAffiliateAccess']);
-Route::get('/affiliate/login/{link}', [ProspectivePartnerResultController::class, 'showLoginForm'])->name('affiliateLogin');
-Route::post('/affiliate/login/{link}', [ProspectivePartnerResultController::class, 'login'])->name('affiliateLoginAttempt');
+//! Route for: Viewing the Prospective Partner Form's Results.
+Route::get('/partner/result/{link}/view', [ProspectivePartnerResultController::class, 'resultProspectivePartnerForm'])->name('resultProspectivePartnerForm')->middleware(['checkAffiliateAccess']);
+Route::get('/partner/result/{link}/login', [ProspectivePartnerResultController::class, 'showResultLoginPage'])->name('showResultLoginPage');
 
-Route::get('affiliate/change-password/{link}', [AffiliatesPageController::class, 'showChangePassword'])->name('affiliateShowChangePassword');
-Route::post('affiliate/change-password/{link}', [AffiliatesPageController::class, 'changePassword'])->name('affiliateChangePassword');
+//! Route for: Login of Affiliates
+Route::post('/partner/result/{link}/login', [AffiliatesLoginController::class, 'resultLogin'])->name('resultLogin');
 
+//! Route for: Changing the Password of the Affiliate's Account.
+Route::get('partner/result/{link}/change-password', [AffiliatesLoginController::class, 'showAffiliateChangePassword'])->name('showAffiliateChangePassword');
+Route::post('partner/result/{link}/change-password', [AffiliatesLoginController::class, 'affiliateChangePassword'])->name('affiliateChangePassword');
 
-/* Routes for Proposal Form Creation */
+// ? Routes for Proposal Form Creation (TEMPORARY)
 Route::get('/proposal-form/create', [ProposalFormController::class, 'create'])->name('createProposal');
 Route::post('/proposal-form/generate', [ProposalFormController::class, 'generate'])->name('generateProposal');
 Route::get('/proposal-form/{id}/view', [ProposalFormController::class, 'viewDocument'])->name('viewProposal');
@@ -71,7 +81,7 @@ Route::get('/proposal-form/{id}/download/{format}', [ProposalFormController::cla
 Route::get('/proposal-form/{id}/edit', [ProposalFormController::class, 'editDocument'])->name('editProposal');
 Route::post('/proposal-form/{id}/update', [ProposalFormController::class, 'updateDocument'])->name('updateProposal');
 
-/* Routes for MOA Creation */
+// ? Routes for Memorandum Generation (TEMPORARY)
 Route::get('/memorandum/create', [MemorandumController::class, 'create'])->name('createMemorandum');
 Route::post('/memorandum/generate', [MemorandumController::class, 'generate'])->name('generateMemorandum');
 Route::get('/memorandum/{id}/view', [MemorandumController::class, 'viewDocument'])->name('viewMemorandum');
@@ -79,7 +89,7 @@ Route::get('/memorandum/{id}/download/{format}', [MemorandumController::class, '
 Route::get('/memorandum/{id}/edit', [MemorandumController::class, 'editDocument'])->name('editMemorandum');
 Route::post('/memorandum/{id}/update', [MemorandumController::class, 'updateDocument'])->name('updateMemorandum');
 
-/* Routes for Endorsement Form Creation */
+// ? Routes for Endorsement Form Creation
 Route::get('/endorsement-form/create', [EndorsementFormController::class, 'create'])->name('createEndorsement');
 Route::post('/endorsement-form/generate', [EndorsementFormController::class, 'generate'])->name('generateEndorsement');
 Route::get('/endorsement-form/{id}/view', [EndorsementFormController::class, 'viewDocument'])->name('viewEndorsement');
@@ -87,7 +97,3 @@ Route::get('/endorsement-form/{id}/download/{format}', [EndorsementFormControlle
 Route::get('/endorsement-form/{id}/edit', [EndorsementFormController::class, 'editDocument'])->name('editEndorsement');
 Route::post('/endorsement-form/{id}/update', [EndorsementFormController::class, 'updateDocument'])->name('updateEndorsement');
 
-//Ensures that the '/' goes to the appropriate link.
-Route::get('/', function () {
-    return redirect('/login');
-});

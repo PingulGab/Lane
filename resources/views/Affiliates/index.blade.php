@@ -18,7 +18,7 @@
             <div class="affiliates-departments-controls">
                 <input type="text" placeholder="Search" class="affiliates-search-bar">
                 <button type="submit" class="affiliates-filters-btn" href="">Filters</button>
-                <a class="affiliates-add-btn" href="{{route('showCreatePage')}}">Add</a>
+                <a class="affiliates-add-btn" href="{{route('showNewAffiliateForm')}}">Add</a>
             </div>
         </div>
 

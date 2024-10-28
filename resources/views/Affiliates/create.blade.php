@@ -78,7 +78,7 @@
         var formData = new FormData(document.getElementById('createNewAffiliate'));
 
         // Make an AJAX POST request
-        fetch("{{ route('affiliatesCreateMethod') }}", {
+        fetch("{{ route('storeNewAffiliate') }}", {
             method: "POST",
             headers: {
                 'X-CSRF-TOKEN': csrfToken,

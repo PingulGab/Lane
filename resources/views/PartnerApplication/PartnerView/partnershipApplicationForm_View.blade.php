@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <form method="POST" action="{{ url('form/' . $link->link) }}">
+    <form method="POST" action="{{route('submitProspectPartnerForm', $link->link)}}">
         @csrf
 
         <h3>Select Affiliates</h3>

@@ -13,7 +13,7 @@
     </div>
 @endif
 
-<form method="POST" action="{{ route('validate-link-password', $link->link) }}">
+<form method="POST" action="{{ route('validatePasswordSubmittedForm', $link->link) }}">
     @csrf
     <label for="password">Password:</label>
     <input type="password" name="password" id="password" required>

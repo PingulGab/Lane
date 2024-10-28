@@ -14,36 +14,17 @@ class AffiliatesPageController extends Controller
     public function affiliates()
     {
         $affiliates = Affiliate::all();
-        return view('affiliates.affiliates-page', compact('affiliates'));
+        return view('Affiliates.index', compact('affiliates'));
     }
 
-    public function showCreatePage()
+    public function showNewAffiliateForm()
     {
         return view('layouts.layout', [
-            'content' => view('affiliates.affiliates-create')
+            'content' => view('affiliates.create')
         ]);
     }
 
-    public function showChangePassword($link)
-    {
-        return view('affiliates.affiliates-changePassword', compact('link'));
-    }
-
-    public function changePassword(Request $request, $link)
-    {
-        $request->validate([
-            'password' => 'required|min:4|confirmed'
-        ]);
-
-        $affiliate = Auth::guard('affiliate')->user();
-        $affiliate->password = Hash::make($request->password);
-        $affiliate->must_change_password = false;
-        $affiliate->save();
-
-        return redirect()->to('affiliate/login/'.$link);
-    }
-
-    public function createAffiliate(Request $request)
+    public function storeNewAffiliate(Request $request)
     {
         // Validate the incoming request
         try {
@@ -91,4 +72,5 @@ class AffiliatesPageController extends Controller
             return response()->json(['error' => 'An unexpected error occurred.'], 500);
         }
     }    
+
 }

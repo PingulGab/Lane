@@ -10,7 +10,7 @@
     </div>
 @endif
 
-<form method="POST" action="{{route('affiliateLoginAttempt', ['link' => $link])}}">
+<form method="POST" action="{{route('resultLogin', ['link' => $link])}}">
     @csrf
     <label for="username">Username:</label>
     <input type="text" name="username" id="username" required>
