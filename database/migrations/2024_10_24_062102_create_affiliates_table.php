@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('affiliates', function (Blueprint $table) {
             $table->id();
-            $table->string('affiliate_name');
-            $table->string('affiliate_contact_person');
-            $table->string('affiliate_email')->unique();
+            $table->string('name');
+            $table->string('contact_person');
+            $table->string('email')->unique();
             $table->string('username')->unique();
             $table->string('password');
             $table->boolean('must_change_password')->default(true); // Force password change

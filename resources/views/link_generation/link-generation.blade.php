@@ -8,7 +8,6 @@
 
 
 @section('content')
-
     <div>
         <h2>Generate a Link</h2>
         <form id="generateLinkForm">

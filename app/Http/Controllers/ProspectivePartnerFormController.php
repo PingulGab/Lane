@@ -21,6 +21,8 @@ class ProspectivePartnerFormController extends Controller
 
         $link = Link::where('link', $link)->firstOrFail();
 
+        $selectedAffiliates = $request->input('selected_affiliates', []);
+
         $memorandum = Memorandum::create([
             'partner_name' => $request->input('partner_name'),
         ]);
@@ -42,7 +44,9 @@ class ProspectivePartnerFormController extends Controller
             'isActive' => false,
         ]);
 
-        Mail::to('janjanpingul@gmail.com')->send(new ProspectivePartnerFormSubmitted($link));
+        $link->affiliates()->sync($selectedAffiliates);
+
+        //Mail::to('janjanpingul@gmail.com')->send(new ProspectivePartnerFormSubmitted($link));
 
         return response()->json(['message' => 'Form submitted successfully.']);
     }
