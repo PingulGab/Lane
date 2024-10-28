@@ -3,124 +3,22 @@
 @section('title', 'LANE - Dashboard')
 
 @section('content')
-<div class="container">
-    <h1>Manage College Accounts</h1>
-
-    <a href="{{ route('affiliatesCreate') }}" class="btn btn-primary mb-3">Create New College</a>
-
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>College Name</th>
-                <th>Contact Person</th>
-                <th>Email</th>
-                <th>Username</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($affiliates as $affiliate)
-            <tr>
-                <td>{{ $affiliate->affiliate_name }}</td>
-                <td>{{ $affiliate->affiliate_contact_person }}</td>
-                <td>{{ $affiliate->affiliate_email }}</td>
-                <td>{{ $affiliate->username }}</td>
-                <td>
-                    <form action="{{ route('affiliatesResetPassword', $affiliate) }}" method="POST" onsubmit="return confirm('Reset password for {{ $affiliate->affiliate_name }}?');">
-                        @csrf
-                        <button type="submit" class="btn btn-warning">Reset Password</button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
-
 <div class="affiliates-container">
 
     <!-- Affiliates Header -->
     <h1 class="affiliates-header">Affiliates Lists</h1>
 
-    <!-- Partners Section -->
-    <div class="affiliates-partners-section">
-        <div class="affiliates-partners-header">
-            <h2>Partners</h2>
-            <div class="affiliates-partners-controls">
-                <p>Total: 12 Partners</p>
-                <input type="text" placeholder="Search" class="affiliates-search-bar">
-                <button class="affiliates-filters-btn">Filters</button>
-                <button class="affiliates-delete-btn"><i class="fas fa-trash"></i></button>
-                <button class="affiliates-delete-btn"><i class="fas fa-plus"></i></button>
-            </div>
-        </div>
-
-        <!-- Partners Table -->
-        <table class="affiliates-table">
-            <thead>
-                <tr>
-                    <th><input type="checkbox"></th>
-                    <th>Partner name</th>
-                    <th>Representative</th>
-                    <th>Email Address</th>
-                    <th>Address</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>Angeles University Foundation</td>
-                    <td>Joseph Emmanuel L. Angeles</td>
-                    <td>angeles,josephemanuel@auf.edu.ph</td>
-                    <td>#123, Angeles City...</td>
-                    <td>
-                        <a href="#" class="affiliates-edit-btn">Edit</a>
-                        <a href="#" class="affiliates-view-btn">View</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>Microsoft</td>
-                    <td>Bill Gates</td>
-                    <td>bill.gates@microsoft@auf.edu.ph</td>
-                    <td>#123, Angeles City...</td>
-                    <td>
-                        <a href="#" class="affiliates-edit-btn">Edit</a>
-                        <a href="#" class="affiliates-view-btn">View</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox"></td>
-                    <td>Amazon</td>
-                    <td>Jeff Bazos</td>
-                    <td>bazos,jeff@amazon.com</td>
-                    <td>#123, Angeles City...</td>
-                    <td>
-                        <a href="#" class="affiliates-edit-btn">Edit</a>
-                        <a href="#" class="affiliates-view-btn">View</a>
-                    </td>
-                </tr>
-                <!-- Add more rows as needed -->
-            </tbody>
-        </table>
-    </div>
-
     <!-- Departments Section -->
     <div class="affiliates-departments-section">
         <div class="affiliates-departments-header">
             <div class="affiliates-departments-header-container">
-                <h2>Departments</h2>
+                <h2>Affiliates</h2>
                 <p>Total: 12 Departments</p>
             </div>
             <div class="affiliates-departments-controls">
                 <input type="text" placeholder="Search" class="affiliates-search-bar">
-                <button class="affiliates-filters-btn">Filters</button>
-                <button class="affiliates-add-btn">Add</button>
+                <button type="submit" class="affiliates-filters-btn" href="">Filters</button>
+                <a class="affiliates-add-btn" href="{{route('showCreatePage')}}">Add</a>
             </div>
         </div>
 

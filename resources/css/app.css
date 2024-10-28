@@ -1343,6 +1343,10 @@
     border: 1px solid #ccc;
 }
 
+.affiliates-departments-controls a {
+    text-decoration: none;
+}
+
 .affiliates-filters-btn, .affiliates-add-btn {
     background-color: #274156;
     color: #fff;

@@ -34,29 +34,34 @@ Route::middleware(['auth', 'role:Superadmin,Employee'])->group(function () {
     Route::get('/documents', [DocumentsPageController::class, 'documents'])->name('documents');
     Route::get('/statistics', [StatisticsPageController::class, 'statistics'])->name('statistics');
     Route::get('/settings', [SettingsPageController::class, 'settings'])->name('settings');
+    Route::get('/affiliates', [AffiliatesPageController::class, 'affiliates'])->name('affiliates');
+
+    /* Affiliates - Create Affiliate*/
+    Route::get('/affiliates/create',[AffiliatesPageController::class, 'showCreatePage'])->name('showCreatePage');
+    Route::post('/affiliatesCreateMethod', [AffiliatesPageController::class, 'createAffiliate'])->name('affiliatesCreateMethod');
+
+
+    /* Links */
+    Route::get('/generate-link', [GenerateLinkController::class, 'viewGenerate'])->name('generate-link');
+    Route::post('/generateLinkMethod', [GenerateLinkController::class, 'generateLink'])->name('generateLinkMethod');
+    Route::delete('/link/{id}', [GenerateLinkController::class, 'deleteLink'])->name('delete-link');
 });
 
 
-
-/* Affiliates */
-Route::get('/affiliates', [AffiliatesPageController::class, 'index'])->name('affiliatesIndex');
-Route::post('/affiliates', [AffiliatesPageController::class, 'store'])->name('affiliatesStore');
-Route::get('/affiliates/create', [AffiliatesPageController::class, 'create'])->name('affiliatesCreate');
-Route::post('/affiliates/{affiliates}/reset-password', [AffiliatesPageController::class, 'resetPassword'])->name('affiliatesResetPassword');
-
-/* Links */
-Route::get('/generate-link', [GenerateLinkController::class, 'viewGenerate'])->name('generate-link');
-Route::post('/generateLinkMethod', [GenerateLinkController::class, 'generateLink'])->name('generateLinkMethod');
 Route::get('/link/{link}', [GenerateLinkController::class, 'showLink'])->name('show-link');
 Route::post('/link/{link}', [GenerateLinkController::class, 'validatePassword'])->name('validate-link-password');
-Route::delete('/link/{id}', [GenerateLinkController::class, 'deleteLink'])->name('delete-link');
 
 /* Prospetice Partner Forms and Result Link */
-// Route for displaying and submitting the form (requires checkLinkAccess middleware)
 Route::post('/form/{link}', [ProspectivePartnerFormController::class, 'submitForm'])->name('submitForm');
 
 // Route for viewing the result (requires authentication middleware)
-Route::get('/result/{link}', [ProspectivePartnerResultController::class, 'showResult'])->name('DeparmentResults');
+Route::get('/result/{link}', [ProspectivePartnerResultController::class, 'showResult'])->name('DeparmentResults')->middleware(['checkAffiliateAccess']);
+Route::get('/affiliate/login/{link}', [ProspectivePartnerResultController::class, 'showLoginForm'])->name('affiliateLogin');
+Route::post('/affiliate/login/{link}', [ProspectivePartnerResultController::class, 'login'])->name('affiliateLoginAttempt');
+
+Route::get('affiliate/change-password/{link}', [AffiliatesPageController::class, 'showChangePassword'])->name('affiliateShowChangePassword');
+Route::post('affiliate/change-password/{link}', [AffiliatesPageController::class, 'changePassword'])->name('affiliateChangePassword');
+
 
 /* Routes for Proposal Form Creation */
 Route::get('/proposal-form/create', [ProposalFormController::class, 'create'])->name('createProposal');

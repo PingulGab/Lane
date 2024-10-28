@@ -1,7 +1,4 @@
 <?php
-
-namespace App\Http\Controllers;
-
 namespace App\Http\Controllers;
 use App\Models\Link;
 use Carbon\Carbon;

@@ -34,6 +34,12 @@ class Link extends Model
     {
         return $this->belongsTo(EndorsementForm::class, 'endorsement_form_fk');
     }
+
+    public function affiliates()
+    {
+        return $this->belongsToMany(Affiliate::class, 'affiliate_link');
+    }
+
     // You can also define default attributes if needed, for example:
     protected $attributes = [
         'isActive' => true,

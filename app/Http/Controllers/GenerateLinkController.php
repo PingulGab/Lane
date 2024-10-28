@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Affiliate;
 use App\Models\Link;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -49,6 +50,7 @@ class GenerateLinkController extends Controller
     public function showLink($link)
     {
         $link = Link::where('link', $link)->firstOrFail();
+        $affiliatesList = Affiliate::all();
 
         // Check if the user is authenticated and if session timestamp exists
         $authSessionKey = "authenticated_{$link->id}";
@@ -60,7 +62,7 @@ class GenerateLinkController extends Controller
             // Check if the session has expired (after 1 hour)
             if ($authenticatedTime->diffInMinutes(now()) <= 180) {
                 // Session is valid, show protected content
-                return view('link_generation.protected-content', ['link' => $link]);
+                return view('link_generation.protected-content', ['link' => $link, 'affiliatesList' => $affiliatesList]);
             } else {
                 // Session expired, remove the session variables
                 Session::forget($authSessionKey);

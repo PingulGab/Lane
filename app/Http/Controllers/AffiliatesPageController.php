@@ -11,78 +11,84 @@ use Illuminate\Support\Facades\Hash;
 class AffiliatesPageController extends Controller
 {
     // Show list of affiliates for admin
-    public function index()
+    public function affiliates()
     {
         $affiliates = Affiliate::all();
         return view('affiliates.affiliates-page', compact('affiliates'));
     }
 
-    // Show form to create a new affiliates
-    public function create()
+    public function showCreatePage()
     {
-        return view('affiliates.affiliates-create');
+        return view('layouts.layout', [
+            'content' => view('affiliates.affiliates-create')
+        ]);
     }
 
-    // Store new affiliates account
-    public function store(Request $request)
+    public function showChangePassword($link)
+    {
+        return view('affiliates.affiliates-changePassword', compact('link'));
+    }
+
+    public function changePassword(Request $request, $link)
     {
         $request->validate([
-            'affiliate_name' => 'required',
-            'affiliate_contact_person' => 'required',
-            'affiliate_email' => 'required|email|unique:affiliates',
-            'username' => 'required|unique:affiliates',
+            'password' => 'required|min:4|confirmed'
         ]);
 
-        // Generate random password
-        $randomPassword = Str::random(12);
+        $affiliate = Auth::guard('affiliate')->user();
+        $affiliate->password = Hash::make($request->password);
+        $affiliate->must_change_password = false;
+        $affiliate->save();
 
-        // Create new affiliates record
-        Affiliate::create([
-            'affiliate_name' => $request->affiliate_name,
-            'affiliate_contact_person' => $request->affiliate_contact_person,
-            'affiliate_email' => $request->affiliate_email,
-            'username' => $request->username,
-            'password' => $randomPassword,
-        ]);
-
-        return redirect()->route('affiliatesIndex')->with('success', 'Affiliate account created. Password: ' . $randomPassword);
+        return redirect()->to('affiliate/login/'.$link);
     }
 
-    // Reset the password of a affiliates account
-    public function resetPassword(Affiliate $affiliate)
+    public function createAffiliate(Request $request)
     {
-        // Generate new random password
-        $newPassword = Str::random(12);
-
-        // Update password and require a password change on next login
-        $affiliate->update([
-            'password' => $newPassword,
-            'must_change_password' => true,
-        ]);
-
-        return redirect()->route('affiliatesIndex')->with('success', 'Password reset. New password: ' . $newPassword);
-    }
+        // Validate the incoming request
+        try {
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'username' => 'required|string|max:255|unique:users',
+                'email' => 'required|string|email|max:255|unique:users',
+                'contact_person' => 'required|string|max:255',
+            ], [
+                'name.required' => 'The name field is required.',
+                'username.unique' => 'This username is already taken.',
+                'email.unique' => 'This email is already taken.',
+                'email.email' => 'Please enter a valid email address.',
+                'contact_person.required' => 'The contact number is required.',
+            ]);
     
-        // Handle college login with username and password
-        public function affiliateLogin(Request $request, $link)
-        {
-            $credentials = $request->only('username', 'password');
+            // If validation passes, create the affiliate
+            $password = Str::random(8);
     
-            // Try to find the college by username
-            $affiliate = Affiliate::where('username', $credentials['username'])->first();
+            $newAffiliate = Affiliate::create([
+                'name' => $validatedData['name'],
+                'username' => $validatedData['username'],
+                'email' => $validatedData['email'],
+                'password' => Hash::make($password),
+                'contact_person' => $validatedData['contact_person'],
+                'must_change_password' => true,
+            ]);
     
-            if ($affiliate && Hash::check($credentials['password'], $affiliate->password)) {
-                if ($affiliate->must_change_password) {
-                    // If the college must change password, redirect to change password form
-                    return redirect()->route('show-link', $link->link);
-                }
-    
-                // Log the college in and grant access
-                Auth::login($affiliate);
-                return redirect()->route('protected.content');
+            // Return success response
+            return response()->json([
+                'id' => $newAffiliate->id,
+                'name' => $validatedData['name'],
+                'password' => $password,
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Handle unique constraint violation
+            if ($e->getCode() === '23000') {
+                return response()->json(['errors' => [
+                    'email' => ['This email is already taken.'],
+                    'username' => ['This username is already taken.']
+                ]], 422);
             }
-    
-            // Invalid credentials
-            return back()->withErrors(['username' => 'Invalid username or password']);
+            
+            // Return generic error message for other exceptions
+            return response()->json(['error' => 'An unexpected error occurred.'], 500);
         }
+    }    
 }

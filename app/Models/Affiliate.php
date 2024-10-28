@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class Affiliate extends Model
+class Affiliate extends Authenticatable
 {
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'affiliate_name', 
-        'affiliate_contact_person', 
-        'affiliate_email', 
+        'name', 
+        'contact_person', 
+        'email', 
         'username', 
         'password',
         'must_change_password',
@@ -24,9 +24,8 @@ class Affiliate extends Model
         'password',
     ];
 
-    // Ensure password is hashed
-    public function setPasswordAttribute($password)
+    public function links ()
     {
-        $this->attributes['password'] = bcrypt($password);
+        return $this->belongsToMany(Link::class, 'affiliate_link');
     }
 }
