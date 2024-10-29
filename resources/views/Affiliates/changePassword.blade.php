@@ -1,4 +1,4 @@
-<form method="POST" action="{{ route('affiliateChangePassword', ['link' => $link]) }}">
+<form method="POST" action="{{ route('affiliateChangePassword', ['id' => $id, 'name' => $name]) }}">
     @csrf
     <label for="password">New Password:</label>
     <input type="password" name="password" id="password" required>

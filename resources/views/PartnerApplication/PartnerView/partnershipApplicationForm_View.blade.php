@@ -20,6 +20,19 @@
             </div>
         @endforeach
 
+        <h3>Select Affiliate</h3>
+        @foreach($affiliateList as $affiliate)
+            <div>
+                <input 
+                    type="checkbox" 
+                    name="selected_affiliates[]" 
+                    value="{{ $affiliate->id }}" 
+                    id="affiliate_{{ $affiliate->id }}"
+                >
+                <label for="affiliate_{{ $affiliate->id }}">{{ $affiliate->name }}</label>
+            </div>
+        @endforeach
+
         <input type="text" name="partner_name" placeholder="Partner Name">
         <input type="text" name="country" placeholder="Country">
         <input type="text" name="institution_name" placeholder="Institution Name">

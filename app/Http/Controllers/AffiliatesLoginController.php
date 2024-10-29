@@ -9,7 +9,11 @@ use Illuminate\Support\Facades\Hash;
 
 class AffiliatesLoginController extends Controller
 {
-    public function resultLogin(Request $request, $link)
+    public function showAffiliateLoginDocument($id, $name)
+    {
+        return view('PartnerApplication.AffiliateView.loginPage', ['id' => $id, 'name' => $name]);
+    }
+    public function affiliateLoginDocument(Request $request, $id, $name)
     {
         $credentials = $request->only('username', 'password');
 
@@ -31,19 +35,19 @@ class AffiliatesLoginController extends Controller
     
         // Attempt authentication using the guard
         if (Auth::guard('affiliate')->attempt($credentials)) {
-            return redirect()->intended(route('resultProspectivePartnerForm', ['link'=>$link]));
+            return redirect()->intended(route('affiliateShowDocument', ['id' => $id, 'name' => $name]));
         }
     
         return back()->withErrors([
             'username' => 'The provided credentials do not match our records.',
         ]);
     }
-    public function showAffiliateChangePassword($link)
+    public function showAffiliateChangePasswordDocument($id, $name)
     {
-        return view('affiliates.changePassword', compact('link'));
+        return view('affiliates.changePassword', ['id' => $id, 'name' => $name]);
     }
 
-    public function affiliateChangePassword(Request $request, $link)
+    public function affiliateChangePassword(Request $request, $id, $name)
     {
         $request->validate([
             'password' => 'required|min:4|confirmed'
@@ -54,6 +58,6 @@ class AffiliatesLoginController extends Controller
         $affiliate->must_change_password = false;
         $affiliate->save();
 
-        return redirect()->route('resultLogin', ['link' => $link]);
+        return redirect()->route('affiliateLoginDocument', ['id' => $id, 'name' => $name]);
     }
 }

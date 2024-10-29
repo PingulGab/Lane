@@ -24,4 +24,8 @@ class Affiliate extends Authenticatable
         'password',
     ];
 
+    public function links ()
+    {
+        return $this->belongsToMany(Link::class, 'affiliate_link');
+    }
 }

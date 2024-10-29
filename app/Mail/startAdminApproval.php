@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class EndorsementFormCreated extends Mailable
+class startAdminApproval extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -31,8 +31,7 @@ class EndorsementFormCreated extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('janjanpingul@gmail.com', 'Jan'),
-            subject: 'Endorsement Form Submitted',
+            subject: 'Your Approval Awaits!',
         );
     }
 
@@ -42,7 +41,7 @@ class EndorsementFormCreated extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.endorsementFormSubmitted',
+            view: 'emails.startAdminApproval',
         );
     }
 

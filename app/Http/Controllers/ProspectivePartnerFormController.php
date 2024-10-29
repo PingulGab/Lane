@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Mail\ProspectivePartnerFormSubmitted;
 use App\Models\College;
+use App\Models\Document;
+use App\Models\DocumentApproval;
 use App\Models\Link;
 use App\Models\Memorandum;
 use App\Models\ProposalForm;
@@ -21,6 +23,7 @@ class ProspectivePartnerFormController extends Controller
     {
         $link = Link::where('link', $link)->firstOrFail();
         $collegeList = College::all();
+        $affiliateList = Affiliate::all();
 
         // Check if the user is authenticated and if session timestamp exists
         $authSessionKey = "authenticated_{$link->id}";
@@ -36,7 +39,7 @@ class ProspectivePartnerFormController extends Controller
                 {
                     return redirect()->route('prospectPartnerViewSubmittedForm', $link->link);
                 } else {
-                    return view('PartnerApplication.PartnerView.partnershipApplicationForm_View', ['link' => $link, 'collegesList' => $collegeList]);
+                    return view('PartnerApplication.PartnerView.partnershipApplicationForm_View', ['link' => $link, 'collegesList' => $collegeList, 'affiliateList' => $affiliateList]);
                 }
             } else {
                 // Session expired, remove the session variables
@@ -126,28 +129,34 @@ class ProspectivePartnerFormController extends Controller
     public function submitProspectPartnerForm(Request $request, $link)
     {
         $link = Link::where('link', $link)->firstOrFail();
-
+    
         $selectedColleges = $request->input('selected_colleges', []);
-
+        $selectedAffiliates = $request->input('selected_affiliates', []);
+    
+        // Step 1: Create Memorandum and Proposal Form
         $memorandum = Memorandum::create([
             'partner_name' => $request->input('partner_name'),
         ]);
-
+    
         $proposalForm = ProposalForm::create([
             'country' => $request->input('country'),
             'institution_name' => $request->input('institution_name'),
         ]);
-
+    
+        // Step 2: Link Memorandum and Proposal Form to the Link model
         $link->update([
             'memorandum_fk' => $memorandum->id,
             'proposal_form_fk' => $proposalForm->id,
             'isActive' => false,
         ]);
-
+    
+        // Sync selected colleges with the link
         $link->colleges()->sync($selectedColleges);
-
-        //Mail::to('janjanpingul@gmail.com')->send(new ProspectivePartnerFormSubmitted($link));
-
-        return response()->json(['message' => 'Form submitted successfully.']);
+        $link->affiliates()->sync($selectedAffiliates);
+    
+        // Optionally send email after submission
+        //TODO Mail::to('janjanpingul@gmail.com')->send(new ProspectivePartnerFormSubmitted($link));
+    
+        return response()->json(['message' => 'Form submitted successfully, and approval tracking initiated.']);
     }
 }

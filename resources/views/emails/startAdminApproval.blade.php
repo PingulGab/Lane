@@ -1,4 +1,4 @@
-<h1>New Prospective Partner Form Submission</h1>
+<h1>Your Approval Awaits!</h1>
 
 <p>A new form has been submitted.</p>
 <p><strong>Link Name:</strong> {{ $document->id }}</p>

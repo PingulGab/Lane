@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\EndorsementFormCreated;
+use App\Models\Document;
+use App\Models\DocumentApproval;
 use App\Models\EndorsementForm;
 use App\Models\Link;
 use Illuminate\Http\Request;
@@ -111,6 +114,28 @@ class EndorsementFormController extends Controller
         Storage::put('public/endorsement-form/' . $fileName . '.pdf', $dompdf->output());
     
         //Mail::to('janjanpingul@gmail.com')->send(new ProspectivePartnerFormSubmitted($link));
+        // TODO: Initiate the Approval Tracking Process
+        // Step 3: Create Document record to track approvals
+        $document = Document::create([
+            'memorandum_id' => $linkModel->memorandum_fk,
+            'proposal_form_id' => $linkModel->proposal_form_fk,
+            'endorsement_form_id' => $linkModel->endorsement_form_fk
+        ]);
+    
+        // Step 4: Fetch affiliates linked to the specified link for approvals
+        $affiliates = $linkModel->affiliates; // Assuming a relationship exists on the Link model
+    
+        // Step 5: Create DocumentApproval records for each required affiliate
+        foreach ($affiliates as $affiliate) {
+            DocumentApproval::create([
+                'document_id' => $document->id,
+                'affiliate_id' => $affiliate->id,
+                'is_approved' => false,
+            ]);
+        }
+
+        // Send email after submission
+        //TODO Mail::to('janjanpingul@gmail.com')->send(new EndorsementFormCreated($document));
 
         //! Redirect to the view page after generating the document
         return redirect()->route('viewEndorsement', ['link' => $link]);
