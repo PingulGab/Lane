@@ -45,6 +45,11 @@ return [
             'driver'=>'session',
             'provider'=>'affiliates'
         ],
+
+        'college' => [
+            'driver' => 'session',
+            'provider' => 'colleges'
+        ],
     ],
 
     /*
@@ -73,6 +78,11 @@ return [
         'affiliates' => [
             'driver' => 'eloquent',
             'model' => App\Models\Affiliate::class,
+        ],
+
+        'colleges' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\College::class,
         ],
 
         // 'users' => [

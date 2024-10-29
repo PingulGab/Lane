@@ -7,16 +7,16 @@
     <form method="POST" action="{{route('submitProspectPartnerForm', $link->link)}}">
         @csrf
 
-        <h3>Select Affiliates</h3>
-        @foreach($affiliatesList as $affiliate)
+        <h3>Select College</h3>
+        @foreach($collegesList as $college)
             <div>
                 <input 
                     type="checkbox" 
-                    name="selected_affiliates[]" 
-                    value="{{ $affiliate->id }}" 
-                    id="affiliate_{{ $affiliate->id }}"
+                    name="selected_colleges[]" 
+                    value="{{ $college->id }}" 
+                    id="college_{{ $college->id }}"
                 >
-                <label for="affiliate_{{ $affiliate->id }}">{{ $affiliate->name }}</label>
+                <label for="college_{{ $college->id }}">{{ $college->name }}</label>
             </div>
         @endforeach
 

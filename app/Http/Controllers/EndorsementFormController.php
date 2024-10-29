@@ -11,7 +11,7 @@ use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Memorandum;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Mail;
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\Style\Font;
 use PhpOffice\PhpWord\IOFactory;
@@ -110,6 +110,8 @@ class EndorsementFormController extends Controller
         $dompdf->render();
         Storage::put('public/endorsement-form/' . $fileName . '.pdf', $dompdf->output());
     
+        //Mail::to('janjanpingul@gmail.com')->send(new ProspectivePartnerFormSubmitted($link));
+
         //! Redirect to the view page after generating the document
         return redirect()->route('viewEndorsement', ['link' => $link]);
     }    
@@ -127,7 +129,7 @@ class EndorsementFormController extends Controller
         $proposalForm = $linkModel->proposalForm;
 
         $endorsement = EndorsementForm::findOrFail($linkModel->endorsement_form_fk);
-        return view('PartnerApplication.AffiliateView.EndorsementSubmitted', compact('endorsement', 'memorandum', 'proposalForm'));
+        return view('PartnerApplication.CollegeView.EndorsementSubmitted', compact('endorsement', 'memorandum', 'proposalForm'));
     }
 
     public function downloadDocument($id, $format)

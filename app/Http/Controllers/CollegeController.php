@@ -2,28 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Affiliate;
+use App\Models\College;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 
-class AffiliatesPageController extends Controller
+class CollegeController extends Controller
 {
-    // Show list of affiliates for admin
-    public function affiliates()
+    // Show list of College for admin
+    public function colleges()
     {
-        $affiliates = Affiliate::all();
+        $colleges = College::all();
         return view('Affiliates.index', compact('affiliates'));
     }
 
-    public function showNewAffiliateForm()
+    public function showNewCollegeForm()
     {
         return view('layouts.layout', [
-            'content' => view('affiliates.create')
+            'content' => view('affiliates.College.create')
         ]);
     }
 
-    public function storeNewAffiliate(Request $request)
+    public function storeNewCollege(Request $request)
     {
         // Validate the incoming request
         try {
@@ -40,10 +40,10 @@ class AffiliatesPageController extends Controller
                 'contact_person.required' => 'The contact number is required.',
             ]);
     
-            // If validation passes, create the affiliate
+            // If validation passes, create the college
             $password = Str::random(8);
     
-            $newAffiliate = Affiliate::create([
+            $newCollege = College::create([
                 'name' => $validatedData['name'],
                 'username' => $validatedData['username'],
                 'email' => $validatedData['email'],
@@ -54,7 +54,7 @@ class AffiliatesPageController extends Controller
     
             // Return success response
             return response()->json([
-                'id' => $newAffiliate->id,
+                'id' => $newCollege->id,
                 'name' => $validatedData['name'],
                 'password' => $password,
             ]);
@@ -68,8 +68,7 @@ class AffiliatesPageController extends Controller
             }
             
             // Return generic error message for other exceptions
-            return response()->json(['error' => 'An unexpected error occurred.'], 500);
+            return response()->json(['error' => 'An unexpected error occurred.' . $e->getMessage()], 500);
         }
     }    
-
 }

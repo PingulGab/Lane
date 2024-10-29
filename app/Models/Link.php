@@ -35,9 +35,9 @@ class Link extends Model
         return $this->belongsTo(EndorsementForm::class, 'endorsement_form_fk');
     }
 
-    public function affiliates()
+    public function colleges()
     {
-        return $this->belongsToMany(Affiliate::class, 'affiliate_link');
+        return $this->belongsToMany(College::class, 'college_link');
     }
 
     // You can also define default attributes if needed, for example:

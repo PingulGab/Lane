@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class Affiliate extends Authenticatable
+class College extends Authenticatable
 {
     use HasFactory, Notifiable;
 
@@ -24,4 +24,8 @@ class Affiliate extends Authenticatable
         'password',
     ];
 
+    public function links ()
+    {
+        return $this->belongsToMany(Link::class, 'college_link');
+    }
 }

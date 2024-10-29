@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ProspectivePartnerFormSubmitted;
+use App\Models\College;
 use App\Models\Link;
 use App\Models\Memorandum;
 use App\Models\ProposalForm;
@@ -19,7 +20,7 @@ class ProspectivePartnerFormController extends Controller
     public function prospectPartnerViewLink($link)
     {
         $link = Link::where('link', $link)->firstOrFail();
-        $affiliatesList = Affiliate::all();
+        $collegeList = College::all();
 
         // Check if the user is authenticated and if session timestamp exists
         $authSessionKey = "authenticated_{$link->id}";
@@ -35,7 +36,7 @@ class ProspectivePartnerFormController extends Controller
                 {
                     return redirect()->route('prospectPartnerViewSubmittedForm', $link->link);
                 } else {
-                    return view('PartnerApplication.PartnerView.partnershipApplicationForm_View', ['link' => $link, 'affiliatesList' => $affiliatesList]);
+                    return view('PartnerApplication.PartnerView.partnershipApplicationForm_View', ['link' => $link, 'collegesList' => $collegeList]);
                 }
             } else {
                 // Session expired, remove the session variables
@@ -124,13 +125,9 @@ class ProspectivePartnerFormController extends Controller
     }
     public function submitProspectPartnerForm(Request $request, $link)
     {
-        $validatedData = $request->validate([
-
-        ]);
-
         $link = Link::where('link', $link)->firstOrFail();
 
-        $selectedAffiliates = $request->input('selected_affiliates', []);
+        $selectedColleges = $request->input('selected_colleges', []);
 
         $memorandum = Memorandum::create([
             'partner_name' => $request->input('partner_name'),
@@ -147,7 +144,7 @@ class ProspectivePartnerFormController extends Controller
             'isActive' => false,
         ]);
 
-        $link->affiliates()->sync($selectedAffiliates);
+        $link->colleges()->sync($selectedColleges);
 
         //Mail::to('janjanpingul@gmail.com')->send(new ProspectivePartnerFormSubmitted($link));
 
