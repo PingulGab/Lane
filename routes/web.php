@@ -62,9 +62,15 @@ Route::post('/partner/application/{link}/submitted', [ProspectivePartnerFormCont
 Route::get('/partner/application/{link}/view', [ProspectivePartnerFormController::class, 'prospectPartnerViewSubmittedForm'])->name('prospectPartnerViewSubmittedForm');
 Route::post('/partner/application/{link}/view', [ProspectivePartnerFormController::class, 'validatePasswordSubmittedForm'])->name('validatePasswordSubmittedForm');
 
-//! Route for: Viewing the Prospective Partner Form's Results.
-Route::get('/partner/result/{link}/view', [ProspectivePartnerResultController::class, 'resultProspectivePartnerForm'])->name('resultProspectivePartnerForm')->middleware(['checkAffiliateAccess']);
+//! Route for: Viewing the Affiliate Viewing the Prospective Partner Form's Results.
+Route::get('/partner/result/{link}/review', [ProspectivePartnerResultController::class, 'resultProspectivePartnerForm'])->name('resultProspectivePartnerForm')->middleware(['checkAffiliateAccess']);
 Route::get('/partner/result/{link}/login', [ProspectivePartnerResultController::class, 'showResultLoginPage'])->name('showResultLoginPage');
+
+//! Route for: Affiliate Creating the Endorsement Form in the view of Prospective Partner Form's Results.
+Route::post('/partner/result/{link}/review', [EndorsementFormController::class, 'generateEndorsement'])->name('generateEndorsement');
+
+//! Route for: Affiliate Viewing the Generated Endorsement Form and Submitted Prospective Partner Form's Result.
+Route::get('/partner/result/{link}/view', [EndorsementFormController::class, 'viewEndorsement'])->name('viewEndorsement');
 
 //! Route for: Login of Affiliates
 Route::post('/partner/result/{link}/login', [AffiliatesLoginController::class, 'resultLogin'])->name('resultLogin');
@@ -72,6 +78,13 @@ Route::post('/partner/result/{link}/login', [AffiliatesLoginController::class, '
 //! Route for: Changing the Password of the Affiliate's Account.
 Route::get('partner/result/{link}/change-password', [AffiliatesLoginController::class, 'showAffiliateChangePassword'])->name('showAffiliateChangePassword');
 Route::post('partner/result/{link}/change-password', [AffiliatesLoginController::class, 'affiliateChangePassword'])->name('affiliateChangePassword');
+
+// ? Routes for Endorsement Form Creation
+Route::get('/endorsement-form/create', [EndorsementFormController::class, 'create'])->name('createEndorsement');
+//Route::post('/endorsement-form/generate', [EndorsementFormController::class, 'generate'])->name('generateEndorsement');
+Route::get('/endorsement-form/{id}/download/{format}', [EndorsementFormController::class, 'downloadDocument'])->name('downloadEndorsement');
+Route::get('/endorsement-form/{id}/edit', [EndorsementFormController::class, 'editDocument'])->name('editEndorsement');
+Route::post('/endorsement-form/{id}/update', [EndorsementFormController::class, 'updateDocument'])->name('updateEndorsement');
 
 // ? Routes for Proposal Form Creation (TEMPORARY)
 Route::get('/proposal-form/create', [ProposalFormController::class, 'create'])->name('createProposal');
@@ -88,12 +101,4 @@ Route::get('/memorandum/{id}/view', [MemorandumController::class, 'viewDocument'
 Route::get('/memorandum/{id}/download/{format}', [MemorandumController::class, 'downloadDocument'])->name('downloadMemorandum');
 Route::get('/memorandum/{id}/edit', [MemorandumController::class, 'editDocument'])->name('editMemorandum');
 Route::post('/memorandum/{id}/update', [MemorandumController::class, 'updateDocument'])->name('updateMemorandum');
-
-// ? Routes for Endorsement Form Creation
-Route::get('/endorsement-form/create', [EndorsementFormController::class, 'create'])->name('createEndorsement');
-Route::post('/endorsement-form/generate', [EndorsementFormController::class, 'generate'])->name('generateEndorsement');
-Route::get('/endorsement-form/{id}/view', [EndorsementFormController::class, 'viewDocument'])->name('viewEndorsement');
-Route::get('/endorsement-form/{id}/download/{format}', [EndorsementFormController::class, 'downloadDocument'])->name('downloadEndorsement');
-Route::get('/endorsement-form/{id}/edit', [EndorsementFormController::class, 'editDocument'])->name('editEndorsement');
-Route::post('/endorsement-form/{id}/update', [EndorsementFormController::class, 'updateDocument'])->name('updateEndorsement');
 

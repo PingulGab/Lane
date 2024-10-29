@@ -2,6 +2,13 @@
 
 @section('content')
 
+<h2>Memorandum Details</h2>
+<p>Partner Name: {{ $memorandum->partner_name }}</p>
+
+<h2>Proposal Form</h2>
+<p>Country: {{ $proposalForm->country }}</p>
+<p>Institution Name: {{ $proposalForm->institution_name }}</p>
+
 <!--- View #1 --->
 
 <div class="container">

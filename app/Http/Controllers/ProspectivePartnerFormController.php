@@ -31,7 +31,12 @@ class ProspectivePartnerFormController extends Controller
             // Check if the session has expired (after 1 hour)
             if ($authenticatedTime->diffInMinutes(now()) <= 180) {
                 // Session is valid, show protected content
-                return view('PartnerApplication.PartnerView.partnershipApplicationForm_View', ['link' => $link, 'affiliatesList' => $affiliatesList]);
+                if ($link->isActive == false)
+                {
+                    return redirect()->route('prospectPartnerViewSubmittedForm', $link->link);
+                } else {
+                    return view('PartnerApplication.PartnerView.partnershipApplicationForm_View', ['link' => $link, 'affiliatesList' => $affiliatesList]);
+                }
             } else {
                 // Session expired, remove the session variables
                 Session::forget($authSessionKey);
@@ -73,7 +78,6 @@ class ProspectivePartnerFormController extends Controller
             'link' => $link,
             'memorandum' => $link->memorandum,
             'proposalForm' => $link->proposalForm,
-            'endorsementForm' => $link->endorsementForm,
         ];
 
         // Check if the user is authenticated and if session timestamp exists
@@ -121,8 +125,7 @@ class ProspectivePartnerFormController extends Controller
     public function submitProspectPartnerForm(Request $request, $link)
     {
         $validatedData = $request->validate([
-            'description_1' => 'required|string|max:255',
-            'description_2' => 'required|string|max:255',
+
         ]);
 
         $link = Link::where('link', $link)->firstOrFail();
@@ -138,15 +141,9 @@ class ProspectivePartnerFormController extends Controller
             'institution_name' => $request->input('institution_name'),
         ]);
 
-        $endorsement = new EndorsementForm();
-        $endorsement->Description_1 = $validatedData['description_1'];
-        $endorsement->Description_2 = $validatedData['description_2'];
-        $endorsement->save();
-
         $link->update([
             'memorandum_fk' => $memorandum->id,
             'proposal_form_fk' => $proposalForm->id,
-            'endorsement_form_fk' => $endorsement->id,
             'isActive' => false,
         ]);
 

@@ -22,9 +22,13 @@ class ProspectivePartnerResultController extends Controller
             'link' => $link,
             'memorandum' => $link->memorandum,
             'proposalForm' => $link->proposalForm,
-            'endorsementForm' => $link->endorsementForm,
         ];
 
+        if ($link->endorsement_form_fk)
+        {
+            return redirect()->route('viewEndorsement', ['link' => $link->link]);
+        }
+        
         return view('PartnerApplication.AffiliateView.resultView', $data);
     }
 
