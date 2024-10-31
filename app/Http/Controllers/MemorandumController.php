@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use App\Models\Link;
+use App\Models\MemorandumVersion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpWord\PhpWord;
@@ -209,7 +210,43 @@ class MemorandumController extends Controller
     public function editDocument($id)
     {
         $memorandum = Memorandum::findOrFail($id);
-    
+
+        // Determine the redirect route based on user role
+        if ($affiliate_user  = Auth::guard('affiliate')->user()) {
+            // Check if it is locked
+            if ($memorandum->locked_by && $memorandum->locked_by != $affiliate_user->id) {
+                $document = Document::with(['memorandum'])
+                                    ->where('memorandum_id', $memorandum->id)
+                                    ->firstOrFail();
+
+                return redirect()->route('affiliateShowDocument', ['id' => $document->id, 'name' => $document->memorandum->partner_name])
+                                ->withErrors('Document is currently being edited by another user.');
+            }
+
+            // Lock the document for the current user
+            $memorandum->update([
+                'locked_by' => $affiliate_user->id,
+                'locked_at' => now(),
+            ]);
+            
+        } elseif($institutionalUnit_user = Auth::guard('institutionalUnit')->user()) {
+
+            if ($memorandum->locked_by && $memorandum->locked_by != $institutionalUnit_user->id) {
+                $document = Document::with(['memorandum'])
+                                    ->where('memorandum_id', $memorandum->id)
+                                    ->firstOrFail();
+
+                return redirect()->route('affiliateShowDocument', ['id' => $document->id, 'name' => $document->memorandum->partner_name])
+                                ->withErrors('Document is currently being edited by another user.');
+            }
+
+            // Lock the document for the current user
+            $memorandum->update([
+                'locked_by' => $institutionalUnit_user->id,
+                'locked_at' => now(),
+            ]);
+        }
+
         // Decode JSON data for whereas_clauses and articles
         $memorandum->whereas_clauses = json_decode($memorandum->whereas_clauses, true);
         $memorandum->articles = json_decode($memorandum->articles, true);
@@ -230,16 +267,32 @@ class MemorandumController extends Controller
             'articles.*' => 'required|string|max:1000',
         ]);
     
-        // Fetch the memorandum to update
+        // Fetch the memorandum
         $memorandum = Memorandum::findOrFail($id);
-    
+
+        // Fetch the current User
+        $affiliate_user = Auth::guard('affiliate')->user();
+
+        // Save Previous Version of Memorandum to the Database
+        MemorandumVersion::create([
+            'memorandum_id' => $memorandum->id,
+            'edited_by' => $affiliate_user->id,
+            'whereas_clauses' => $memorandum->whereas_clauses,
+            'articles' => $memorandum->articles,
+            'version' => $memorandum->version,
+        ]);
+
+        // Increment the Version
+        $newVersion = number_format($memorandum->version + 0.1, 1);
+
         // Update the memorandum fields
-        $memorandum->partner_name = $validatedData['partner_name'];
-        $memorandum->contact_person = $validatedData['contact_person'];
-        $memorandum->contact_email = $validatedData['contact_email'];
-        $memorandum->whereas_clauses = json_encode($validatedData['whereas_clauses']);
-        $memorandum->articles = json_encode($validatedData['articles']);
-        $memorandum->save();
+        $memorandum->update([
+            'whereas_clauses' => json_encode($validatedData['whereas_clauses']),
+            'articles' => json_encode($validatedData['articles']),
+            'version' => $newVersion,
+            'locked_by' => null,
+            'locked_at' => null,
+        ]);
     
         // Regenerate the file names with the updated partner name and creation date
         $dateCreated = $memorandum->created_at->format('Ymd');

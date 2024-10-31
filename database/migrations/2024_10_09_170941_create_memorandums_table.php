@@ -15,6 +15,9 @@ class CreateMemorandumsTable extends Migration
             $table->json('articles')->nullable();
             $table->string('contact_person')->nullable(); // Add contact person field
             $table->string('contact_email')->nullable();  // Add contact email field
+            $table->unsignedBigInteger('locked_by')->nullable();
+            $table->timestamp('locked_at')->nullable();
+            $table->decimal('version', 3, 1)->default(1.0);
             $table->timestamps();
         });
     }

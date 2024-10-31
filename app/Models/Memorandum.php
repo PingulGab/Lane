@@ -13,7 +13,10 @@ class Memorandum extends Model
         'contact_person',  // New field for contact person
         'contact_email',   // New field for contact email
         'whereas_clauses',
-        'articles'
+        'articles',
+        'locked_by',
+        'locked_at',
+        'version',
     ];
 
     // Decode the JSON fields automatically when retrieving from the database
@@ -36,5 +39,10 @@ class Memorandum extends Model
     public function setArticlesAttribute($value)
     {
         $this->attributes['articles'] = json_encode($value);
+    }
+
+    public function versions()
+    {
+        return $this->hasMany(MemorandumVersion::class);
     }
 }

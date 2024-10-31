@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\startAdminApproval;
 use App\Models\Document;
 use App\Models\DocumentApproval;
+use App\Models\Memorandum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\EndorsementFormCreated;
@@ -66,10 +67,12 @@ class DocumentsPageController extends Controller
         ->where('affiliate_id', $affiliate->id)
         ->firstOrFail();
 
+        $memorandumVersion = Memorandum::with('versions')->findOrFail($document->memorandum->id);
+
         if($documentApproval->is_approved){
-            return view('PartnerApplication.AffiliateView.approvedView', ['id' => $id, 'document' => $document]);
+            return view('PartnerApplication.AffiliateView.approvedView', ['id' => $id, 'document' => $document, 'memorandumVersion' => $memorandumVersion]);
         } else {
-            return view('PartnerApplication.AffiliateView.index', ['id' => $id, 'document' => $document]);
+            return view('PartnerApplication.AffiliateView.index', ['id' => $id, 'document' => $document, 'memorandumVersion' => $memorandumVersion]);
         }        
     }
 
