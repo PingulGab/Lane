@@ -67,12 +67,12 @@ class DocumentsPageController extends Controller
         ->where('affiliate_id', $affiliate->id)
         ->firstOrFail();
 
-        $memorandumVersion = Memorandum::with('versions')->findOrFail($document->memorandum->id);
+        $currentVersion = $document->memorandum->version;
 
         if($documentApproval->is_approved){
-            return view('PartnerApplication.AffiliateView.approvedView', ['id' => $id, 'document' => $document, 'memorandumVersion' => $memorandumVersion]);
+            return view('PartnerApplication.AffiliateView.approvedView', ['id' => $id, 'document' => $document, 'currentVersion' => $currentVersion]);
         } else {
-            return view('PartnerApplication.AffiliateView.index', ['id' => $id, 'document' => $document, 'memorandumVersion' => $memorandumVersion]);
+            return view('PartnerApplication.AffiliateView.index', ['id' => $id, 'document' => $document, 'currentVersion' => $currentVersion]);
         }        
     }
 

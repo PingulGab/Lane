@@ -211,7 +211,7 @@ class MemorandumController extends Controller
     {
         $memorandum = Memorandum::findOrFail($id);
 
-        // Determine the redirect route based on user role
+        // Determine who is the logged in User
         if ($affiliate_user  = Auth::guard('affiliate')->user()) {
             // Check if it is locked
             if ($memorandum->locked_by && $memorandum->locked_by != $affiliate_user->id) {
@@ -270,17 +270,27 @@ class MemorandumController extends Controller
         // Fetch the memorandum
         $memorandum = Memorandum::findOrFail($id);
 
-        // Fetch the current User
-        $affiliate_user = Auth::guard('affiliate')->user();
+        // Determine who is the logged in User
+        if ($affiliate_user  = Auth::guard('affiliate')->user()) {
+            
+            MemorandumVersion::create([
+                'memorandum_id' => $memorandum->id,
+                'edited_by' => $affiliate_user->id,
+                'whereas_clauses' => $memorandum->whereas_clauses,
+                'articles' => $memorandum->articles,
+                'version' => $memorandum->version,
+            ]);
+            
+        } elseif($institutionalUnit_user = Auth::guard('institutionalUnit')->user()) {
 
-        // Save Previous Version of Memorandum to the Database
-        MemorandumVersion::create([
-            'memorandum_id' => $memorandum->id,
-            'edited_by' => $affiliate_user->id,
-            'whereas_clauses' => $memorandum->whereas_clauses,
-            'articles' => $memorandum->articles,
-            'version' => $memorandum->version,
-        ]);
+            MemorandumVersion::create([
+                'memorandum_id' => $memorandum->id,
+                'edited_by' => $institutionalUnit_user->id,
+                'whereas_clauses' => $memorandum->whereas_clauses,
+                'articles' => $memorandum->articles,
+                'version' => $memorandum->version,
+            ]);
+        }
 
         // Increment the Version
         $newVersion = number_format($memorandum->version + 0.1, 1);
@@ -368,4 +378,136 @@ class MemorandumController extends Controller
         return redirect()->route('viewMemorandum', ['id' => $memorandum->id]);
     }    
 
+    public function compareVersion($id, $version)
+    {
+        // Fetch the current (latest) version from the `memorandum` table
+        $currentMemorandum = Memorandum::findOrFail($id);
+        $isLatestVersion = $currentMemorandum->version == $version;
+    
+        if ($isLatestVersion) {
+            // If the selected version is the latest, use the current `memorandum` as selectedVersion
+            $selectedVersion = $currentMemorandum;
+    
+            // Fetch the previous version from the `memorandum_versions` table
+            $previousVersion = MemorandumVersion::where('memorandum_id', $id)
+                                ->where('version', '<', $version)
+                                ->orderBy('version', 'desc')
+                                ->first();
+        } else {
+            // Fetch the selected version from the `memorandum_versions` table
+            $selectedVersion = MemorandumVersion::where([['memorandum_id', $id], ['version', $version]])->firstOrFail();
+    
+            // Fetch the previous version (immediately before the selected version)
+            $previousVersion = MemorandumVersion::where('memorandum_id', $id)
+                                ->where('version', '<', $version)
+                                ->orderBy('version', 'desc')
+                                ->first();
+        }
+    
+        // If no previous version exists, handle gracefully
+        if (!$previousVersion) {
+            return response()->json(['error' => 'No previous version found for comparison.']);
+        }
+    
+        // Decode JSON fields for comparison
+        $selectedWhereas = json_decode($selectedVersion->whereas_clauses, true);
+        $previousWhereas = json_decode($previousVersion->whereas_clauses, true);
+        
+        $selectedArticles = json_decode($selectedVersion->articles, true);
+        $previousArticles = json_decode($previousVersion->articles, true);
+    
+        // Find differences between the previous and selected versions
+        $whereasDiff = $this->getDifferences($previousWhereas, $selectedWhereas);
+        $articlesDiff = $this->getDifferences($previousArticles, $selectedArticles);
+    
+        // Render HTML with differences for PDF
+        $html = view('PartnerApplication.AffiliateView.pdfFormat', [
+            'partner_name' => $selectedVersion->partner_name,
+            'contact_person' => $selectedVersion->contact_person,
+            'contact_email' => $selectedVersion->contact_email,
+            'whereasDiff' => $whereasDiff,
+            'articlesDiff' => $articlesDiff,
+            'currentVersion' => $selectedVersion->version,
+            'previousVersion' => $previousVersion->version,
+        ])->render();
+    
+        // Generate and display PDF on the fly without saving
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+    
+        // Return the PDF as a streamed response for embedding in an iframe
+        return response($dompdf->output(), 200)
+                ->header('Content-Type', 'application/pdf');
+    }
+    
+
+    private function getDifferences($old, $new)
+    {
+        $diff = [];
+        foreach ($new as $index => $newClause) {
+            $oldClause = $old[$index] ?? null;
+            
+            // Check for changed clauses
+            if ($oldClause && $oldClause != $newClause) {
+                $diff[] = [
+                    'status' => 'changed',
+                    'removed' => $oldClause, // Store removed clause content
+                    'added' => $newClause    // Store added clause content
+                ];
+            } 
+            // Check for newly added clauses
+            elseif (!$oldClause) {
+                $diff[] = [
+                    'status' => 'added',
+                    'content' => $newClause  // Store added clause content
+                ];
+            } 
+            // Unchanged clauses
+            else {
+                $diff[] = [
+                    'status' => 'unchanged',
+                    'content' => $newClause  // Store unchanged clause content
+                ];
+            }
+        }
+        
+        // Check for removed clauses (present in $old but not in $new)
+        foreach ($old as $index => $oldClause) {
+            if (!isset($new[$index])) {
+                $diff[] = [
+                    'status' => 'removed',
+                    'content' => $oldClause  // Store removed clause content
+                ];
+            }
+        }
+    
+        return $diff;
+    }
+    
+    
+    public function displayMemorandumComparison($id, $version)
+    {
+        // Fetch the current version from the `memorandum` table
+        $currentMemorandum = Memorandum::findOrFail($id);
+    
+        // Check if the selected version is the latest version
+        $isLatestVersion = $currentMemorandum->version == $version;
+    
+        if ($isLatestVersion) {
+            // If the selected version is the latest, use the `memorandum` record as `selectedVersion`
+            $selectedVersion = $currentMemorandum;
+        } else {
+            // If not the latest, fetch from the `memorandum_versions` table
+            $selectedVersion = MemorandumVersion::where([['memorandum_id', $id], ['version', $version]])->firstOrFail();
+        }
+    
+        return view('PartnerApplication.AffiliateView.displayPdf', [
+            'id' => $id,
+            'version' => $version,
+            'currentVersion' => $currentMemorandum->version,
+            'selectedVersion' => $selectedVersion->version,
+        ]);
+    }
+    
 }

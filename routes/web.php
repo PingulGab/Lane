@@ -61,6 +61,10 @@ Route::middleware(['auth', 'role:Superadmin,Employee'])->group(function () {
     Route::post('/documents/{id}/{name}/view', [DocumentsPageController::class, 'approveDocument'])->name('approveDocument');
 });
 
+//TODO Compare Version
+Route::get('/memorandum/{id}/compare/{version}', [MemorandumController::class, 'compareVersion'])->name('compareVersion');
+Route::get('/memorandum/{id}/compare/{version}/view', [MemorandumController::class, 'displayMemorandumComparison'])->name('displayMemorandumComparison');
+
 //! Route for: Affiliates' Approval Process
 Route::get('/documents/application/{id}/{name}/approval', [DocumentsPageController::class, 'affiliateShowDocument'])->name('affiliateShowDocument')->middleware('checkAffiliateAccess');
 Route::post('/documents/application/{id}/{name}/approval', [DocumentsPageController::class, 'affiliateApproveDocument'])->name('affiliateApproveDocument');
