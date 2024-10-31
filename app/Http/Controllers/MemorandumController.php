@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Document;
+use App\Models\Link;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Dompdf\Dompdf;
@@ -27,7 +30,7 @@ class MemorandumController extends Controller
         ]);
     }
 
-    public function generate(Request $request)
+    public function generateMemorandum(Request $request)
     {
         // Validate all the inputs from the multi-step form
         $validatedData = $request->validate([
@@ -63,7 +66,7 @@ class MemorandumController extends Controller
     
         // Generate the file name: AUF-MOA-[partner_name]-[datecreated]
         $dateCreated = Carbon::now()->format('Ymd');
-        $fileName = 'AUF-MOA-' . str_replace(' ', '-', $memorandum->partner_name) . '-' . $dateCreated;
+        $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $memorandum->partner_name) . '-' . $dateCreated;
     
         //Setting Capitalizations
         $partnerName = strtoupper($memorandum->partner_name);
@@ -162,7 +165,7 @@ class MemorandumController extends Controller
         }*/
     
         // Save the .docx file
-        $docxFilePath = storage_path('app/public/' . $fileName . '.docx');
+        $docxFilePath = storage_path('app/public/memorandum/' . $fileName . '.docx');
         $phpWord->save($docxFilePath, 'Word2007');
     
         // Generate the PDF using DOMPDF
@@ -182,10 +185,10 @@ class MemorandumController extends Controller
         ])->render();    
         $dompdf->loadHtml($html);
         $dompdf->render();
-        Storage::put('public/' . $fileName . '.pdf', $dompdf->output());
+        Storage::put('public/memorandum/' . $fileName . '.pdf', $dompdf->output());
     
         // Redirect to the view page after generating the document
-        return redirect()->route('viewMemorandum', ['id' => $memorandum->id]);
+        return $memorandum->id;
     }    
 
     public function viewDocument($id)
@@ -240,7 +243,7 @@ class MemorandumController extends Controller
     
         // Regenerate the file names with the updated partner name and creation date
         $dateCreated = $memorandum->created_at->format('Ymd');
-        $fileName = 'AUF-MOA-' . str_replace(' ', '-', $memorandum->partner_name) . '-' . $dateCreated;
+        $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $memorandum->partner_name) . '-' . $dateCreated;
     
         // Regenerate the Word document using PHPWord
         $phpWord = new \PhpOffice\PhpWord\PhpWord();
@@ -267,7 +270,7 @@ class MemorandumController extends Controller
         }
     
         // Save the updated .docx file
-        $docxFilePath = storage_path('app/public/' . $fileName . '.docx');
+        $docxFilePath = storage_path('app/public/memorandum/' . $fileName . '.docx');
         $phpWord->save($docxFilePath, 'Word2007');
     
         // Generate the updated PDF using DOMPDF
@@ -282,10 +285,34 @@ class MemorandumController extends Controller
         $dompdf->loadHtml($html);
         $dompdf->render();
     
-        // Save the updated PDF file
-        Storage::disk('public')->put($fileName . '.pdf', $dompdf->output());
+        // Save the updated PDF fileStorage::put('public/memorandum/' . $fileName . '.pdf', $dompdf->output());
+        Storage::put('public/memorandum/' . $fileName . '.pdf', $dompdf->output());
     
+        //Gather user Role for Affiliate
+        $affiliate_user = Auth::guard('affiliate')->user();
+
+        // Determine the redirect route based on user role
+        if ($affiliate_user) {
+            $document = Document::with(['memorandum'])
+                                ->where('memorandum_id', $memorandum->id)
+                                ->firstOrFail();
+
+            return redirect()->route('affiliateShowDocument', ['id' => $document->id, 'name' => $document->memorandum->partner_name]);
+        } else {
+
+            $institutionalUnit_user = Auth::guard('institutionalUnit')->user();
+            if ($institutionalUnit_user)
+            {
+                $link = Link::with([
+                    'memorandum', 
+                    ])->where('memorandum_fk', $memorandum->id)->firstOrFail();
+    
+                return redirect()->route('resultProspectivePartnerForm', ['link' => $link->link]); // replace $someLink with the appropriate value
+            }
+        }
+
         // Redirect back to the view page with the updated files
         return redirect()->route('viewMemorandum', ['id' => $memorandum->id]);
     }    
+
 }

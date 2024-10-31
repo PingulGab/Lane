@@ -44,4 +44,5 @@ class ProspectivePartnerResultController extends Controller
 
         return view('PartnerApplication.InstitutionalUnitView.login', $data);
     }
+    
 }

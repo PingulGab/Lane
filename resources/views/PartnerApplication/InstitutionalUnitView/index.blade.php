@@ -5,7 +5,8 @@
 @section('content')
 
     <h2>Memorandum Details</h2>
-    <p>Partner Name: {{ $memorandum->partner_name }}</p>
+    <iframe src="{{ asset('storage/memorandum/AUF-Memorandum-' . str_replace(' ', '-', $memorandum->partner_name) . '-' . $memorandum->created_at->format('Ymd') . '.pdf') }}" width="100%" height="600px"></iframe>
+    <a href="{{ route('editMemorandum', ['id' => $memorandum->id]) }}" class="btn btn-warning">Edit</a>
 
     <h2>Proposal Form</h2>
     <p>Country: {{ $proposalForm->country }}</p>
