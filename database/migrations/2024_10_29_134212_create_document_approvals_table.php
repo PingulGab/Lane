@@ -16,6 +16,8 @@ class CreateDocumentApprovalsTable extends Migration
             $table->foreignId('document_id')->constrained('documents')->onDelete('cascade');
             $table->foreignId('affiliate_id')->constrained('affiliates')->onDelete('cascade');
             $table->boolean('is_approved')->default(false);
+            $table->unsignedInteger('approval_order')->nullable(); // Track the order of approval
+            $table->boolean('is_notified')->default(false); // Track if an affiliate has been notified
             $table->timestamp('approved_at')->nullable();
             $table->timestamps();
         });

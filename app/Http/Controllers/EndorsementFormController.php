@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\EndorsementFormCreated;
+use App\Models\Affiliate;
 use App\Models\Document;
 use App\Models\DocumentApproval;
 use App\Models\EndorsementForm;
@@ -113,26 +114,43 @@ class EndorsementFormController extends Controller
         $dompdf->render();
         Storage::put('public/endorsement-form/' . $fileName . '.pdf', $dompdf->output());
     
-        //Mail::to('janjanpingul@gmail.com')->send(new ProspectivePartnerFormSubmitted($link));
         // TODO: Initiate the Approval Tracking Process
-        // Step 3: Create Document record to track approvals
+
+        //Step 1: Save the Selected Affiliates in the affiliate_link Table
+        $selectedAffiliates = $request->input('selected_affiliates', []);
+        $linkModel->affiliates()->sync($selectedAffiliates);
+
+        // Step 2: Create Document record to track approvals
         $document = Document::create([
             'memorandum_id' => $linkModel->memorandum_fk,
             'proposal_form_id' => $linkModel->proposal_form_fk,
             'endorsement_form_id' => $linkModel->endorsement_form_fk
         ]);
-    
-        // Step 4: Fetch affiliates linked to the specified link for approvals
-        $affiliates = $linkModel->affiliates; // Assuming a relationship exists on the Link model
-    
-        // Step 5: Create DocumentApproval records for each required affiliate
-        foreach ($affiliates as $affiliate) {
-            DocumentApproval::create([
+
+        //Step 3: Adding the Approval Order
+        $approvals = [];
+        $order = 1;
+
+        // Step 3.1: Vice President Offices
+        $vpOffices = Affiliate::whereIn('id', $selectedAffiliates)->where('name', 'like', '%Vice President%')->get();
+        foreach ($vpOffices as $vpOffice) {
+            $approvals[] = [
                 'document_id' => $document->id,
-                'affiliate_id' => $affiliate->id,
-                'is_approved' => false,
-            ]);
+                'affiliate_id' => $vpOffice->id,
+                'approval_order' => $order,
+            ];
         }
+
+        // Step 3.2: Mandatory Offices (Such as: Legal, DPO)
+        $order++;
+        $approvals[] = [
+            'document_id' => $document->id,
+            'affiliate_id' => Affiliate::where('name', 'OVP1')->first()->id,
+            'approval_order' => $order,
+        ];
+
+        // Step 4: Inserting Data
+        DocumentApproval::insert($approvals);
 
         // Send email after submission
         //TODO Mail::to('janjanpingul@gmail.com')->send(new EndorsementFormCreated($document));
@@ -143,6 +161,7 @@ class EndorsementFormController extends Controller
 
     public function viewEndorsement($link)
     {
+        
         $linkModel = Link::with([
             'memorandum', 
             'proposalForm', 

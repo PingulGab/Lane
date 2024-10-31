@@ -82,16 +82,16 @@ Route::post('/partner/application/{link}/view', [ProspectivePartnerFormControlle
 
 //! Route for: Viewing the College Viewing the Prospective Partner Form's Results.
 Route::get('/partner/result/{link}/review', [ProspectivePartnerResultController::class, 'resultProspectivePartnerForm'])->name('resultProspectivePartnerForm')->middleware(['checkCollegeAccess']);
+
+//! Route for: Login of Colleges
 Route::get('/partner/result/{link}/login', [ProspectivePartnerResultController::class, 'showResultLoginPage'])->name('showResultLoginPage');
+Route::post('/partner/result/{link}/login', [CollegeLogin::class, 'resultLogin'])->name('resultLogin');
 
 //! Route for: College Creating the Endorsement Form in the view of Prospective Partner Form's Results.
 Route::post('/partner/result/{link}/review', [EndorsementFormController::class, 'generateEndorsement'])->name('generateEndorsement');
 
 //! Route for: College Viewing the Generated Endorsement Form and Submitted Prospective Partner Form's Result.
 Route::get('/partner/result/{link}/view', [EndorsementFormController::class, 'viewEndorsement'])->name('viewEndorsement');
-
-//! Route for: Login of Colleges
-Route::post('/partner/result/{link}/login', [CollegeLogin::class, 'resultLogin'])->name('resultLogin');
 
 //! Route for: Changing the Password of the College's Account.
 Route::get('partner/result/{link}/change-password', [CollegeLogin::class, 'showCollegeChangePassword'])->name('showCollegeChangePassword');

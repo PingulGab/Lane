@@ -131,7 +131,6 @@ class ProspectivePartnerFormController extends Controller
         $link = Link::where('link', $link)->firstOrFail();
     
         $selectedColleges = $request->input('selected_colleges', []);
-        $selectedAffiliates = $request->input('selected_affiliates', []);
     
         // Step 1: Create Memorandum and Proposal Form
         $memorandum = Memorandum::create([
@@ -152,7 +151,6 @@ class ProspectivePartnerFormController extends Controller
     
         // Sync selected colleges with the link
         $link->colleges()->sync($selectedColleges);
-        $link->affiliates()->sync($selectedAffiliates);
     
         // Optionally send email after submission
         //TODO Mail::to('janjanpingul@gmail.com')->send(new ProspectivePartnerFormSubmitted($link));

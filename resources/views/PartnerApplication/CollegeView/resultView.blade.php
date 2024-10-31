@@ -26,6 +26,19 @@
         <form id="multi-step-form" action="{{ route('generateEndorsement', ['link' => $link->link])}}" method="POST">
             @csrf
 
+            <h3>Select Affiliate</h3>
+            @foreach($affiliateList as $affiliate)
+                <div>
+                    <input 
+                        type="checkbox" 
+                        name="selected_affiliates[]" 
+                        value="{{ $affiliate->id }}" 
+                        id="affiliate_{{ $affiliate->id }}"
+                    >
+                    <label for="affiliate_{{ $affiliate->id }}">{{ $affiliate->name }}</label>
+                </div>
+            @endforeach
+
             <!-- Step 1 -->
             <div class="form-section" id="step-1">
                 <h2>Step 1: D1 Information</h2>

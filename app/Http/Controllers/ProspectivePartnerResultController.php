@@ -11,6 +11,8 @@ class ProspectivePartnerResultController extends Controller
 {
     public function resultProspectivePartnerForm($link)
     {
+        $affiliateList = Affiliate::all();
+
         $link = Link::with([
             'memorandum', 
             'proposalForm', 
@@ -22,6 +24,7 @@ class ProspectivePartnerResultController extends Controller
             'link' => $link,
             'memorandum' => $link->memorandum,
             'proposalForm' => $link->proposalForm,
+            'affiliateList' => $affiliateList,
         ];
 
         if ($link->endorsement_form_fk)

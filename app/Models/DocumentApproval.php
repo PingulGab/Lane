@@ -9,7 +9,7 @@ class DocumentApproval extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['document_id', 'affiliate_id', 'is_approved', 'approved_at', 'comments'];
+    protected $fillable = ['document_id', 'affiliate_id', 'is_approved', 'approved_at', 'is_notified', 'approval_order'];
 
     public function document()
     {

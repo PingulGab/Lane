@@ -7,6 +7,7 @@ use App\Models\Document;
 use App\Models\DocumentApproval;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\EndorsementFormCreated;
 use Mail;
 
 class DocumentsPageController extends Controller
@@ -84,11 +85,48 @@ class DocumentsPageController extends Controller
         ->where('affiliate_id', $affiliate->id)
         ->firstOrFail();
 
+        //Check if all Approvals at the current stage (Approval_Order) are completed.
+        $currentOrder = $documentApproval->approval_order;
+
+        $pendingPriorApprovals = DocumentApproval::where('document_id', $id)
+                                ->where('approval_order', '<',$currentOrder)
+                                ->where('is_approved', false)
+                                ->count();
+
+        // Error if Mandatory Affiliates (DPO, and Legal) tried to Access without the approval of all VPOs
+        if ($pendingPriorApprovals > 0) {
+            // TODO You should create an alert where it states "VPO ### has not yet approved.
+            return redirect()->back()->withErrors('All prior approvals must be completed before your approval.');
+        }
+
         // Updating the Table
         $documentApproval->update([
             'is_approved' => true,
             'approved_at' => now(),
         ]);
+
+        $pendingApprovalIsInCurrentOrder = DocumentApproval::where('document_id', $id)
+                                        ->where('approval_order', $currentOrder)
+                                        ->where('is_approved', false)
+                                        ->count();
+
+        if ($pendingApprovalIsInCurrentOrder === 0) {
+            //Notify next stage if all approvals are completed.
+            $nextOder = $currentOrder + 1;
+            $nextApprovals = DocumentApproval::where('document_id', $id)
+                            -> where('approval_order', $nextOder)
+                            -> where('is_notified', false)
+                            -> get();
+            
+            foreach($nextApprovals as $nextApproval) {
+                // Send email to next Affiliate
+                $affilaiteToNofity = $nextApproval->affiliate;
+                Mail::to($affilaiteToNofity->email)->send(new EndorsementFormCreated($document));
+
+                // Mark as Notified
+                $nextApproval->update(['is_notified' => true]);
+            }
+        }
 
         return redirect()->route('affiliateShowDocument', ['id' => $id, 'name' => $name]);
     }
