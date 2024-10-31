@@ -35,9 +35,9 @@ class Link extends Model
         return $this->belongsTo(EndorsementForm::class, 'endorsement_form_fk');
     }
 
-    public function colleges()
+    public function institutionalUnits()
     {
-        return $this->belongsToMany(College::class, 'college_link');
+        return $this->belongsToMany(InstitutionalUnit::class, 'institutional_unit_link');
     }
 
     public function affiliates()

@@ -28,4 +28,9 @@ class Affiliate extends Authenticatable
     {
         return $this->belongsToMany(Link::class, 'affiliate_link');
     }
+
+    public function institutionalUnits()
+    {
+        return $this->hasMany(InstitutionalUnit::class, 'mother_affiliate_id');
+    }
 }

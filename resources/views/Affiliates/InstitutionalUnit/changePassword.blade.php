@@ -1,4 +1,4 @@
-<form method="POST" action="{{ route('collegeChangePassword', ['link' => $link]) }}">
+<form method="POST" action="{{ route('institutionalUnitChangePassword', ['link' => $link]) }}">
     @csrf
     <label for="password">New Password:</label>
     <input type="password" name="password" id="password" required>

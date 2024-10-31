@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ProspectivePartnerFormSubmitted;
-use App\Models\College;
 use App\Models\Document;
 use App\Models\DocumentApproval;
+use App\Models\InstitutionalUnit;
 use App\Models\Link;
 use App\Models\Memorandum;
 use App\Models\ProposalForm;
@@ -22,8 +22,7 @@ class ProspectivePartnerFormController extends Controller
     public function prospectPartnerViewLink($link)
     {
         $link = Link::where('link', $link)->firstOrFail();
-        $collegeList = College::all();
-        $affiliateList = Affiliate::all();
+        $institutionalUnitList = InstitutionalUnit::all();
 
         // Check if the user is authenticated and if session timestamp exists
         $authSessionKey = "authenticated_{$link->id}";
@@ -39,7 +38,7 @@ class ProspectivePartnerFormController extends Controller
                 {
                     return redirect()->route('prospectPartnerViewSubmittedForm', $link->link);
                 } else {
-                    return view('PartnerApplication.PartnerView.partnershipApplicationForm_View', ['link' => $link, 'collegesList' => $collegeList, 'affiliateList' => $affiliateList]);
+                    return view('PartnerApplication.PartnerView.partnershipApplicationForm_View', ['link' => $link, 'institutionalUnitList' => $institutionalUnitList]);
                 }
             } else {
                 // Session expired, remove the session variables
@@ -130,7 +129,7 @@ class ProspectivePartnerFormController extends Controller
     {
         $link = Link::where('link', $link)->firstOrFail();
     
-        $selectedColleges = $request->input('selected_colleges', []);
+        $selectedinstitutionalUnits = $request->input('selected_institutionalUnits', []);
     
         // Step 1: Create Memorandum and Proposal Form
         $memorandum = Memorandum::create([
@@ -149,8 +148,8 @@ class ProspectivePartnerFormController extends Controller
             'isActive' => false,
         ]);
     
-        // Sync selected colleges with the link
-        $link->colleges()->sync($selectedColleges);
+        // Sync selected institutional units with the link
+        $link->institutionalUnits()->sync($selectedinstitutionalUnits);
     
         // Optionally send email after submission
         //TODO Mail::to('janjanpingul@gmail.com')->send(new ProspectivePartnerFormSubmitted($link));

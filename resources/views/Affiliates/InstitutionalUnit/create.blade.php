@@ -78,7 +78,7 @@
         var formData = new FormData(document.getElementById('createNewCollege'));
 
         // Make an AJAX POST request
-        fetch("{{ route('storeNewCollege') }}", {
+        fetch("{{ route('storeNewInstitutionalUnit') }}", {
             method: "POST",
             headers: {
                 'X-CSRF-TOKEN': csrfToken,

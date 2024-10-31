@@ -81,7 +81,7 @@
             <div class="affiliates-departments-controls">
                 <input type="text" placeholder="Search" class="affiliates-search-bar">
                 <button type="submit" class="affiliates-filters-btn" href="">Filters</button>
-                <a class="affiliates-add-btn" href="{{route('showNewCollegeForm')}}">Add</a>
+                <a class="affiliates-add-btn" href="{{route('showNewInstitutionalUnitForm')}}">Add</a>
             </div>
         </div>
 
