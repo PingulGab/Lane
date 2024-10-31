@@ -32,7 +32,7 @@ class ProspectivePartnerResultController extends Controller
             return redirect()->route('viewEndorsement', ['link' => $link->link]);
         }
         
-        return view('PartnerApplication.CollegeView.resultView', $data);
+        return view('PartnerApplication.InstitutionalUnitView.index', $data);
     }
 
     public function showResultLoginPage($link)
@@ -42,6 +42,6 @@ class ProspectivePartnerResultController extends Controller
             'link' => $link,
         ];
 
-        return view('PartnerApplication.CollegeView.resultAffiliateLogin', $data);
+        return view('PartnerApplication.InstitutionalUnitView.login', $data);
     }
 }

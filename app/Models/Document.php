@@ -9,7 +9,7 @@ class Document extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['memorandum_id', 'endorsement_form_id', 'proposal_form_id', 'is_ogr_approved'];
+    protected $fillable = ['memorandum_id', 'endorsement_form_id', 'proposal_form_id', 'institutional_unit_id', 'is_ogr_approved'];
 
     public function memorandum()
     {
@@ -29,5 +29,10 @@ class Document extends Model
     public function approvals()
     {
         return $this->hasMany(DocumentApproval::class);
+    }
+
+    public function institutionalUnits()
+    {
+        return $this->belongsTo(InstitutionalUnit::class, 'institutional_unit_id');
     }
 }

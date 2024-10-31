@@ -4,14 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCollegesTable extends Migration
+class CreateInstitutionalUnitTable extends Migration
 {
     /**
      * Run the migrations.
      */
     public function up()
     {
-        Schema::create('colleges', function (Blueprint $table) {
+        Schema::create('institutional_units', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('contact_person');
@@ -19,12 +19,13 @@ class CreateCollegesTable extends Migration
             $table->string('username')->unique();
             $table->string('password');
             $table->boolean('must_change_password')->default(true); // Force password change
+            $table->foreignId('mother_affiliate_id')->constrained('affiliates')->onDelete('cascade');
             $table->timestamps();
         });        
     }
 
     public function down()
     {
-        Schema::dropIfExists('colleges');
+        Schema::dropIfExists('institutional_units');
     }
 };

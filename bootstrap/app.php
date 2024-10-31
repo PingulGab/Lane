@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckAffiliatesAccess;
-use App\Http\Middleware\CheckCollegeAccess;
+use App\Http\Middleware\CheckInstitutionalUnitAccess;
 use App\Http\Middleware\RoleMiddleWare;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -17,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => RoleMiddleWare::class,
             'checkAffiliateAccess' => CheckAffiliatesAccess::class,
-            'checkCollegeAccess' => CheckCollegeAccess::class,
+            'checkInstitutionalUnitAccess' => CheckInstitutionalUnitAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

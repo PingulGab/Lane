@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\AffiliatesLoginController;
 use App\Http\Controllers\AffiliatesPageController;
-use App\Http\Controllers\CollegeController;
-use App\Http\Controllers\CollegeLogin;
 use App\Http\Controllers\DashboardPageController;
 use App\Http\Controllers\DocumentsPageController;
 use App\Http\Controllers\EndorsementFormController;
+use App\Http\Controllers\InstitutionalUnitController;
+use App\Http\Controllers\InstitutionalUnitLogin;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\PartnershipsPageController;
@@ -47,55 +47,59 @@ Route::middleware(['auth', 'role:Superadmin,Employee'])->group(function () {
     Route::get('/affiliates/new',[AffiliatesPageController::class, 'showNewAffiliateForm'])->name('showNewAffiliateForm');
     Route::post('/affiliates/new', [AffiliatesPageController::class, 'storeNewAffiliate'])->name('storeNewAffiliate');
 
-    //! NEW COLLEGE
-    Route::get('/affiliate/college/new',[CollegeController::class, 'showNewCollegeForm'])->name('showNewCollegeForm');
-    Route::post('/affiliates/college/new', [CollegeController::class, 'storeNewCollege'])->name('storeNewCollege');
+    //! NEW Institutional Unit
+    Route::get('/affiliate/institutional-unit/new',[InstitutionalUnitController::class, 'showNewInstitutionalUnitForm'])->name('showNewInstitutionalUnitForm');
+    Route::post('/affiliates/institutional-unit/new', [InstitutionalUnitController::class, 'storeNewInstitutionalUnit'])->name('storeNewInstitutionalUnit');
 
     //! Generate Link and Methods (Located in Sidebar)
     Route::get('/links', [LinkController::class, 'viewLink'])->name('viewLink');
     Route::post('/links/new', [LinkController::class, 'storeNewLink'])->name('storeNewLink');
     Route::delete('/links/delete/{id}', [LinkController::class, 'deleteLink'])->name('delete-link');
 
-    //TODO: TEST FOR APPROVAL TRACKING
+    //! Route for OGR Approving the 3 Documents
     Route::get('/documents/{id}/{name}/view', [DocumentsPageController::class, 'showDocument'])->name('showDocument');
     Route::post('/documents/{id}/{name}/view', [DocumentsPageController::class, 'approveDocument'])->name('approveDocument');
 });
 
-//TODO: Route for Affiliates' Approval Process
+//! Route for: Affiliates' Approval Process
 Route::get('/documents/application/{id}/{name}/approval', [DocumentsPageController::class, 'affiliateShowDocument'])->name('affiliateShowDocument')->middleware('checkAffiliateAccess');
-Route::get('/documents/application/{id}/{name}/login', [AffiliatesLoginController::class, 'showAffiliateLoginDocument'])->name('showAffiliateLoginDocument');
-Route::post('/documents/application/{id}/{name}/login', [AffiliatesLoginController::class, 'affiliateLoginDocument'])->name('affiliateLoginDocument');
-Route::get('/documents/application/{id}/{name}/change-password', [AffiliatesLoginController::class, 'showAffiliateChangePasswordDocument'])->name('showAffiliateChangePasswordDocument');
-Route::post('/documents/application/{id}/{name}/change-password', [AffiliatesLoginController::class, 'affiliateChangePassword'])->name('affiliateChangePassword');
 Route::post('/documents/application/{id}/{name}/approval', [DocumentsPageController::class, 'affiliateApproveDocument'])->name('affiliateApproveDocument');
 
-//! Routes for: Entering Password on Generated Link
+Route::get('/documents/application/{id}/{name}/login', [AffiliatesLoginController::class, 'showAffiliateLoginDocument'])->name('showAffiliateLoginDocument');
+Route::post('/documents/application/{id}/{name}/login', [AffiliatesLoginController::class, 'affiliateLoginDocument'])->name('affiliateLoginDocument');
+
+Route::get('/documents/application/{id}/{name}/change-password', [AffiliatesLoginController::class, 'showAffiliateChangePasswordDocument'])->name('showAffiliateChangePasswordDocument');
+Route::post('/documents/application/{id}/{name}/change-password', [AffiliatesLoginController::class, 'affiliateChangePassword'])->name('affiliateChangePassword');
+
+//! Routes for: Prospective Partner's
+// View of Password and Form + Login
 Route::get('/partner/application/{link}', [ProspectivePartnerFormController::class, 'prospectPartnerViewLink'])->name('prospectPartnerViewLink');
 Route::post('/partner/application/{link}', [ProspectivePartnerFormController::class, 'validateProspectPartnerPassword'])->name('validateProspectPartnerPassword');
 
-//! Routes for: Submission of the Prospective Partner's Form.
+// Submission of Form
 Route::post('/partner/application/{link}/submitted', [ProspectivePartnerFormController::class, 'submitProspectPartnerForm'])->name('submitProspectPartnerForm');
 
-//! Route for: Prospective Partner Viewing the Submitted Form
+// View of Submitted Information
 Route::get('/partner/application/{link}/view', [ProspectivePartnerFormController::class, 'prospectPartnerViewSubmittedForm'])->name('prospectPartnerViewSubmittedForm');
 Route::post('/partner/application/{link}/view', [ProspectivePartnerFormController::class, 'validatePasswordSubmittedForm'])->name('validatePasswordSubmittedForm');
 
-//! Route for: Viewing the College Viewing the Prospective Partner Form's Results.
-Route::get('/partner/result/{link}/review', [ProspectivePartnerResultController::class, 'resultProspectivePartnerForm'])->name('resultProspectivePartnerForm')->middleware(['checkCollegeAccess']);
+//! Route for: Institutional Unit's
+// View of Submitted Information (From Prospective Partner)
+Route::get('/partner/result/{link}/review', [ProspectivePartnerResultController::class, 'resultProspectivePartnerForm'])->name('resultProspectivePartnerForm')->middleware(['checkInstitutionalUnitAccess']);
 
-//! Route for: Login of Colleges
+// Login
 Route::get('/partner/result/{link}/login', [ProspectivePartnerResultController::class, 'showResultLoginPage'])->name('showResultLoginPage');
-Route::post('/partner/result/{link}/login', [CollegeLogin::class, 'resultLogin'])->name('resultLogin');
+Route::post('/partner/result/{link}/login', [InstitutionalUnitLogin::class, 'resultLogin'])->name('resultLogin');
 
-//! Route for: College Creating the Endorsement Form in the view of Prospective Partner Form's Results.
+// Change Password
+Route::get('partner/result/{link}/change-password', [InstitutionalUnitLogin::class, 'showInstitutionalUnitChangePassword'])->name('showInstitutionalUnitChangePassword');
+Route::post('partner/result/{link}/change-password', [InstitutionalUnitLogin::class, 'institutionalUnitChangePassword'])->name('institutionalUnitChangePassword');
+
+// Creation of Endorsement Form
 Route::post('/partner/result/{link}/review', [EndorsementFormController::class, 'generateEndorsement'])->name('generateEndorsement');
 
-//! Route for: College Viewing the Generated Endorsement Form and Submitted Prospective Partner Form's Result.
+// View of Submitted Endorsement Form + Prospective Partner's Submitted Information
 Route::get('/partner/result/{link}/view', [EndorsementFormController::class, 'viewEndorsement'])->name('viewEndorsement');
-
-//! Route for: Changing the Password of the College's Account.
-Route::get('partner/result/{link}/change-password', [CollegeLogin::class, 'showCollegeChangePassword'])->name('showCollegeChangePassword');
-Route::post('partner/result/{link}/change-password', [CollegeLogin::class, 'collegeChangePassword'])->name('collegeChangePassword');
 
 // ? Routes for Endorsement Form Creation
 Route::get('/endorsement-form/create', [EndorsementFormController::class, 'create'])->name('createEndorsement');

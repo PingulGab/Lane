@@ -46,9 +46,9 @@ return [
             'provider'=>'affiliates'
         ],
 
-        'college' => [
+        'institutionalUnit' => [
             'driver' => 'session',
-            'provider' => 'colleges'
+            'provider' => 'institutionalUnits'
         ],
     ],
 
@@ -80,9 +80,9 @@ return [
             'model' => App\Models\Affiliate::class,
         ],
 
-        'colleges' => [
+        'institutionalUnits' => [
             'driver' => 'eloquent',
-            'model' => App\Models\College::class,
+            'model' => App\Models\InstitutionalUnit::class,
         ],
 
         // 'users' => [

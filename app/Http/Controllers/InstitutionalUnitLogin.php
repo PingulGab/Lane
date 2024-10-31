@@ -2,36 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Affiliate;
-use App\Models\College;
+use App\Models\InstitutionalUnit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
-class CollegeLogin extends Controller
+class InstitutionalUnitLogin extends Controller
 {
     public function resultLogin(Request $request, $link)
     {
         $credentials = $request->only('username', 'password');
 
         // Debugging: Check credentials and their hash in the database
-        $college = College::where('username', $credentials['username'])->first();
+        $institutionalUnit = InstitutionalUnit::where('username', $credentials['username'])->first();
         
-        if (!$college) {
+        if (!$institutionalUnit) {
             return back()->withErrors([
                 'username' => 'Username does not exist.',
             ]);
         }
     
         // Check if the entered password matches the stored password hash
-        if (!\Hash::check($credentials['password'], $college->password)) {
+        if (!\Hash::check($credentials['password'], $institutionalUnit->password)) {
             return back()->withErrors([
                 'password' => 'Password does not match.',
             ]);
         }
     
         // Attempt authentication using the guard
-        if (Auth::guard('college')->attempt($credentials)) {
+        if (Auth::guard('institutionalUnit')->attempt($credentials)) {
             return redirect()->intended(route('resultProspectivePartnerForm', ['link'=>$link]));
         }
     
@@ -39,21 +38,21 @@ class CollegeLogin extends Controller
             'username' => 'The provided credentials do not match our records.',
         ]);
     }
-    public function showCollegeChangePassword($link)
+    public function showInstitutionalUnitChangePassword($link)
     {
-        return view('affiliates.College.changePassword', compact('link'));
+        return view('affiliates.InstitutionalUnit.changePassword', compact('link'));
     }
 
-    public function collegeChangePassword(Request $request, $link)
+    public function institutionalUnitChangePassword(Request $request, $link)
     {
         $request->validate([
             'password' => 'required|min:4|confirmed'
         ]);
 
-        $college = Auth::guard('college')->user();
-        $college->password = Hash::make($request->password);
-        $college->must_change_password = false;
-        $college->save();
+        $institutionalUnit = Auth::guard('institutionalUnit')->user();
+        $institutionalUnit->password = Hash::make($request->password);
+        $institutionalUnit->must_change_password = false;
+        $institutionalUnit->save();
 
         return redirect()->route('resultLogin', ['link' => $link]);
     }

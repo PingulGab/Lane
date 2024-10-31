@@ -9,6 +9,7 @@ use App\Models\DocumentApproval;
 use App\Models\EndorsementForm;
 use App\Models\Link;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Dompdf\Dompdf;
@@ -120,11 +121,14 @@ class EndorsementFormController extends Controller
         $selectedAffiliates = $request->input('selected_affiliates', []);
         $linkModel->affiliates()->sync($selectedAffiliates);
 
+        //Step 1.1: Obtain the Institutional Unit ID based on the logged in User.
+
         // Step 2: Create Document record to track approvals
         $document = Document::create([
             'memorandum_id' => $linkModel->memorandum_fk,
             'proposal_form_id' => $linkModel->proposal_form_fk,
-            'endorsement_form_id' => $linkModel->endorsement_form_fk
+            'endorsement_form_id' => $linkModel->endorsement_form_fk,
+            'institutional_unit_id' => Auth::guard('institutionalUnit')->id()
         ]);
 
         //Step 3: Adding the Approval Order
@@ -132,7 +136,9 @@ class EndorsementFormController extends Controller
         $order = 1;
 
         // Step 3.1: Vice President Offices
-        $vpOffices = Affiliate::whereIn('id', $selectedAffiliates)->where('name', 'like', '%Vice President%')->get();
+        $vpOffices = Affiliate::whereIn('id', $selectedAffiliates)
+                    ->get();
+                    
         foreach ($vpOffices as $vpOffice) {
             $approvals[] = [
                 'document_id' => $document->id,
@@ -141,7 +147,19 @@ class EndorsementFormController extends Controller
             ];
         }
 
-        // Step 3.2: Mandatory Offices (Such as: Legal, DPO)
+        // Step 3.2: Add Mother Affiliate based on Institutional Unit
+        $institutionalUnits = $document->institutionalUnits;
+        $motherAffiliate = $institutionalUnits->motherAffiliate;
+
+        if($motherAffiliate) {
+            $approvals[] = [
+                'document_id' => $document->id,
+                'affiliate_id' => $motherAffiliate->id,
+                'approval_order' => $order,
+            ];
+        };
+
+        // Step 3.1: Mandatory Offices (Such as: Legal, DPO)
         $order++;
         $approvals[] = [
             'document_id' => $document->id,
@@ -173,7 +191,7 @@ class EndorsementFormController extends Controller
         $proposalForm = $linkModel->proposalForm;
 
         $endorsement = EndorsementForm::findOrFail($linkModel->endorsement_form_fk);
-        return view('PartnerApplication.CollegeView.EndorsementSubmitted', compact('endorsement', 'memorandum', 'proposalForm'));
+        return view('PartnerApplication.InstitutionalUnitView.submitted_view', compact('endorsement', 'memorandum', 'proposalForm'));
     }
 
     public function downloadDocument($id, $format)

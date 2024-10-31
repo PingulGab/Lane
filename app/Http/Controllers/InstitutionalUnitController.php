@@ -2,28 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\College;
+use App\Models\InstitutionalUnit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 
-class CollegeController extends Controller
+class InstitutionalUnitController extends Controller
 {
-    // Show list of College for admin
-    public function colleges()
-    {
-        $colleges = College::all();
-        return view('Affiliates.index', compact('affiliates'));
-    }
-
-    public function showNewCollegeForm()
+    public function showNewInstitutionalUnitForm()
     {
         return view('layouts.layout', [
-            'content' => view('affiliates.College.create')
+            'content' => view('affiliates.InstitutionalUnit.create')
         ]);
     }
 
-    public function storeNewCollege(Request $request)
+    public function storeNewInstitutionalUnit(Request $request)
     {
         // Validate the incoming request
         try {
@@ -40,10 +33,10 @@ class CollegeController extends Controller
                 'contact_person.required' => 'The contact number is required.',
             ]);
     
-            // If validation passes, create the college
+            // If validation passes, create the institutional unit
             $password = Str::random(8);
     
-            $newCollege = College::create([
+            $newInstitutionalUnit = InstitutionalUnit::create([
                 'name' => $validatedData['name'],
                 'username' => $validatedData['username'],
                 'email' => $validatedData['email'],
@@ -54,7 +47,7 @@ class CollegeController extends Controller
     
             // Return success response
             return response()->json([
-                'id' => $newCollege->id,
+                'id' => $newInstitutionalUnit->id,
                 'name' => $validatedData['name'],
                 'password' => $password,
             ]);
