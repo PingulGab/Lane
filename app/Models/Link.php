@@ -40,6 +40,11 @@ class Link extends Model
         return $this->belongsToMany(College::class, 'college_link');
     }
 
+    public function affiliates()
+    {
+        return $this->belongsToMany(Affiliate::class, 'affiliate_link');
+    }
+
     // You can also define default attributes if needed, for example:
     protected $attributes = [
         'isActive' => true,
