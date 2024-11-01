@@ -28,25 +28,7 @@ class AdminSeeder extends Seeder
         ]);
 
         Affiliate::create([
-            'name' => 'Mother',
-            'contact_person' => 'aff0',
-            'email' => 'dummypingul@gmail.com',
-            'username' => 'aff0',
-            'password' => Hash::make('aff0'),
-            'must_change_password' => false
-        ]);
-
-        Affiliate::create([
-            'name' => 'Mother2',
-            'contact_person' => 'moth',
-            'email' => 'dummypingul2@gmail.com',
-            'username' => 'moth',
-            'password' => Hash::make('moth'),
-            'must_change_password' => false
-        ]);
-
-        Affiliate::create([
-            'name' => 'OVP1',
+            'name' => 'Legal Counsel',
             'contact_person' => 'aff1',
             'email' => 'janjanpingul@gmail.com',
             'username' => 'aff1',
@@ -55,20 +37,56 @@ class AdminSeeder extends Seeder
         ]);
 
         Affiliate::create([
-            'name' => 'Vice President of Finance',
+            'name' => 'Data Protection Officer',
             'contact_person' => 'aff2',
-            'email' => 'jankth17@gmail.com',
+            'email' => 'aff2@gmail.com',
             'username' => 'aff2',
             'password' => Hash::make('aff2'),
             'must_change_password' => false
         ]);
 
         Affiliate::create([
-            'name' => 'Vice President of Research',
+            'name' => 'Registrar',
             'contact_person' => 'aff3',
-            'email' => 'janjanpingulstorage@gmail.com',
+            'email' => 'aff3@gmail.com',
             'username' => 'aff3',
             'password' => Hash::make('aff3'),
+            'must_change_password' => false
+        ]);
+
+        Affiliate::create([
+            'name' => 'Office of the Vice President for Administration',
+            'contact_person' => 'aff4',
+            'email' => 'jankth17@gmail.com',
+            'username' => 'aff4',
+            'password' => Hash::make('aff4'),
+            'must_change_password' => false
+        ]);
+
+        Affiliate::create([
+            'name' => 'Office of the Vice President for Academic Affairs',
+            'contact_person' => 'aff5',
+            'email' => 'janjanpingulstorage@gmail.com',
+            'username' => 'aff5',
+            'password' => Hash::make('aff5'),
+            'must_change_password' => false
+        ]);
+
+        Affiliate::create([
+            'name' => 'Office of the Vice President for Finance',
+            'contact_person' => 'aff6',
+            'email' => 'aff6@gmail.com',
+            'username' => 'aff6',
+            'password' => Hash::make('aff6'),
+            'must_change_password' => false
+        ]);
+
+        Affiliate::create([
+            'name' => 'Office of the Vice President for Research & Innovation',
+            'contact_person' => 'aff7',
+            'email' => 'aff7@gmail.com',
+            'username' => 'aff7',
+            'password' => Hash::make('aff7'),
             'must_change_password' => false
         ]);
 
@@ -79,7 +97,7 @@ class AdminSeeder extends Seeder
             'username' => 'qwer',
             'password' => Hash::make('qwer'),
             'must_change_password' => false,
-            'mother_affiliate_id' => 1
+            'mother_affiliate_id' => 4
         ]);
 
         InstitutionalUnit::create([
@@ -89,7 +107,7 @@ class AdminSeeder extends Seeder
             'username' => 'qwert',
             'password' => Hash::make('qwert'),
             'must_change_password' => false,
-            'mother_affiliate_id' => 2
+            'mother_affiliate_id' => 5
         ]);
 
         Link::create([

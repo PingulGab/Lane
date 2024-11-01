@@ -13,6 +13,8 @@ use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Memorandum;
 use Carbon\Carbon;
+use App\Mail\EndorsementFormCreated;
+use Mail;
 
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\Style\Font;
@@ -200,10 +202,18 @@ class MemorandumController extends Controller
 
     public function downloadDocument($id, $format)
     {
-        $memorandum = Memorandum::findOrFail($id);
-        $fileName = 'AUF-MOA-' . str_replace(' ', '-', $memorandum->partner_name) . '-' . $memorandum->created_at->format('Ymd') . '.' . $format;
-        $filePath = storage_path('app/public/' . $fileName);
+        $documentID = session('documentID');
+        $document = Document::with('memorandum')->findOrFail($documentID);
 
+        $document->update(['is_downloaded' => true]);
+
+        //TODO Mail::to('janjanpingul@gmail.com')->send(new EndorsementFormCreated($document));
+
+        $memorandum = Memorandum::findOrFail($id);
+        $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $memorandum->partner_name) . '-' . $memorandum->created_at->format('Ymd') . '.' . $format;
+        $filePath = storage_path('app/public/memorandum/' . $fileName);
+
+        session()->forget('documentID');
         return response()->download($filePath);
     }
 

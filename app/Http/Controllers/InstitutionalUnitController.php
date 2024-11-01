@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Document;
 use App\Models\InstitutionalUnit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -64,4 +65,14 @@ class InstitutionalUnitController extends Controller
             return response()->json(['error' => 'An unexpected error occurred.' . $e->getMessage()], 500);
         }
     }    
+
+    public function showSignPendingView($id)
+    {
+        $document = Document::with('approvals')->where('id', $id)->firstOrFail();
+
+        session(['documentID' => $document->id]);
+        $isDownloaded = $document->is_downloaded;
+
+        return view('PartnerApplication.InstitutionalUnitView.signPending.index', ['document' => $document, 'isDownloaded' => $isDownloaded]);
+    }
 }

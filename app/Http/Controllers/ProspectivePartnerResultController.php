@@ -11,7 +11,7 @@ class ProspectivePartnerResultController extends Controller
 {
     public function resultProspectivePartnerForm($link)
     {
-        $affiliateList = Affiliate::all();
+        $affiliateList = Affiliate::whereNotIn('id', [1, 2])->get();
 
         $link = Link::with([
             'memorandum', 

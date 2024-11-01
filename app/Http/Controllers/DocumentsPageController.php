@@ -79,58 +79,69 @@ class DocumentsPageController extends Controller
     public function affiliateApproveDocument($id, $name)
     {
         $document = Document::with('approvals')->where('id', $id)->firstOrFail();
-
-        //Retrieve the Logged in Affiliate
+    
+        // Retrieve the logged-in affiliate
         $affiliate = Auth::guard('affiliate')->user();
-
+    
         // Find the specific DocumentApproval record for the affiliate and document.
         $documentApproval = DocumentApproval::where('document_id', $id)
-        ->where('affiliate_id', $affiliate->id)
-        ->firstOrFail();
-
-        //Check if all Approvals at the current stage (Approval_Order) are completed.
+            ->where('affiliate_id', $affiliate->id)
+            ->firstOrFail();
+    
+        // Check if all approvals at the current stage (approval_order) are completed.
         $currentOrder = $documentApproval->approval_order;
-
+    
         $pendingPriorApprovals = DocumentApproval::where('document_id', $id)
-                                ->where('approval_order', '<',$currentOrder)
-                                ->where('is_approved', false)
-                                ->count();
-
-        // Error if Mandatory Affiliates (DPO, and Legal) tried to Access without the approval of all VPOs
+            ->where('approval_order', '<', $currentOrder)
+            ->where('is_approved', false)
+            ->count();
+    
+        // Error if Mandatory Affiliates (DPO and Legal) tried to access without the approval of all VPOs
         if ($pendingPriorApprovals > 0) {
-            // TODO You should create an alert where it states "VPO ### has not yet approved.
             return redirect()->back()->withErrors('All prior approvals must be completed before your approval.');
         }
-
-        // Updating the Table
+    
+        // Updating the table to mark as approved
         $documentApproval->update([
             'is_approved' => true,
             'approved_at' => now(),
         ]);
-
+    
+        // Check if there are any pending approvals in the current order
         $pendingApprovalIsInCurrentOrder = DocumentApproval::where('document_id', $id)
-                                        ->where('approval_order', $currentOrder)
-                                        ->where('is_approved', false)
-                                        ->count();
-
+            ->where('approval_order', $currentOrder)
+            ->where('is_approved', false)
+            ->count();
+    
+        // Notify next stage if all approvals in the current order are completed
         if ($pendingApprovalIsInCurrentOrder === 0) {
-            //Notify next stage if all approvals are completed.
-            $nextOder = $currentOrder + 1;
+            $nextOrder = $currentOrder + 1;
             $nextApprovals = DocumentApproval::where('document_id', $id)
-                            -> where('approval_order', $nextOder)
-                            -> where('is_notified', false)
-                            -> get();
-            
-            foreach($nextApprovals as $nextApproval) {
-                // Send email to next Affiliate
-                $affilaiteToNofity = $nextApproval->affiliate;
-                Mail::to($affilaiteToNofity->email)->send(new EndorsementFormCreated($document));
-
-                // Mark as Notified
+                ->where('approval_order', $nextOrder)
+                ->where('is_notified', false)
+                ->get();
+    
+            foreach ($nextApprovals as $nextApproval) {
+                // Send email to next affiliate
+                $affiliateToNotify = $nextApproval->affiliate;
+                //Mail::to($affiliateToNotify->email)->send(new EndorsementFormCreated($document));
+    
+                // Mark as notified
                 $nextApproval->update(['is_notified' => true]);
             }
         }
-
+    
+        // **New Code: Check if the current affiliate is the last stage (Legal)**
+        $isLastApproval = DocumentApproval::where('document_id', $id)
+            ->where('is_approved', false)
+            ->count() === 0;
+    
+        // Send final email notification if this was the last required approval (Legal office)
+        if ($isLastApproval && $affiliate->name === 'Legal Counsel') {
+            // Customize and send a final approval completed email notification
+            Mail::to($document->institutionalUnits->email)->send(new EndorsementFormCreated($document));
+        }
+    
         return redirect()->route('affiliateShowDocument', ['id' => $id, 'name' => $name]);
-    }
+    }    
 }

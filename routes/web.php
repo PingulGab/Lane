@@ -105,6 +105,12 @@ Route::post('/partner/result/{link}/review', [EndorsementFormController::class, 
 // View of Submitted Endorsement Form + Prospective Partner's Submitted Information
 Route::get('/partner/result/{link}/view', [EndorsementFormController::class, 'viewEndorsement'])->name('viewEndorsement');
 
+// View of Sign Pending
+Route::get('/documents/application/{id}/{name}/sign', [InstitutionalUnitController::class, 'showSignPendingView'])->name('showSignPendingView')->middleware(['checkApprovalStatusandInstitutionalUnitAccess']);
+Route::get('/documents/application/{id}/{name}/sign/login', [InstitutionalUnitLogin::class, 'showSignPendingLogin'])->name('showSignPendingLogin');
+Route::post('/documents/application/{id}/{name}/sign/login', [InstitutionalUnitLogin::class, 'signPendingLogin'])->name('signPendingLogin');
+Route::get('/documents/application/{id}/{name}/sign/download/{file}', [MemorandumController::class, 'actualDownload'])->name('actualDownload');
+
 // ? Routes for Endorsement Form Creation
 Route::get('/endorsement-form/create', [EndorsementFormController::class, 'create'])->name('createEndorsement');
 //Route::post('/endorsement-form/generate', [EndorsementFormController::class, 'generate'])->name('generateEndorsement');

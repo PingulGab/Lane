@@ -151,19 +151,26 @@ class EndorsementFormController extends Controller
         $institutionalUnits = $document->institutionalUnits;
         $motherAffiliate = $institutionalUnits->motherAffiliate;
 
-        if($motherAffiliate) {
+        if ($motherAffiliate && !$vpOffices->contains('id', $motherAffiliate->id)) {
             $approvals[] = [
                 'document_id' => $document->id,
                 'affiliate_id' => $motherAffiliate->id,
                 'approval_order' => $order,
             ];
-        };
+        }
 
         // Step 3.1: Mandatory Offices (Such as: Legal, DPO)
         $order++;
         $approvals[] = [
             'document_id' => $document->id,
-            'affiliate_id' => Affiliate::where('name', 'OVP1')->first()->id,
+            'affiliate_id' => Affiliate::where('name', 'Data Protection Officer')->first()->id,
+            'approval_order' => $order,
+        ];
+
+        $order++;
+        $approvals[] = [
+            'document_id' => $document->id,
+            'affiliate_id' => Affiliate::where('name', 'Legal Counsel')->first()->id,
             'approval_order' => $order,
         ];
 
