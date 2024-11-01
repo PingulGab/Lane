@@ -10,7 +10,9 @@
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "nesbot/carbon": "^3.8",
-        "phpoffice/phpword": "^1.3"
+        "phpoffice/phpword": "^1.3",
+        "setasign/fpdi": "^2.6",
+        "setasign/fpdf": "^1.8"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

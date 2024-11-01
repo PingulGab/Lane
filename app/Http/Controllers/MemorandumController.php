@@ -8,17 +8,17 @@ use App\Models\MemorandumVersion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\TemplateProcessor;
 use Dompdf\Dompdf;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Memorandum;
 use Carbon\Carbon;
 use App\Mail\EndorsementFormCreated;
 use Mail;
+use PhpOffice\PhpWord\IOFactory as PhpWordIOFactory;
+use setasign\Fpdi\Fpdi;
+use setasign\Fpdi\FpdfTpl;
 
 use PhpOffice\PhpWord\SimpleType\Jc;
-use PhpOffice\PhpWord\Style\Font;
-use PhpOffice\PhpWord\IOFactory;
 
 class MemorandumController extends Controller
 {
@@ -519,5 +519,112 @@ class MemorandumController extends Controller
             'selectedVersion' => $selectedVersion->version,
         ]);
     }
+
+    //TODO Appending Uploaded
+
+    public function appendDocument(Request $request, $id)
+    {
+        // Validate file upload
+        $request->validate([
+            'document' => 'required|file|mimes:pdf,docx',
+        ]);
+
+        // Fetch the memorandum
+        $memorandum = Memorandum::findOrFail($id);
+        
+        // Generate file names
+        $dateCreated = $memorandum->created_at->format('Ymd');
+        $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $memorandum->partner_name) . '-' . $dateCreated;
+
+        // File paths for existing files
+        $docxFilePath = storage_path('app/public/memorandum/' . $fileName . '.docx');
+        $pdfFilePath = storage_path('app/public/memorandum/' . $fileName . '.pdf');
+
+        // Load the uploaded file
+        $uploadedFile = $request->file('document');
+        $uploadedFilePath = $uploadedFile->getRealPath();
+
+        if ($uploadedFile->getClientOriginalExtension() === 'docx') {
+            // Handle DOCX file
+            $this->appendDocx($docxFilePath, $uploadedFilePath);
+        } elseif ($uploadedFile->getClientOriginalExtension() === 'pdf') {
+            // Handle PDF file
+            $this->appendPdf($pdfFilePath, $uploadedFilePath);
+        }
+
+        // Redirect back or to another view as needed
+        return redirect()->route('viewMemorandum', ['id' => $memorandum->id])
+                        ->with('success', 'Document appended successfully.');
+    }
+
+    /**
+     * Append content of a DOCX file to an existing DOCX file after removing its last page.
+     */
+    private function appendDocx($existingFilePath, $uploadedFilePath)
+    {
+        // Load the existing document
+        $phpWord = PhpWordIOFactory::load($existingFilePath);
     
+        // Remove the last section (last page) by removing the last section's elements
+        $sections = $phpWord->getSections();
+        $lastSection = end($sections);
+
+        // Remove elements from the last section
+        if ($lastSection) {
+            $lastSection->clearElements(); // This should clear elements correctly
+        }
+    
+        // Load the uploaded DOCX file and append its content
+        $uploadedDoc = PhpWordIOFactory::load($uploadedFilePath);
+        foreach ($uploadedDoc->getSections() as $section) {
+            $newSection = $phpWord->addSection($section->getSettings());
+    
+            // Add each element to the new section in the existing document
+            foreach ($section->getElements() as $element) {
+                if ($element instanceof TextRun) {
+                    $textRun = $newSection->addTextRun($element->getParagraphStyle());
+                    foreach ($element->getElements() as $text) {
+                        $textRun->addText($text->getText(), $text->getFontStyle(), $text->getParagraphStyle());
+                    }
+                }
+                // Handle other element types (Tables, Lists, etc.) if present
+            }
+        }
+    
+        // Save the updated document
+        $phpWordWriter = PhpWordIOFactory::createWriter($phpWord, 'Word2007');
+        $phpWordWriter->save($existingFilePath);
+    }
+
+    /**
+     * Append content of a PDF file to an existing PDF file after removing its last page.
+     */
+    private function appendPdf($existingFilePath, $uploadedFilePath)
+    {
+        // Load the existing PDF
+        $pdf = new Fpdi();
+        $pdf->setSourceFile($existingFilePath);
+        $totalPages = $pdf->setSourceFile($existingFilePath);
+
+        // Copy all but the last page
+        for ($i = 1; $i < $totalPages; $i++) {
+            $templateId = $pdf->importPage($i);
+            $pdf->addPage();
+            $pdf->useTemplate($templateId);
+        }
+
+        // Load the uploaded PDF and append its pages
+        $pdf->setSourceFile($uploadedFilePath);
+        $uploadedPages = $pdf->setSourceFile($uploadedFilePath);
+
+        for ($i = 1; $i <= $uploadedPages; $i++) {
+            $templateId = $pdf->importPage($i);
+            $pdf->addPage();
+            $pdf->useTemplate($templateId);
+        }
+
+        // Save the updated PDF
+        $outputFilePath = storage_path('app/public/memorandum/' . basename($existingFilePath));
+        $pdf->Output('F',$outputFilePath);
+    }
 }

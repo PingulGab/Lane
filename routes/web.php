@@ -110,6 +110,7 @@ Route::get('/documents/application/{id}/{name}/sign', [InstitutionalUnitControll
 Route::get('/documents/application/{id}/{name}/sign/login', [InstitutionalUnitLogin::class, 'showSignPendingLogin'])->name('showSignPendingLogin');
 Route::post('/documents/application/{id}/{name}/sign/login', [InstitutionalUnitLogin::class, 'signPendingLogin'])->name('signPendingLogin');
 Route::get('/documents/application/{id}/{name}/sign/download/{file}', [MemorandumController::class, 'actualDownload'])->name('actualDownload');
+Route::post('/documents/application/{id}/{name}/sign/upload', [MemorandumController::class, 'appendDocument'])->name('appendDocument');
 
 // ? Routes for Endorsement Form Creation
 Route::get('/endorsement-form/create', [EndorsementFormController::class, 'create'])->name('createEndorsement');
