@@ -19,6 +19,7 @@ class CreateDocumentsTable extends Migration
             $table->foreignId('institutional_unit_id')->constrained('institutional_units')->onDelete('cascade'); // Added institutional_unit_id
             $table->boolean('is_ogr_approved')->default(false);
             $table->boolean('is_downloaded')->default(false);
+            $table->boolean('is_signed')->default(false);
             $table->timestamps();
         });
     }

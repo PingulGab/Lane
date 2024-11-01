@@ -527,73 +527,55 @@ class MemorandumController extends Controller
         // Validate file upload
         $request->validate([
             'document' => 'required|file|mimes:pdf,docx',
+            'date_of_signing' => 'required|date',
+            'valid_until' => 'required|date',
+            'intl_students_outbound' => 'nullable|integer|min:0',
+            'intl_students_inbound' => 'nullable|integer|min:0',
+            'intl_faculty_outbound' => 'nullable|integer|min:0',
+            'intl_faculty_inbound' => 'nullable|integer|min:0',
+            'local_students_auf' => 'nullable|integer|min:0',
+            'local_students_other' => 'nullable|integer|min:0',
+            'local_faculty_auf' => 'nullable|integer|min:0',
+            'local_faculty_other' => 'nullable|integer|min:0',
         ]);
 
         // Fetch the memorandum
-        $memorandum = Memorandum::findOrFail($id);
+        $documentModel = Document::findOrFail($id);
+        $memorandum = Memorandum::findOrFail($documentModel->memorandum->id);
         
+        // Update 'is_signed' status
+        $documentModel->update([
+            'is_signed' => true
+        ]);
+
         // Generate file names
         $dateCreated = $memorandum->created_at->format('Ymd');
         $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $memorandum->partner_name) . '-' . $dateCreated;
 
         // File paths for existing files
-        $docxFilePath = storage_path('app/public/memorandum/' . $fileName . '.docx');
         $pdfFilePath = storage_path('app/public/memorandum/' . $fileName . '.pdf');
 
         // Load the uploaded file
         $uploadedFile = $request->file('document');
         $uploadedFilePath = $uploadedFile->getRealPath();
 
-        if ($uploadedFile->getClientOriginalExtension() === 'docx') {
-            // Handle DOCX file
-            $this->appendDocx($docxFilePath, $uploadedFilePath);
-        } elseif ($uploadedFile->getClientOriginalExtension() === 'pdf') {
-            // Handle PDF file
+        // Check file type and append
+        if ($uploadedFile->getClientOriginalExtension() === 'pdf') {
+            $uploadedFilePath = $uploadedFile->getRealPath();
             $this->appendPdf($pdfFilePath, $uploadedFilePath);
-        }
 
-        // Redirect back or to another view as needed
-        return redirect()->route('viewMemorandum', ['id' => $memorandum->id])
-                        ->with('success', 'Document appended successfully.');
-    }
-
-    /**
-     * Append content of a DOCX file to an existing DOCX file after removing its last page.
-     */
-    private function appendDocx($existingFilePath, $uploadedFilePath)
-    {
-        // Load the existing document
-        $phpWord = PhpWordIOFactory::load($existingFilePath);
-    
-        // Remove the last section (last page) by removing the last section's elements
-        $sections = $phpWord->getSections();
-        $lastSection = end($sections);
-
-        // Remove elements from the last section
-        if ($lastSection) {
-            $lastSection->clearElements(); // This should clear elements correctly
+            // Redirect back with success message
+            return redirect()->route('showSignPendingView', [
+                'id' => $memorandum->id,
+                'name' => $memorandum->partner_name
+            ])->with('success', 'Document appended successfully.');
+        } else {
+            // Redirect back with error message if not a PDF
+            return redirect()->route('showSignPendingView', [
+                'id' => $memorandum->id,
+                'name' => $memorandum->partner_name
+            ])->withErrors(['error' => 'File must be a PDF.']);
         }
-    
-        // Load the uploaded DOCX file and append its content
-        $uploadedDoc = PhpWordIOFactory::load($uploadedFilePath);
-        foreach ($uploadedDoc->getSections() as $section) {
-            $newSection = $phpWord->addSection($section->getSettings());
-    
-            // Add each element to the new section in the existing document
-            foreach ($section->getElements() as $element) {
-                if ($element instanceof TextRun) {
-                    $textRun = $newSection->addTextRun($element->getParagraphStyle());
-                    foreach ($element->getElements() as $text) {
-                        $textRun->addText($text->getText(), $text->getFontStyle(), $text->getParagraphStyle());
-                    }
-                }
-                // Handle other element types (Tables, Lists, etc.) if present
-            }
-        }
-    
-        // Save the updated document
-        $phpWordWriter = PhpWordIOFactory::createWriter($phpWord, 'Word2007');
-        $phpWordWriter->save($existingFilePath);
     }
 
     /**
