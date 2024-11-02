@@ -31,6 +31,7 @@ class ProspectivePartnerFormController extends Controller
     {
         $link = Link::where('link', $link)->firstOrFail();
         $institutionalUnitList = InstitutionalUnit::all();
+        $countriesList = config('countries');
 
         // Check if the user is authenticated and if session timestamp exists
         $authSessionKey = "authenticated_{$link->id}";
@@ -46,7 +47,7 @@ class ProspectivePartnerFormController extends Controller
                 {
                     return redirect()->route('prospectPartnerViewSubmittedForm', $link->link);
                 } else {
-                    return view('PartnerApplication.PartnerView.partnershipApplicationForm_View', ['link' => $link, 'institutionalUnitList' => $institutionalUnitList]);
+                    return view('PartnerApplication.PartnerView.partnershipApplicationForm_View', ['link' => $link, 'institutionalUnitList' => $institutionalUnitList, 'countriesList' => $countriesList]);
                 }
             } else {
                 // Session expired, remove the session variables
@@ -147,26 +148,29 @@ class ProspectivePartnerFormController extends Controller
         return response()->json(['message' => 'Form submitted successfully, and approval tracking initiated.']);
     }
 
-    public function generateProposalForm(Request $request, $link, $memorandum)
+
+
+    public function generateProposalForm(Request $request, $link)
     {
-        $link = Link::where('link', $link)->firstOrFail();
-    
-        $selectedinstitutionalUnits = $request->input('selected_institutionalUnits', []);
-    
-        $proposalForm = ProposalForm::create([
-            'country' => $request->input('country'),
-            'institution_name' => $request->input('institution_name'),
+        $validatedData = $request->validate([
+            'selected_institutionalUnit' => 'nullable|exists:institutional_units,id',
         ]);
+
+        $link = Link::where('link', $link)->firstOrFail();
+
+        // Call the generateProposalForm method and capture the proposal form ID
+        $proposalFormId = (new ProposalFormController())->generateProposalForm($request);
     
         // Step 2: Link Memorandum and Proposal Form to the Link model
         $link->update([
-            'memorandum_fk' => $memorandum,
-            'proposal_form_fk' => $proposalForm->id,
+            'proposal_form_fk' => $proposalFormId,
             'isActive' => false,
         ]);
     
         // Sync selected institutional units with the link
-        $link->institutionalUnits()->sync($selectedinstitutionalUnits);
+        $link->institutionalUnits()->sync($validatedData['selected_institutionalUnit']);
+
+        return redirect()->route('prospectPartnerViewLink', $link->link);
     }
 
     //Generate Memorandum

@@ -28,10 +28,17 @@ class DocumentsPageController extends Controller
     {
         $document = Document::with(['memorandum', 'endorsementForm', 'proposalForm', 'approvals.affiliate'])->findOrFail($id);
         
-        if($document->is_ogr_approved){
+        if($document->is_ogr_approved && !$document->is_signed){
             return view('Documents.viewDocument', [ 'document' => $document, 'id' => $id]);
-        } else {
+        }
+        
+        if(!$document->is_ogr_approved){
             return view('PartnerApplication.OGRView.pendingOGRApproval', [ 'document' => $document, 'id' => $id]);
+        }
+
+        if($document->is_signed)
+        {
+            return view('PartnerApplication.OGRView.signedDocument.index', ['document' => $document]);
         }
         
     }
@@ -56,7 +63,6 @@ class DocumentsPageController extends Controller
 
         return redirect()->route('showDocument', ['id' => $id, 'name' => $document->memorandum->partner_name]);
     }
-
     public function affiliateShowDocument($id, $name)
     {
         $document = Document::with('approvals')->where('id', $id)->firstOrFail();
@@ -143,5 +149,10 @@ class DocumentsPageController extends Controller
         }
     
         return redirect()->route('affiliateShowDocument', ['id' => $id, 'name' => $name]);
-    }    
+    }
+
+    public function approveSignedDocument($id, $name)
+    {
+        //TODO This is where the function that registers the document as a PARTNERSHIP.
+    }
 }

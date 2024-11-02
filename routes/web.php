@@ -59,6 +59,8 @@ Route::middleware(['auth', 'role:Superadmin,Employee'])->group(function () {
     //! Route for OGR Approving the 3 Documents
     Route::get('/documents/{id}/{name}/view', [DocumentsPageController::class, 'showDocument'])->name('showDocument');
     Route::post('/documents/{id}/{name}/view', [DocumentsPageController::class, 'approveDocument'])->name('approveDocument');
+
+    Route::post('/documents/{id}/{name}/view/approve-signed-document', [DocumentsPageController::class, 'approveSignedDocument'])->name('approveSignedDocument');
 });
 
 //TODO Compare Version
@@ -81,7 +83,7 @@ Route::get('/partner/application/{link}', [ProspectivePartnerFormController::cla
 Route::post('/partner/application/{link}', [ProspectivePartnerFormController::class, 'validateProspectPartnerPassword'])->name('validateProspectPartnerPassword');
 
 // Submission of Form
-Route::post('/partner/application/{link}/submitted', [ProspectivePartnerFormController::class, 'submitProspectPartnerForm'])->name('submitProspectPartnerForm');
+Route::post('/partner/application/{link}/submitted', [ProspectivePartnerFormController::class, 'generateProposalForm'])->name('generateProposalForm');
 
 // View of Submitted Information
 Route::get('/partner/application/{link}/view', [ProspectivePartnerFormController::class, 'prospectPartnerViewSubmittedForm'])->name('prospectPartnerViewSubmittedForm');
