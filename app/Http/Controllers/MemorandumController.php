@@ -227,7 +227,7 @@ class MemorandumController extends Controller
         //TODO Mail::to('janjanpingul@gmail.com')->send(new EndorsementFormCreated($document));
 
         $memorandum = Memorandum::findOrFail($id);
-        $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $memorandum->partner_name) . '-' . $memorandum->created_at->format('Ymd') . '.' . $format;
+        $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $document->proposalForm->institution_name) . '-' . $memorandum->created_at->format('Ymd') . '.' . $format;
         $filePath = storage_path('app/public/memorandum/' . $fileName);
 
         session()->forget('documentID');
@@ -242,10 +242,136 @@ class MemorandumController extends Controller
         return view('PartnerApplication.PartnerView.editMemorandum', ['link' => $linkModel, 'memorandum' => $memorandumModel]);
     }
 
+    public function partnerUpdateMemorandum(Request $request, $id, $link)
+    {
+        $validatedData = $request->validate([
+            'partnership_title' => 'string',
+            'combined_duration' => 'string|max:255',
+            'whereas_clauses' => 'nullable|array',
+            'whereas_clauses.*' => 'required|string',
+            'whereas_clause_texts' => 'nullable|array',
+            'whereas_clause_texts.*' => 'required|string',
+
+            'article1' => 'nullable|array',
+            'article1.*' => 'required|string',
+
+            'article2' => 'required|array',
+            'article2.*' => 'required|string',
+
+            'article3' => 'required|array',
+            'article3.*' => 'required|string',
+
+            'article5' => 'required|array',
+            'article5.*' => 'required|string',
+
+            'article6' => 'required|array',
+            'article6.*' => 'required|string',
+
+            'article7' => 'required|array',
+            'article7.*' => 'required|string',
+
+            'article8' => 'required|array',
+            'article8.*' => 'required|string',
+
+            'article9' => 'required|array',
+            'article9.*' => 'required|string',
+
+            'article10' => 'required|array',
+            'article10.*' => 'required|string',
+
+            'article11' => 'required|array',
+            'article11.*' => 'required|string',
+
+            'article12' => 'required|array',
+            'article12.*' => 'required|string',
+
+            'article13' => 'required|array',
+            'article13.*' => 'required|string',
+
+            'article14' => 'required|array',
+            'article14.*' => 'required|string',
+
+            'article15' => 'required|array',
+            'article15.*' => 'required|string',
+
+            'article16' => 'required|array',
+            'article16.*' => 'required|string',
+
+            'article17' => 'required|array',
+            'article17.*' => 'required|string',
+
+            'article18' => 'required|array',
+            'article18.*' => 'required|string',
+
+            'article19' => 'required|array',
+            'article19.*' => 'required|string',
+
+            'article20' => 'required|array',
+            'article20.*' => 'required|string',
+
+            'article21' => 'required|array',
+            'article21.*' => 'required|string',
+        ]);
+
+        // Combine the Whereas dropdown and textarea into a structured array
+        $combinedWhereasClauses = [];
+        foreach ($validatedData['whereas_clauses'] as $index => $dropdownClause) {
+            $textClause = $validatedData['whereas_clause_texts'][$index] ?? ''; // Textarea content
+            $combinedWhereasClauses[] = [
+                'dropdown' => $dropdownClause,
+                'text' => $textClause
+            ];
+        }
+
+        $memorandum = Memorandum::findOrFail($id);
+
+        $memorandum->update([
+            'partnership_title' => $validatedData['partnership_title'],
+            'validity_period' => $validatedData['combined_duration'],
+            'whereas_clauses' => json_encode($combinedWhereasClauses),
+            'article_1' => json_encode($validatedData['article1']),
+            'article_2_partner' => json_encode($validatedData['article2']),
+            'article_3' => json_encode($validatedData['article3']),
+            'article_5' => json_encode($validatedData['article5']),
+            'article_6' => json_encode($validatedData['article6']),
+            'article_7' => json_encode($validatedData['article7']),
+            'article_8' => json_encode($validatedData['article8']),
+            'article_9' => json_encode($validatedData['article9']),
+            'article_10' => json_encode($validatedData['article10']),
+            'article_11' => json_encode($validatedData['article11']),
+            'article_12' => json_encode($validatedData['article12']),
+            'article_13' => json_encode($validatedData['article13']),
+            'article_14' => json_encode($validatedData['article14']),
+            'article_15' => json_encode($validatedData['article15']),
+            'article_16' => json_encode($validatedData['article16']),
+            'article_17' => json_encode($validatedData['article17']),
+            'article_18' => json_encode($validatedData['article18']),
+            'article_19' => json_encode($validatedData['article19']),
+            'article_20' => json_encode($validatedData['article20']),
+            'article_21' => json_encode($validatedData['article21']),
+        ]);
+    
+        // Regenerate the file names with the updated partner name and creation date
+        $dateCreated = $memorandum->created_at->format('Ymd');
+        $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $link->proposalForm->institution_name) . '-' . $dateCreated;
+    
+        // Generate the updated PDF using DOMPDF
+        $dompdf = new \Dompdf\Dompdf();
+        $html = view('components.memorandum._memorandum_preview', [
+            'memorandum' => $memorandum,
+            'link' => $link
+        ])->render();
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+    
+        // Save the updated PDF fileStorage::put('public/memorandum/' . $fileName . '.pdf', $dompdf->output());
+        Storage::put('public/memorandum/' . $fileName . '.pdf', $dompdf->output());
+    }
+
     public function editDocument($id)
     {
         $memorandum = Memorandum::findOrFail($id);
-
+        $document = Document::where('memorandum_id', $memorandum->id)->firstOrFail();
         // Determine who is the logged in User
         if ($affiliate_user  = Auth::guard('affiliate')->user()) {
             // Check if it is locked
@@ -282,24 +408,97 @@ class MemorandumController extends Controller
             ]);
         }
     
-        return view('generate_moa.memorandum_edit', compact('memorandum'));
+        return view('Memorandum.editMemorandum', ['id' => $id, 'document'=>$document, 'memorandum' => $memorandum]);
     }
 
     public function updateDocument(Request $request, $id)
     {
         // Validate the input data
         $validatedData = $request->validate([
-            'partner_name' => 'required|string|max:255',
-            'contact_person' => 'required|string|max:255',
-            'contact_email' => 'required|string|max:255',
+            'partnership_title' => 'string',
+            'combined_duration' => 'string|max:255',
             'whereas_clauses' => 'nullable|array',
             'whereas_clauses.*' => 'required|string',
-            'articles' => 'nullable|array',
-            'articles.*' => 'required|string',
+            'whereas_clause_texts' => 'nullable|array',
+            'whereas_clause_texts.*' => 'required|string',
+
+            'article1' => 'nullable|array',
+            'article1.*' => 'required|string',
+
+            'article2' => 'required|array',
+            'article2.*' => 'required|string',
+
+            'article3' => 'required|array',
+            'article3.*' => 'required|string',
+
+            'article4' => 'required|array',
+            'article4.*' => 'required|string',
+
+            'article5' => 'required|array',
+            'article5.*' => 'required|string',
+
+            'article6' => 'required|array',
+            'article6.*' => 'required|string',
+
+            'article7' => 'required|array',
+            'article7.*' => 'required|string',
+
+            'article8' => 'required|array',
+            'article8.*' => 'required|string',
+
+            'article9' => 'required|array',
+            'article9.*' => 'required|string',
+
+            'article10' => 'required|array',
+            'article10.*' => 'required|string',
+
+            'article11' => 'required|array',
+            'article11.*' => 'required|string',
+
+            'article12' => 'required|array',
+            'article12.*' => 'required|string',
+
+            'article13' => 'required|array',
+            'article13.*' => 'required|string',
+
+            'article14' => 'required|array',
+            'article14.*' => 'required|string',
+
+            'article15' => 'required|array',
+            'article15.*' => 'required|string',
+
+            'article16' => 'required|array',
+            'article16.*' => 'required|string',
+
+            'article17' => 'required|array',
+            'article17.*' => 'required|string',
+
+            'article18' => 'required|array',
+            'article18.*' => 'required|string',
+
+            'article19' => 'required|array',
+            'article19.*' => 'required|string',
+
+            'article20' => 'required|array',
+            'article20.*' => 'required|string',
+
+            'article21' => 'required|array',
+            'article21.*' => 'required|string',
         ]);
     
+        // Combine the Whereas dropdown and textarea into a structured array
+        $combinedWhereasClauses = [];
+        foreach ($validatedData['whereas_clauses'] as $index => $dropdownClause) {
+            $textClause = $validatedData['whereas_clause_texts'][$index] ?? ''; // Textarea content
+            $combinedWhereasClauses[] = [
+                'dropdown' => $dropdownClause,
+                'text' => $textClause
+            ];
+        }
+
         // Fetch the memorandum
         $memorandum = Memorandum::findOrFail($id);
+        $document = Document::where('memorandum_id', $memorandum->id)->firstOrFail();
 
         // Determine who is the logged in User
         if ($affiliate_user  = Auth::guard('affiliate')->user()) {
@@ -307,9 +506,35 @@ class MemorandumController extends Controller
             MemorandumVersion::create([
                 'memorandum_id' => $memorandum->id,
                 'edited_by' => $affiliate_user->id,
-                'whereas_clauses' => $memorandum->whereas_clauses,
-                'articles' => $memorandum->articles,
                 'version' => $memorandum->version,
+
+                'partnership_title' => $memorandum->partnership_title,
+                'validity_period' => $memorandum->validity_period,
+                'whereas_clauses' => $memorandum->whereas_clauses,
+
+                'article_1' => $memorandum->article_1,
+                'article_2_partner' => $memorandum->article_2_partner,
+                'article_2_AUF' => $memorandum->article_2_AUF,
+
+                'article_3' => $memorandum->article_3,
+                'article_4' => $memorandum->article_4,
+                'article_5' => $memorandum->article_5,
+                'article_6' => $memorandum->article_6,
+                'article_7' => $memorandum->article_7,
+                'article_8' => $memorandum->article_8,
+                'article_9' => $memorandum->article_9,
+                'article_10' => $memorandum->article_10,
+                'article_11' => $memorandum->article_11,
+                'article_12' => $memorandum->article_12,
+                'article_13' => $memorandum->article_13,
+                'article_14' => $memorandum->article_14,
+                'article_15' => $memorandum->article_15,
+                'article_16' => $memorandum->article_16,
+                'article_17' => $memorandum->article_17,
+                'article_18' => $memorandum->article_18,
+                'article_19' => $memorandum->article_19,
+                'article_20' => $memorandum->article_20,
+                'article_21' => $memorandum->article_21,
             ]);
             
         } elseif($institutionalUnit_user = Auth::guard('institutionalUnit')->user()) {
@@ -317,9 +542,35 @@ class MemorandumController extends Controller
             MemorandumVersion::create([
                 'memorandum_id' => $memorandum->id,
                 'edited_by' => $institutionalUnit_user->id,
-                'whereas_clauses' => $memorandum->whereas_clauses,
-                'articles' => $memorandum->articles,
                 'version' => $memorandum->version,
+
+                'partnership_title' => $memorandum->partnership_title,
+                'validity_period' => $memorandum->validity_period,
+                'whereas_clauses' => $memorandum->whereas_clauses,
+
+                'article_1' => $memorandum->article_1,
+                'article_2_partner' => $memorandum->article_2_partner,
+                'article_2_AUF' => $memorandum->article_2_AUF,
+
+                'article_3' => $memorandum->article_3,
+                'article_4' => $memorandum->article_4,
+                'article_5' => $memorandum->article_5,
+                'article_6' => $memorandum->article_6,
+                'article_7' => $memorandum->article_7,
+                'article_8' => $memorandum->article_8,
+                'article_9' => $memorandum->article_9,
+                'article_10' => $memorandum->article_10,
+                'article_11' => $memorandum->article_11,
+                'article_12' => $memorandum->article_12,
+                'article_13' => $memorandum->article_13,
+                'article_14' => $memorandum->article_14,
+                'article_15' => $memorandum->article_15,
+                'article_16' => $memorandum->article_16,
+                'article_17' => $memorandum->article_17,
+                'article_18' => $memorandum->article_18,
+                'article_19' => $memorandum->article_19,
+                'article_20' => $memorandum->article_20,
+                'article_21' => $memorandum->article_21,
             ]);
         }
 
@@ -328,8 +579,30 @@ class MemorandumController extends Controller
 
         // Update the memorandum fields
         $memorandum->update([
-            'whereas_clauses' => json_encode($validatedData['whereas_clauses']),
-            'articles' => json_encode($validatedData['articles']),
+            'partnership_title' => $validatedData['partnership_title'],
+            'validity_period' => $validatedData['combined_duration'],
+            'whereas_clauses' => json_encode($combinedWhereasClauses),
+            'article_1' => json_encode($validatedData['article1']),
+            'article_2_partner' => json_encode($validatedData['article2']),
+            'article_3' => json_encode($validatedData['article3']),
+            'article_4' => json_encode($validatedData['article4']),
+            'article_5' => json_encode($validatedData['article5']),
+            'article_6' => json_encode($validatedData['article6']),
+            'article_7' => json_encode($validatedData['article7']),
+            'article_8' => json_encode($validatedData['article8']),
+            'article_9' => json_encode($validatedData['article9']),
+            'article_10' => json_encode($validatedData['article10']),
+            'article_11' => json_encode($validatedData['article11']),
+            'article_12' => json_encode($validatedData['article12']),
+            'article_13' => json_encode($validatedData['article13']),
+            'article_14' => json_encode($validatedData['article14']),
+            'article_15' => json_encode($validatedData['article15']),
+            'article_16' => json_encode($validatedData['article16']),
+            'article_17' => json_encode($validatedData['article17']),
+            'article_18' => json_encode($validatedData['article18']),
+            'article_19' => json_encode($validatedData['article19']),
+            'article_20' => json_encode($validatedData['article20']),
+            'article_21' => json_encode($validatedData['article21']),
             'version' => $newVersion,
             'locked_by' => null,
             'locked_at' => null,
@@ -337,16 +610,12 @@ class MemorandumController extends Controller
     
         // Regenerate the file names with the updated partner name and creation date
         $dateCreated = $memorandum->created_at->format('Ymd');
-        $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $memorandum->partner_name) . '-' . $dateCreated;
+        $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $document->proposalForm->institution_name) . '-' . $dateCreated;
     
         // Generate the updated PDF using DOMPDF
         $dompdf = new \Dompdf\Dompdf();
-        $html = view('generate_moa.memorandum_pdf_view', [
-            'partner_name' => $memorandum->partner_name,
-            'contact_person' => $memorandum->contact_person,
-            'contact_email' => $memorandum->contact_email,
-            'whereasClauses' => json_decode($memorandum->whereas_clauses),
-            'articles' => json_decode($memorandum->articles)
+        $html = view('components.documents_preview.moa', [
+            'document' => $document
         ])->render();
         $dompdf->loadHtml($html);
         $dompdf->render();
@@ -363,7 +632,7 @@ class MemorandumController extends Controller
                                 ->where('memorandum_id', $memorandum->id)
                                 ->firstOrFail();
 
-            return redirect()->route('affiliateShowDocument', ['id' => $document->id, 'name' => $document->memorandum->partner_name]);
+            return redirect()->route('affiliateShowDocument', ['id' => $document->id, 'name' => $document->proposalForm->institution_name]);
         } else {
 
             $institutionalUnit_user = Auth::guard('institutionalUnit')->user();
@@ -383,70 +652,66 @@ class MemorandumController extends Controller
 
     public function compareVersion($id, $version)
     {
-        // Fetch the current (latest) version from the `memorandum` table
+        $document = Document::where('memorandum_id', $id)->firstOrFail();
         $currentMemorandum = Memorandum::findOrFail($id);
         $isLatestVersion = $currentMemorandum->version == $version;
     
-        if ($isLatestVersion) {
-            // If the selected version is the latest, use the current `memorandum` as selectedVersion
-            $selectedVersion = $currentMemorandum;
+        $selectedVersion = $isLatestVersion ? $currentMemorandum : MemorandumVersion::where([
+            ['memorandum_id', $id],
+            ['version', $version]
+        ])->firstOrFail();
     
-            // Fetch the previous version from the `memorandum_versions` table
-            $previousVersion = MemorandumVersion::where('memorandum_id', $id)
-                                ->where('version', '<', $version)
-                                ->orderBy('version', 'desc')
-                                ->first();
-        } else {
-            // Fetch the selected version from the `memorandum_versions` table
-            $selectedVersion = MemorandumVersion::where([['memorandum_id', $id], ['version', $version]])->firstOrFail();
+        $previousVersion = MemorandumVersion::where('memorandum_id', $id)
+                            ->where('version', '<', $version)
+                            ->orderBy('version', 'desc')
+                            ->first();
     
-            // Fetch the previous version (immediately before the selected version)
-            $previousVersion = MemorandumVersion::where('memorandum_id', $id)
-                                ->where('version', '<', $version)
-                                ->orderBy('version', 'desc')
-                                ->first();
-        }
-    
-        // If no previous version exists, handle gracefully
         if (!$previousVersion) {
             return response()->json(['error' => 'No previous version found for comparison.']);
         }
     
-        // Decode JSON fields for comparison
-        $selectedWhereas = json_decode($selectedVersion->whereas_clauses, true);
-        $previousWhereas = json_decode($previousVersion->whereas_clauses, true);
-        
-        $selectedArticles = json_decode($selectedVersion->articles, true);
-        $previousArticles = json_decode($previousVersion->articles, true);
+        $whereasDiff = $this->getDifferences(json_decode($previousVersion->whereas_clauses, true), json_decode($selectedVersion->whereas_clauses, true));
+        $article1Diff = $this->getDifferences(json_decode($previousVersion->article_1, true), json_decode($selectedVersion->article_1, true));
+        $article2Diff = $this->getDifferences(json_decode($previousVersion->article_2_partner, true), json_decode($selectedVersion->article_2_partner, true));
+        $article3Diff = $this->getDifferences(json_decode($previousVersion->article_3, true), json_decode($selectedVersion->article_3, true));
     
-        // Find differences between the previous and selected versions
-        $whereasDiff = $this->getDifferences($previousWhereas, $selectedWhereas);
-        $articlesDiff = $this->getDifferences($previousArticles, $selectedArticles);
+        $dynamicArticleDiffs = [];
+        for ($i = 4; $i <= 21; $i++) {
+            $dynamicArticleDiffs["diffArticle$i"] = $this->getDifferences(
+                json_decode($previousVersion->{"article_$i"}, true),
+                json_decode($selectedVersion->{"article_$i"}, true)
+            );
+        }
     
-        // Render HTML with differences for PDF
-        $html = view('PartnerApplication.AffiliateView.pdfFormat', [
+        return view('PartnerApplication.AffiliateView.compareVersion', [
+            'document' => $document,
             'partner_name' => $selectedVersion->partner_name,
             'contact_person' => $selectedVersion->contact_person,
             'contact_email' => $selectedVersion->contact_email,
             'whereasDiff' => $whereasDiff,
-            'articlesDiff' => $articlesDiff,
+            'diffArticle1' => $article1Diff,
+            'diffArticle2' => $article2Diff,
+            'diffArticle3' => $article3Diff,
+            'dynamicArticleDiffs' => $dynamicArticleDiffs,
             'currentVersion' => $selectedVersion->version,
-            'previousVersion' => $previousVersion->version,
-        ])->render();
-    
-        // Generate and display PDF on the fly without saving
-        $dompdf = new Dompdf();
-        $dompdf->loadHtml($html);
-        $dompdf->render();
-    
-        // Return the PDF as a streamed response for embedding in an iframe
-        return response($dompdf->output(), 200)
-                ->header('Content-Type', 'application/pdf');
+            'previousVersion' => $previousVersion->version
+        ]);
     }
+    
     
 
     private function getDifferences($old, $new)
     {
+        // Validate input data - return an empty diff if data is missing or not in expected format
+        if (!is_array($old) || !is_array($new)) {
+            return [
+                [
+                    'status' => 'error',
+                    'message' => 'Invalid data format. Expected arrays for both old and new clauses.'
+                ]
+            ];
+        }
+        
         $diff = [];
         foreach ($new as $index => $newClause) {
             $oldClause = $old[$index] ?? null;
@@ -487,63 +752,47 @@ class MemorandumController extends Controller
     
         return $diff;
     }
-    
-    
-    public function displayMemorandumComparison($id, $version)
-    {
-        // Fetch the current version from the `memorandum` table
-        $currentMemorandum = Memorandum::findOrFail($id);
-    
-        // Check if the selected version is the latest version
-        $isLatestVersion = $currentMemorandum->version == $version;
-    
-        if ($isLatestVersion) {
-            // If the selected version is the latest, use the `memorandum` record as `selectedVersion`
-            $selectedVersion = $currentMemorandum;
-        } else {
-            // If not the latest, fetch from the `memorandum_versions` table
-            $selectedVersion = MemorandumVersion::where([['memorandum_id', $id], ['version', $version]])->firstOrFail();
-        }
-    
-        return view('PartnerApplication.AffiliateView.displayPdf', [
-            'id' => $id,
-            'version' => $version,
-            'currentVersion' => $currentMemorandum->version,
-            'selectedVersion' => $selectedVersion->version,
-        ]);
-    }
 
     //TODO Appending Uploaded
 
     public function appendDocument(Request $request, $id)
     {
         // Validate file upload
-        $request->validate([
+        $validatedData = $request->validate([
             'document' => 'required|file|mimes:pdf,docx',
             'date_of_signing' => 'required|date',
             'valid_until' => 'required|date',
-            'intl_students_outbound' => 'nullable|integer|min:0',
-            'intl_students_inbound' => 'nullable|integer|min:0',
-            'intl_faculty_outbound' => 'nullable|integer|min:0',
-            'intl_faculty_inbound' => 'nullable|integer|min:0',
-            'local_students_auf' => 'nullable|integer|min:0',
-            'local_students_other' => 'nullable|integer|min:0',
-            'local_faculty_auf' => 'nullable|integer|min:0',
-            'local_faculty_other' => 'nullable|integer|min:0',
+            'sign_location' => 'required|string',
         ]);
 
         // Fetch the memorandum
         $documentModel = Document::findOrFail($id);
         $memorandum = Memorandum::findOrFail($documentModel->memorandum->id);
         
+        $memorandum->update([
+            'sign_date' => $validatedData['date_of_signing'],
+            'valid_until' => $validatedData['valid_until'],
+            'sign_location' => $validatedData['sign_location'],
+        ]);
+
         // Update 'is_signed' status
         $documentModel->update([
             'is_signed' => true
         ]);
 
-        // Generate file names
         $dateCreated = $memorandum->created_at->format('Ymd');
-        $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $memorandum->partner_name) . '-' . $dateCreated;
+        $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $documentModel->proposalForm->institution_name) . '-' . $dateCreated;
+    
+        // Generate the updated PDF using DOMPDF
+        $dompdf = new \Dompdf\Dompdf();
+        $html = view('components.documents_preview.moa', [
+            'document' => $documentModel
+        ])->render();
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+    
+        // Save the updated PDF fileStorage::put('public/memorandum/' . $fileName . '.pdf', $dompdf->output());
+        Storage::put('public/memorandum/' . $fileName . '.pdf', $dompdf->output());
 
         // File paths for existing files
         $pdfFilePath = storage_path('app/public/memorandum/' . $fileName . '.pdf');
@@ -560,15 +809,17 @@ class MemorandumController extends Controller
             // Redirect back with success message
             return redirect()->route('showSignPendingView', [
                 'id' => $memorandum->id,
-                'name' => $memorandum->partner_name
+                'name' => $documentModel->proposalForm->institution_name
             ])->with('success', 'Document appended successfully.');
         } else {
             // Redirect back with error message if not a PDF
             return redirect()->route('showSignPendingView', [
                 'id' => $memorandum->id,
-                'name' => $memorandum->partner_name
+                'name' => $documentModel->proposalForm->institution_name
             ])->withErrors(['error' => 'File must be a PDF.']);
         }
+
+        //Todo Notify OGR
     }
 
     /**

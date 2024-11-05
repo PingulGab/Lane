@@ -1,8 +1,8 @@
 <?php 
-        $memorandumModel = $link->memorandum;
+        $memorandum = $document->memorandum;
 
         $combinedWhereasClausesForPdf = [];
-        $partnerAcronym = $link->proposalForm->institution_name_acronym;
+        $partnerAcronym = $document->proposalForm->institution_name_acronym;
         foreach (json_decode($memorandum->whereas_clauses) as $index => $clauseData) {
             $dropdownText = $clauseData->dropdown;
             $textContent = ucfirst($clauseData->text); // Capitalize the first letter of the text
@@ -103,7 +103,7 @@
         <div class="page-center">
             <h2 class="text-center">ANGELES UNIVERSITY FOUNDATION (PHILIPPINES)</h2>
             <h2 class="text-center">AND</h2>
-            <h2 class="text-center">{{strtoupper($link->proposalForm->institution_name)}} ({{strtoupper($link->proposalForm->country)}})</h2>
+            <h2 class="text-center">{{strtoupper($document->proposalForm->institution_name)}} ({{strtoupper($document->proposalForm->country)}})</h2>
             <br><br><br>
             <h2 class="text-center">MEMORANDUM OF AGREEMENT FOR {{strtoupper($memorandum->partnership_title)}}</h2>
         </div>
@@ -115,8 +115,7 @@
         <h2 class="text-center">MEMORANDUM OF AGREEMENT</h2>
         <p class="leading-paragraph">KNOW ALL MEN BY THESE PRESENTS:</p>
         <p class="indented-paragraph">
-            This Memorandum of Agreement is executed on <span class="bold">{{$memorandum->sign_date}}</span>, in <span
-                class="bold">{{$memorandum->sign_location}}</span>, by and between:
+            This Memorandum of Agreement is executed on {{$memorandum->sign_date}}, in {{$memorandum->sign_location}}, by and between:
         </p>
 
         <p class="indented-paragraph">
@@ -131,13 +130,13 @@
         <p class="text-center">and</p>
 
         <p class="indented-paragraph">
-            <span class="bold"> {{ strtoupper($link->proposalForm->institution_name) }}
-                ({{ $link->proposalForm->country }})</span>,
-            {{ $link->proposalForm->institution_overview }} Herein represented by its {{$link->proposalForm->institution_head_title}},
+            <span class="bold"> {{ strtoupper($document->proposalForm->institution_name) }}
+                ({{ $document->proposalForm->country }})</span>,
+            {{ $document->proposalForm->institution_overview }} Herein represented by its {{$document->proposalForm->institution_head_title}},
             <span class="bold">
-                {{ strtoupper($link->proposalForm->institution_head) }}</span>, (hereafter
+                {{ strtoupper($document->proposalForm->institution_head) }}</span>, (hereafter
             referred to as <span
-                class="bold">"{{ $link->proposalform->institution_name_acronym }}"</span>).
+                class="bold">"{{ $document->proposalform->institution_name_acronym }}"</span>).
         </p>
 
         <br>
@@ -146,7 +145,7 @@
                 <p class="indented-paragraph">{!! $clause !!}</p>
             @endforeach
         
-        @include('components.memorandum._witnessethSection2', ['link' => $link])
+        @include('components.memorandum._witnessethSection2', ['link' => $document])
     </div>
 
     {{-- Page 3: Article 1 --}}
@@ -189,7 +188,7 @@
             2.1.7. The signatory to this MOA is duly authorized by its governing Board to validly enter into this MOA.
         </p>
         <p class="numbered-paragraph">
-            2.2. The {{$link->proposalForm->institution_name_acronym}} hereby represents and warrants that:
+            2.2. The {{$document->proposalForm->institution_name_acronym}} hereby represents and warrants that:
         </p>
         @if (!empty($memorandum->article_2_partner))
             @foreach(json_decode($memorandum->article_2_partner) as $index => $article)
@@ -225,7 +224,7 @@
     {{-- Page 7: Article 5 --}}
     <div id="page7">
         <br>
-        <h2 class="text-center"> ARTICLE 5<br>RESPONSIBILITIES OF {{$link->proposalForm->institution_name_acronym}} </h2>
+        <h2 class="text-center"> ARTICLE 5<br>RESPONSIBILITIES OF {{$document->proposalForm->institution_name_acronym}} </h2>
         @if (!empty($memorandum->article_5))
             @foreach(json_decode($memorandum->article_5) as $index => $article)
                 <p class="numbered-paragraph">5.{{ $index + 1 }}. {{ $article }}</p>
@@ -236,7 +235,7 @@
     {{-- Page 8: Article 6 --}}
     <div id="page8">
         <br>
-        <h2 class="text-center"> ARTICLE 6<br>RESPONSIBILITIES OF AUF AND {{$link->proposalForm->institution_name_acronym}} </h2>
+        <h2 class="text-center"> ARTICLE 6<br>RESPONSIBILITIES OF AUF AND {{$document->proposalForm->institution_name_acronym}} </h2>
         @if (!empty($memorandum->article_6))
             @foreach(json_decode($memorandum->article_6) as $index => $article)
                 <p class="numbered-paragraph">6.{{ $index + 1 }}. {{ $article }}</p>
@@ -276,7 +275,7 @@
         <br>
         <h2 class="text-center"> ARTICLE 9<br>EXCLUSIVITY </h2>
         <p class="numbered-paragraph"> 9.1. The AUF shall not enter into a separate MOA with any foreign educational institution on any of the academic programs covered by this MOA during its existence, and within two (2) years from its termination. </p>
-        <p class="numbered-paragraph"> 9.2. The {{$link->proposalForm->institution_name_acronym}} shall not likewise enter into a separate MOA with any other educational institution in the Philippines on any of the academic programs covered by this MOA during its existence, and within two (2) years from its termination. </p>
+        <p class="numbered-paragraph"> 9.2. The {{$document->proposalForm->institution_name_acronym}} shall not likewise enter into a separate MOA with any other educational institution in the Philippines on any of the academic programs covered by this MOA during its existence, and within two (2) years from its termination. </p>
         @if (!empty($memorandum->article_9))
             @foreach(json_decode($memorandum->article_9) as $index => $article)
                 <p class="numbered-paragraph">9.{{3+$index}}. {{ $article }}</p>
@@ -439,7 +438,7 @@
             <p class="numbered-paragraph">20.{{4+$index}}. {{ $article }}</p>
             @endforeach
         @endif
-        @include('components.memorandum._article20_contacts', ['link' => $link])
+        @include('components.memorandum._article20_contacts', ['link' => $document])
     </div>
 
     {{-- Page 23: Article 21 --}}
@@ -459,7 +458,7 @@
     {{-- Page 24: Last Page --}}
     <div id="page24">
         <div style="page-break-after: always;"></div>
-        @include('components.memorandum._lastPage',['link' => $link])
+        @include('components.memorandum._lastPage',['link' => $document])
     </div>
 
 

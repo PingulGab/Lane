@@ -1,14 +1,73 @@
-@extends('layouts.layout')
+@extends('layouts.nonAdmin')
 
 @section('head')
     <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
 
 @section('content')
-    <iframe src="{{ asset('storage/memorandum/AUF-Memorandum-' . str_replace(' ', '-', $document->memorandum->partner_name) . '-' . $document->memorandum->created_at->format('Ymd') . '.pdf') }}" width="100%" height="600px"></iframe>
+<style>
+    .previewStyle {
+        font-family: 'Times New Roman', serif;
+        font-size: 18px;
+        width: 70vh;
+        height: 70vh;
+        overflow: auto;
+        text-align: justify;
+        background-color: white;
+        padding: 30px;
+        border-radius: 15px;
+    }
 
+    .biContainer {
+        display: flex;
+    }
+
+    .biContainer-area1 {
+        flex: 1;
+    }
+
+    .biContainer-area2 {
+        flex: 1;
+    }
+</style>
+<div class="biContainer">
+    <div class="biContainer-area1">
+        <div class="previewStyle">
+            @include('components.documents_preview.moa')
+        </div>
+        <div id="dropdown-container">
+            <select id="page-selector" onchange="navigateToPage()">
+                <option value="page1">Title Page</option>
+                <option value="page2">Introduction</option>
+                <option value="page3">Article 1: Program Overview</option>
+                <option value="page4">Article 2: Representation and Warranties</option>
+                <option value="page5">Article 3: Scope of Collaboration</option>
+                <option value="page6">Article 4: Responsibilities of AUF</option>
+                <option value="page7">Article 5: Responsibilities of {{ $document->proposalForm->institution_name_acronym }}</option>
+                <option value="page8">Article 6: Responsibilities of AUF and {{ $document->proposalForm->institution_name_acronym }}</option>
+                <option value="page9">Article 7: Intellectual Property Rights</option>
+                <option value="page10">Article 8: Employment Relations</option>
+                <option value="page11">Article 9: Exclusivity</option>
+                <option value="page12">Article 10: Material Adverse Change Clause</option>
+                <option value="page13">Article 11: Confidentiality</option>
+                <option value="page14">Article 12: Compliance with Law</option>
+                <option value="page15">Article 13: Non-Assignment of Rights</option>
+                <option value="page16">Article 14: Severability</option>
+                <option value="page17">Article 15: Effectivity</option>
+                <option value="page18">Article 16: Amendments</option>
+                <option value="page19">Article 17: Governing Law</option>
+                <option value="page20">Article 18: Dispute Resolution</option>
+                <option value="page21">Article 19: Venue of Action</option>
+                <option value="page22">Article 20: Notices</option>
+                <option value="page23">Article 21: Subsequent Agreements</option>
+            </select>
+        </div>
+    </div>
+    <div class="biContainer-area2">
+
+    </div>
+</div>
     @if (!$isDownloaded)
-        <a href="#" onclick="downloadDocument('{{ route('downloadMemorandum', ['id' => $document->memorandum->id, 'format' => 'docx']) }}')" class="btn btn-primary">Download as .docx</a>
         <a href="#" onclick="downloadDocument('{{ route('downloadMemorandum', ['id' => $document->memorandum->id, 'format' => 'pdf']) }}')" class="btn btn-primary">Download as .pdf</a>
     @elseif ($isDownloaded && !$document->is_signed)
         <!-- Display any success or error messages -->
@@ -44,7 +103,7 @@
                 <h2>Upload Document</h2>
     
                 <!-- Modal form for additional questions and file upload -->
-                <form id="uploadForm" action="{{ route('appendDocument', ['id' => $document->id, 'name' => $document->memorandum->partner_name]) }}" method="POST" enctype="multipart/form-data">
+                <form id="uploadForm" action="{{ route('appendDocument', ['id' => $document->id, 'name' => $document->proposalForm->institution_name]) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div>
                         <label for="document">Choose File</label>
@@ -60,47 +119,39 @@
                         <label for="valid_until">Valid Until</label>
                         <input type="date" id="valid_until" name="valid_until" required>
                     </div>
-    
-                    <h3>International Partnership Questions</h3>
                     <div>
-                        <label for="intl_students_outbound">AUF students (outbound)</label>
-                        <input type="number" id="intl_students_outbound" name="intl_students_outbound" min="0">
+                        <label for="sign_location">Location of Signing</label>
+                        <input type="input" id="sign_location" name="sign_location" required>
                     </div>
-                    <div>
-                        <label for="intl_students_inbound">Foreign students (inbound)</label>
-                        <input type="number" id="intl_students_inbound" name="intl_students_inbound" min="0">
-                    </div>
-                    <div>
-                        <label for="intl_faculty_outbound">AUF faculty (outbound)</label>
-                        <input type="number" id="intl_faculty_outbound" name="intl_faculty_outbound" min="0">
-                    </div>
-                    <div>
-                        <label for="intl_faculty_inbound">Foreign faculty (inbound)</label>
-                        <input type="number" id="intl_faculty_inbound" name="intl_faculty_inbound" min="0">
-                    </div>
-    
-                    <h3>Local Partnership Questions</h3>
-                    <div>
-                        <label for="local_students_auf">AUF students participated</label>
-                        <input type="number" id="local_students_auf" name="local_students_auf" min="0">
-                    </div>
-                    <div>
-                        <label for="local_students_other">Other HEIs students participated</label>
-                        <input type="number" id="local_students_other" name="local_students_other" min="0">
-                    </div>
-                    <div>
-                        <label for="local_faculty_auf">AUF faculty participated</label>
-                        <input type="number" id="local_faculty_auf" name="local_faculty_auf" min="0">
-                    </div>
-                    <div>
-                        <label for="local_faculty_other">Other HEIs faculty participated</label>
-                        <input type="number" id="local_faculty_other" name="local_faculty_other" min="0">
-                    </div>
-    
+
                     <button type="submit">Submit Document</button>
                 </form>
             </div>
         </div>
+
+        <script>
+            // Modal elements
+            var modal = document.getElementById('documentModal');
+            var openModalBtn = document.getElementById('openModalButton');
+            var closeModalBtn = document.getElementsByClassName('close')[0];
+
+            // Show modal on button click
+            openModalBtn.onclick = function() {
+                modal.style.display = "block";
+            }
+
+            // Close modal on 'x' click
+            closeModalBtn.onclick = function() {
+                modal.style.display = "none";
+            }
+
+            // Close modal on outside click
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+        </script>
     @elseif($document->is_signed)
 
         <div>
@@ -150,45 +201,23 @@
     // CSRF token
     var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    // Modal elements
-    var modal = document.getElementById('documentModal');
-    var openModalBtn = document.getElementById('openModalButton');
-    var closeModalBtn = document.getElementsByClassName('close')[0];
+    function downloadDocument(url) {
+        // Create a hidden link element
+        var link = document.createElement('a');
+        link.href = url;
+        link.download = '';
 
-    // Show modal on button click
-    openModalBtn.onclick = function() {
-        modal.style.display = "block";
+        // Append to the body
+        document.body.appendChild(link);
+
+        // Programmatically click the link to trigger the download
+        link.click();
+
+        // Remove the link from the document
+        document.body.removeChild(link);
+
+        // Refresh the page
+        location.reload();
     }
-
-    // Close modal on 'x' click
-    closeModalBtn.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    // Close modal on outside click
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-
-        function downloadDocument(url) {
-            // Create a hidden link element
-            var link = document.createElement('a');
-            link.href = url;
-            link.download = '';
-
-            // Append to the body
-            document.body.appendChild(link);
-
-            // Programmatically click the link to trigger the download
-            link.click();
-
-            // Remove the link from the document
-            document.body.removeChild(link);
-
-            // Refresh the page
-            location.reload();
-        }
     </script>
 @endsection

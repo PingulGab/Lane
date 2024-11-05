@@ -61,7 +61,7 @@ class DocumentsPageController extends Controller
             Mail::to($affiliate->email)->send(new startAdminApproval($document));
         } */
 
-        return redirect()->route('showDocument', ['id' => $id, 'name' => $document->memorandum->partner_name]);
+        return redirect()->route('showDocument', ['id' => $id, 'name' => $document->proposalForm->institution_name]);
     }
     public function affiliateShowDocument($id, $name)
     {

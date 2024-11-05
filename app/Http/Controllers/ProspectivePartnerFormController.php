@@ -174,6 +174,47 @@ class ProspectivePartnerFormController extends Controller
             'isActive' => false,
         ]);
 
+        //TODO Send Email to Institutional Unit
+
+        return redirect()->route('prospectPartnerViewLink', $link->link);
+    }
+
+    public function partnerEditMemorandum($link)
+    {    
+        $linkModel = Link::where('link', $link)->firstOrFail();
+        $memorandumModel = $linkModel->memorandum;
+
+        return view('PartnerApplication.PartnerView.editMemorandum', ['link' => $linkModel, 'memorandum' => $memorandumModel]);
+    }
+
+    public function partnerEditProposal($link)
+    {    
+        $linkModel = Link::where('link', $link)->firstOrFail();
+        $proposalModel = $linkModel->proposalForm;
+
+        $countriesList = config('countries');
+        $institutionalUnitList = InstitutionalUnit::all();
+
+        return view('PartnerApplication.PartnerView.editProposal', ['link' => $linkModel, 'proposal' => $proposalModel, 'countriesList' => $countriesList, 'institutionalUnitList' => $institutionalUnitList]);
+    }
+
+    public function partnerUpdateProposal(Request $request, $link)
+    {
+        $link = Link::where('link', $link)->firstOrFail();
+        $id = $link->proposalForm->id;
+
+        (new ProposalFormController())->partnerUpdateProposal($request, $id, $link);
+        
+        return redirect()->route('prospectPartnerViewLink', $link->link);
+    }
+
+    public function partnerUpdateMemorandum(Request $request, $link)
+    {
+        $link = Link::where('link', $link)->firstOrFail();
+        $id = $link->memorandum->id;
+
+        (new MemorandumController())->partnerUpdateMemorandum($request, $id, $link);
+
         return redirect()->route('prospectPartnerViewLink', $link->link);
     }
 

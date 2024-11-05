@@ -69,7 +69,7 @@ class EndorsementFormController extends Controller
 
         //! Generatin of File Name
         $dateCreated = Carbon::now()->format('Ymd');
-        $fileName = 'AUF-EndorsementForm-' . str_replace(' ', '-', $linkModel->memorandum->partnership_title) . '-' . $dateCreated;
+        $fileName = 'AUF-EndorsementForm-' . str_replace(' ', '-', $linkModel->proposalForm->institution_name) . '-' . $dateCreated;
 
         //! Generate the PDF using DOMPDF        
         $dompdf = new Dompdf();
@@ -144,9 +144,6 @@ class EndorsementFormController extends Controller
 
         // Send email after submission
         //TODO Mail::to('janjanpingul@gmail.com')->send(new EndorsementFormCreated($document));
-
-        //! Redirect to the view page after generating the document
-        return redirect()->route('viewEndorsement', ['link' => $link]);
     }    
 
     public function viewEndorsement($link)

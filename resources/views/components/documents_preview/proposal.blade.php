@@ -13,153 +13,6 @@ $aufLogo = 'data:image/png;base64,' . $imageData;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        /* Add your styles here */
-        @page {
-            margin: 100px 25px;
-            /* Adjust margins for the header */
-        }
-
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 50px;
-            background-color: #f5f5f5;
-            color: #333;
-            text-align: center;
-            line-height: 50px;
-            font-size: 16px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        h1,
-        h2 {
-            font-size: 18px;
-        }
-
-        .leading-paragraph {
-            text-align: justify;
-            margin-bottom: 15px;
-        }
-
-        .indented-paragraph {
-            text-indent: 35px;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-
-        .indented-paragraph-list {
-            padding-left: 50px;
-            margin-bottom: 0px;
-            line-height: 1;
-        }
-
-        .numbered-paragraph {
-            text-align: justify;
-            margin-bottom: 15px;
-            line-height: 1.5;
-            text-indent: -30px;
-            /* Indent the number out of the paragraph */
-            padding-left: 30px;
-            /* Offset the paragraph text to align after the number */
-        }
-
-        .numbered-paragraphChild {
-            text-align: justify;
-            margin-bottom: 15px;
-            line-height: 1.5;
-            text-indent: 0px;
-            /* Indent the number out of the paragraph */
-            padding-left: 35px;
-            /* Offset the paragraph text to align after the number */
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .bold {
-            font-weight: bold;
-        }
-
-        .italic {
-            font-style: italic;
-        }
-
-        .page-center {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            /* Full viewport height */
-            text-align: center;
-        }
-
-        label {
-            display: block;
-        }
-
-        /* General Table Styling */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-            font-size: 18px !important;
-        }
-
-        /* Header row styling */
-        th,
-        td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-            vertical-align: top;
-        }
-
-        /* Title row styling */
-        th {
-            background-color: #002060;
-            color: white;
-            font-weight: bold;
-        }
-
-        /* Column Headers */
-        .section-title {
-            font-weight: bold;
-            width: 40%;
-            font-size: 18px;
-        }
-
-        /* Subheaders with merged cells */
-        .subheader {
-            font-weight: bold;
-            vertical-align: top;
-            text-align: left;
-            width: 20%;
-            font-size: 18px;
-        }
-
-        /* Instructions text */
-        .instructions {
-            font-style: italic;
-            font-size: 12px;
-            margin: 0px;
-            padding: 0px;
-        }
-
-        /* Special row for title of the part */
-        .part-title {
-            background-color: #002060;
-            color: white;
-            text-align: left;
-            font-weight: bold;
-            padding: 8px;
-            font-size: 18px;
-        }
-    </style>
 </head>
 
 <body>
@@ -201,44 +54,44 @@ $aufLogo = 'data:image/png;base64,' . $imageData;
             </tr>
             <tr>
                 <td class="section-title" colspan="1">NAME OF THE INSTITUTION</td>
-                <td colspan="2"> {{ $link->proposalForm->institution_name }} </td>
+                <td colspan="2"> {{ $document->proposalForm->institution_name }} </td>
             </tr>
             <tr>
                 <td class="section-title" colspan="1">COUNTRY</td>
-                <td colspan="2">{{ $link->proposalForm->country }}</td>
+                <td colspan="2">{{ $document->proposalForm->country }}</td>
             </tr>
             <tr>
                 <td class="section-title" colspan="1">TYPE OF INSTITUTION</td>
-                <td colspan="2">{{ $link->proposalForm->type_of_institution }}</td>
+                <td colspan="2">{{ $document->proposalForm->type_of_institution }}</td>
             </tr>
 
             <!-- Contact Information -->
             <tr>
                 <td class="section-title" rowspan="5" colspan="1">CONTACT INFORMATION OF INSTITUTION</td>
                 <td class="subheader" colspan="1">EMAIL ADDRESS</td>
-                <td colspan="1">{{ $link->proposalForm->email }}</td>
+                <td colspan="1">{{ $document->proposalForm->email }}</td>
             </tr>
             <tr>
                 <td class="subheader" colspan="1">TELEPHONE NO.</td>
-                <td colspan="1">{{ $link->proposalForm->telephone_number }}</td>
+                <td colspan="1">{{ $document->proposalForm->telephone_number }}</td>
             </tr>
             <tr>
                 <td class="subheader" colspan="1">MOBILE NO.</td>
-                <td colspan="1">{{ $link->proposalForm->mobile_number }}</td>
+                <td colspan="1">{{ $document->proposalForm->mobile_number }}</td>
             </tr>
             <tr>
                 <td class="subheader" colspan="1">WEBSITE</td>
-                <td colspan="1">{{ $link->proposalForm->website }}</td>
+                <td colspan="1">{{ $document->proposalForm->website }}</td>
             </tr>
             <tr>
                 <td class="section-title" colspan="1">ADDRESS</td>
-                <td colspan="1">{{ $link->proposalForm->address }}</td>
+                <td colspan="1">{{ $document->proposalForm->address }}</td>
             </tr>
 
             <!-- Overview of the Institution -->
             <tr>
                 <td class="section-title" colspan="1">OVERVIEW OF THE INSTITUTION</td>
-                <td colspan="2">{{ $link->proposalForm->institution_overview }}</td>
+                <td colspan="2">{{ $document->proposalForm->institution_overview }}</td>
             </tr>
 
             <!-- Local & International Accreditation -->
@@ -247,7 +100,7 @@ $aufLogo = 'data:image/png;base64,' . $imageData;
                 <td colspan="2">
                     <ul>
                         <?php
-                        $accreditations = json_decode($link->proposalForm->institution_accreditation, true) ?? [];
+                        $accreditations = json_decode($document->proposalForm->institution_accreditation, true) ?? [];
                         ?>
                         <?php foreach ($accreditations as $accreditation): ?>
                         <li><?= htmlspecialchars($accreditation) ?></li>
@@ -265,7 +118,7 @@ $aufLogo = 'data:image/png;base64,' . $imageData;
                 <td class="section-title" colspan="1">NATURE OF PARTNERSHIP</td>
                 <td class="section-title" colspan="1">VALIDITY PERIOD</td>
             </tr>
-            @if($link->proposalForm->partnerLinkages->isEmpty())
+            @if($document->proposalForm->partnerLinkages->isEmpty())
             <!-- If no partner linkages, render one empty row -->
             <tr>
                 <td colspan="1">
@@ -280,7 +133,7 @@ $aufLogo = 'data:image/png;base64,' . $imageData;
             </tr>
         @else
             <?php
-            $partnerLinkages = $link->proposalForm->partnerLinkages ?? [];
+            $partnerLinkages = $document->proposalForm->partnerLinkages ?? [];
             ?>
             <?php foreach ($partnerLinkages as $linkage): ?>
             <tr>
@@ -301,8 +154,8 @@ $aufLogo = 'data:image/png;base64,' . $imageData;
             <!-- Target Participant & Level -->
             <tr>
                 <?php
-                $storedTargetParticipant = $link->proposalForm->target_participant;
-                $storedTargetLevel = $link->proposalForm->target_level;
+                $storedTargetParticipant = $document->proposalForm->target_participant;
+                $storedTargetLevel = $document->proposalForm->target_level;
                 ?>
                 <td class="section-title" rowspan="2">TARGET PARTICIPANT & LEVEL</td>
                 <td colspan="2">
@@ -337,11 +190,11 @@ $aufLogo = 'data:image/png;base64,' . $imageData;
             <!-- Target Program or Course -->
             <tr>
                 <td class="section-title" colspan="1">TARGET PROGRAM OR COURSE:</td>
-                <td colspan="2">{{ $link->proposalForm->institutionalUnit->name }}</td>
+                <td colspan="2">{{ $document->proposalForm->institutionalUnit->name }}</td>
             </tr>
             <!-- Type of Partnership -->
             <?php
-            $selected_type_of_partnership = $link->proposalForm->type_of_partnership;
+            $selected_type_of_partnership = $document->proposalForm->type_of_partnership;
             ?>
             <tr>
                 <td class="section-title" colspan="3">TYPE OF PARTNERSHIP:</td>
@@ -464,7 +317,7 @@ $aufLogo = 'data:image/png;base64,' . $imageData;
             <!-- Overview of Proposed Partnership -->
             <tr>
                 <td class="section-title">OVERVIEW OF THE PROPOSED PARTNERSHIP:</td>
-                <td colspan="2">{{ $link->proposalForm->partnership_overview }}</td>
+                <td colspan="2">{{ $document->proposalForm->partnership_overview }}</td>
             </tr>
 
             <!-- Part IV -->
@@ -476,27 +329,27 @@ $aufLogo = 'data:image/png;base64,' . $imageData;
             <tr>
                 <td class="section-title" rowspan="6" colspan="1">CONTACT PERSON / LIAISON OFFICER</td>
                 <td colspan="1" class="subheader">NAME</td>
-                <td colspan="1">{{ $link->proposalForm->contactPerson->name }}</td>
+                <td colspan="1">{{ $document->proposalForm->contactPerson->name }}</td>
             </tr>
             <tr>
                 <td colspan="1" class="subheader">EMAIL ADDRESS</td>
-                <td colspan="1">{{ $link->proposalForm->contactPerson->email }}</td>
+                <td colspan="1">{{ $document->proposalForm->contactPerson->email }}</td>
             </tr>
             <tr>
                 <td colspan="1" class="subheader">POSITION</td>
-                <td colspan="1">{{ $link->proposalForm->contactPerson->position }}</td>
+                <td colspan="1">{{ $document->proposalForm->contactPerson->position }}</td>
             </tr>
             <tr>
                 <td colspan="1" class="subheader">OFFICE</td>
-                <td colspan="1">{{ $link->proposalForm->contactPerson->office }}</td>
+                <td colspan="1">{{ $document->proposalForm->contactPerson->office }}</td>
             </tr>
             <tr>
                 <td colspan="1" class="subheader">TELEPHONE NUMBER</td>
-                <td colspan="1">{{ $link->proposalForm->contactPerson->telephone_number }}</td>
+                <td colspan="1">{{ $document->proposalForm->contactPerson->telephone_number }}</td>
             </tr>
             <tr>
                 <td colspan="1" class="subheader">MOBILE NUMBER</td>
-                <td colspan="1">{{ $link->proposalForm->contactPerson->mobile_number }}</td>
+                <td colspan="1">{{ $document->proposalForm->contactPerson->mobile_number }}</td>
             </tr>
         </table>
     </div>

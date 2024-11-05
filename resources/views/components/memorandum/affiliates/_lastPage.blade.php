@@ -28,7 +28,7 @@
     <thead>
         <tr>
             <th>PHILIPPINES <br> ANGELES UNIVERSITY FOUNDATION</th>
-            <th>{{$link->proposalForm->country}}<br>{{$link->proposalForm->institution_name}}</th>
+            <th>{{$document->proposalForm->country}}<br>{{$document->proposalForm->institution_name}}</th>
         </tr>
     </thead>
     <tbody>
@@ -40,8 +40,8 @@
             </td>
             <td>By:
                 <br><br><br>
-                <p class="text-center" style="margin: 0"><span class="bold">{{$link->proposalForm->institution_head}}</span></p>
-                <p class="text-center italic" style="margin:0">{{$link->proposalForm->institution_head_title}}</p>
+                <p class="text-center" style="margin: 0"><span class="bold">{{$document->proposalForm->institution_head}}</span></p>
+                <p class="text-center italic" style="margin:0">{{$document->proposalForm->institution_head_title}}</p>
             </td>
         </tr>
         <tr>

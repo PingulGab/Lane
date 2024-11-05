@@ -68,8 +68,7 @@ Route::get('test/{link}', [ProspectivePartnerFormController::class, 'test'])->na
 Route::get('test/{link}/pdf', [ProspectivePartnerFormController::class, 'test2'])->name('test2');
 
 //TODO Compare Version
-Route::get('/memorandum/{id}/compare/{version}', [MemorandumController::class, 'compareVersion'])->name('compareVersion');
-Route::get('/memorandum/{id}/compare/{version}/view', [MemorandumController::class, 'displayMemorandumComparison'])->name('displayMemorandumComparison');
+Route::get('/memorandum/{id}/compare/{version}/view', [MemorandumController::class, 'compareVersion'])->name('compareVersion');
 
 //! Route for: Affiliates' Approval Process
 Route::get('/documents/application/{id}/{name}/approval', [DocumentsPageController::class, 'affiliateShowDocument'])->name('affiliateShowDocument')->middleware('checkAffiliateAccess');
@@ -91,25 +90,24 @@ Route::post('/partner/application/{link}/submitted-proposal', [ProspectivePartne
 Route::post('/partner/application/{link}/submitted-memorandum', [ProspectivePartnerFormController::class, 'submitProspectPartnerFormMemorandum'])->name('submitProspectPartnerFormMemorandum');
 
 // Edit of Memorandum and Proposal Form
-Route::get('/partner/application/{link}/edit-memorandum',[MemorandumController::class,'partnerEditMemorandum'])->name('partnerEditMemorandum');
+Route::get('/partner/application/{link}/edit-memorandum',[ProspectivePartnerFormController::class,'partnerEditMemorandum'])->name('partnerEditMemorandum');
+Route::post('/partner/application/{link}/edit-memorandum',[ProspectivePartnerFormController::class,'partnerUpdateMemorandum'])->name('partnerUpdateMemorandum');
+
+Route::get('/partner/application/{link}/edit-proposal',[ProspectivePartnerFormController::class,'partnerEditProposal'])->name('partnerEditProposal');
+Route::post('/partner/application/{link}/edit-proposal',[ProspectivePartnerFormController::class,'partnerUpdateProposal'])->name('partnerUpdateProposal');
 
 //! Route for: Institutional Unit's
 // View of Submitted Information (From Prospective Partner)
-Route::get('/partner/result/{link}/review', [ProspectivePartnerResultController::class, 'resultProspectivePartnerForm'])->name('resultProspectivePartnerForm')->middleware(['checkInstitutionalUnitAccess']);
+Route::get('/partner/application/{link}/review', [ProspectivePartnerResultController::class, 'resultProspectivePartnerForm'])->name('resultProspectivePartnerForm')->middleware(['checkInstitutionalUnitAccess']);
+Route::post('/partner/application/{link}/review', [ProspectivePartnerResultController::class, 'submitEndorsementForm'])->name('submitEndorsementForm');
 
 // Login
-Route::get('/partner/result/{link}/login', [ProspectivePartnerResultController::class, 'showResultLoginPage'])->name('showResultLoginPage');
-Route::post('/partner/result/{link}/login', [InstitutionalUnitLogin::class, 'resultLogin'])->name('resultLogin');
+Route::get('/partner/application/{link}/login', [ProspectivePartnerResultController::class, 'showResultLoginPage'])->name('showResultLoginPage');
+Route::post('/partner/application/{link}/login', [InstitutionalUnitLogin::class, 'resultLogin'])->name('resultLogin');
 
 // Change Password
-Route::get('partner/result/{link}/change-password', [InstitutionalUnitLogin::class, 'showInstitutionalUnitChangePassword'])->name('showInstitutionalUnitChangePassword');
-Route::post('partner/result/{link}/change-password', [InstitutionalUnitLogin::class, 'institutionalUnitChangePassword'])->name('institutionalUnitChangePassword');
-
-// Creation of Endorsement Form
-Route::post('/partner/result/{link}/review', [EndorsementFormController::class, 'generateEndorsement'])->name('generateEndorsement');
-
-// View of Submitted Endorsement Form + Prospective Partner's Submitted Information
-Route::get('/partner/result/{link}/view', [EndorsementFormController::class, 'viewEndorsement'])->name('viewEndorsement');
+Route::get('partner/application/{link}/change-password', [InstitutionalUnitLogin::class, 'showInstitutionalUnitChangePassword'])->name('showInstitutionalUnitChangePassword');
+Route::post('partner/application/{link}/change-password', [InstitutionalUnitLogin::class, 'institutionalUnitChangePassword'])->name('institutionalUnitChangePassword');
 
 // View of Sign Pending
 Route::get('/documents/application/{id}/{name}/sign', [InstitutionalUnitController::class, 'showSignPendingView'])->name('showSignPendingView')->middleware(['checkApprovalStatusandInstitutionalUnitAccess']);

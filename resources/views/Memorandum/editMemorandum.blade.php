@@ -7,9 +7,9 @@
     $predefinedTags = [
         'the AUF',
         'AUF',
-        $link->proposalform->institution_name_acronym,
-        'the ' . $link->proposalform->institution_name_acronym,
-        'the AUF and ' . $link->proposalform->institution_name_acronym,
+        $document->proposalForm->institution_name_acronym,
+        'the ' . $document->proposalForm->institution_name_acronym,
+        'the AUF and ' . $document->proposalForm->institution_name_acronym,
     ];
     $allTags = $predefinedTags;
 
@@ -127,7 +127,7 @@
         }
     </style>
     <!--- Memorandum (Agreement) --->
-    <form method="POST" action="{{ route('partnerUpdateMemorandum', ['link' => $link->link, 'id' => $memorandum->id]) }}">
+    <form method="POST" action="{{route('updateMemorandum', ['id' => $id])}}">
         @csrf
         <h1> Memorandum </h1>
         <div class="memorandum-form-container">
@@ -137,7 +137,7 @@
                 <div class="form-section hidden" id="step-0">
                     <div class="memorandum_container_preview">
                         <div class="article0-preview previewStyle" id="article0-preview">
-                            @include('components.memorandum._firstPage')
+                            @include('components.memorandum.affiliates._firstPage')
                         </div>
                     </div>
                 </div>
@@ -145,14 +145,14 @@
                 <!-- Section 1: Witnesseth Section -->
                 <div class="form-section" id="step-1">
                     <input type="hidden" class="form-control" id="partner_name" name="partner_name"
-                        value="{{ $link->proposalform->institution_name_acronym }}" disabled>
+                        value="{{ $document->proposalForm->institution_name_acronym }}" disabled>
                     <!--- First Page + Witnesseth Section Preview --->
                     <div class="memorandum_container_preview">
                         <div class="previewStyle">
                             <div class="witnesseth-section-preview" id="witnesseth-section-preview">
-                                @include('components.memorandum._witnessethSection', ['link' => $link])
+                                @include('components.memorandum.affiliates._witnessethSection', ['link' => $document])
                             </div>
-                            @include('components.memorandum._witnessethSection2', ['link' => $link])
+                            @include('components.memorandum.affiliates._witnessethSection2', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -161,7 +161,7 @@
                 <div class="form-section hidden" id="step-2">
                     <div class="memorandum_container_preview">
                         <div class="article1-preview previewStyle" id="article1-preview">
-                            @include('components.memorandum._article1')
+                            @include('components.memorandum.affiliates._article1')
                         </div>
                     </div>
                 </div>
@@ -170,7 +170,7 @@
                 <div class="form-section hidden" id="step-3">
                     <div class="memorandum_container_preview">
                         <div class="article2-preview previewStyle" id="article2-preview">
-                            @include('components.memorandum._article2', ['link' => $link])
+                            @include('components.memorandum.affiliates._article2', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -179,7 +179,16 @@
                 <div class="form-section hidden" id="step-4">
                     <div class="memorandum_container_preview">
                         <div class="article3-preview previewStyle" id="article3-preview">
-                            @include('components.memorandum._article3', ['link' => $link])
+                            @include('components.memorandum.affiliates._article3', ['link' => $document])
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 5: Responsibilities of AUF -->
+                <div class="form-section hidden" id="step-05">
+                    <div class="memorandum_container_preview">
+                        <div class="article4-preview previewStyle" id="article4-preview">
+                            @include('components.memorandum.affiliates._article4', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -188,7 +197,7 @@
                 <div class="form-section hidden" id="step-5">
                     <div class="memorandum_container_preview">
                         <div class="article5-preview previewStyle" id="article5-preview">
-                            @include('components.memorandum._article5', ['link' => $link])
+                            @include('components.memorandum.affiliates._article5', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -197,7 +206,7 @@
                 <div class="form-section hidden" id="step-6">
                     <div class="memorandum_container_preview">
                         <div class="article6-preview previewStyle" id="article6-preview">
-                            @include('components.memorandum._article6', ['link' => $link])
+                            @include('components.memorandum.affiliates._article6', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -206,7 +215,7 @@
                 <div class="form-section hidden" id="step-7">
                     <div class="memorandum_container_preview">
                         <div class="article7-preview previewStyle" id="article7-preview">
-                            @include('components.memorandum._article7', ['link' => $link])
+                            @include('components.memorandum.affiliates._article7', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -215,7 +224,7 @@
                 <div class="form-section hidden" id="step-8">
                     <div class="memorandum_container_preview">
                         <div class="article8-preview previewStyle" id="article8-preview">
-                            @include('components.memorandum._article8', ['link' => $link])
+                            @include('components.memorandum.affiliates._article8', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -224,7 +233,7 @@
                 <div class="form-section hidden" id="step-9">
                     <div class="memorandum_container_preview">
                         <div class="article9-preview previewStyle" id="article9-preview">
-                            @include('components.memorandum._article9', ['link' => $link])
+                            @include('components.memorandum.affiliates._article9', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -233,7 +242,7 @@
                 <div class="form-section hidden" id="step-10">
                     <div class="memorandum_container_preview">
                         <div class="article10-preview previewStyle" id="article10-preview">
-                            @include('components.memorandum._article10', ['link' => $link])
+                            @include('components.memorandum.affiliates._article10', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -242,7 +251,7 @@
                 <div class="form-section hidden" id="step-11">
                     <div class="memorandum_container_preview">
                         <div class="article11-preview previewStyle" id="article11-preview">
-                            @include('components.memorandum._article11', ['link' => $link])
+                            @include('components.memorandum.affiliates._article11', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -251,7 +260,7 @@
                 <div class="form-section hidden" id="step-12">
                     <div class="memorandum_container_preview">
                         <div class="article12-preview previewStyle" id="article12-preview">
-                            @include('components.memorandum._article12', ['link' => $link])
+                            @include('components.memorandum.affiliates._article12', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -260,7 +269,7 @@
                 <div class="form-section hidden" id="step-13">
                     <div class="memorandum_container_preview">
                         <div class="article13-preview previewStyle" id="article13-preview">
-                            @include('components.memorandum._article13', ['link' => $link])
+                            @include('components.memorandum.affiliates._article13', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -269,7 +278,7 @@
                 <div class="form-section hidden" id="step-14">
                     <div class="memorandum_container_preview">
                         <div class="article14-preview previewStyle" id="article14-preview">
-                            @include('components.memorandum._article14', ['link' => $link])
+                            @include('components.memorandum.affiliates._article14', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -278,7 +287,7 @@
                 <div class="form-section hidden" id="step-15">
                     <div class="memorandum_container_preview">
                         <div class="article15-preview previewStyle" id="article15-preview">
-                            @include('components.memorandum._article15', ['link' => $link])
+                            @include('components.memorandum.affiliates._article15', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -287,7 +296,7 @@
                 <div class="form-section hidden" id="step-16">
                     <div class="memorandum_container_preview">
                         <div class="article16-preview previewStyle" id="article16-preview">
-                            @include('components.memorandum._article16', ['link' => $link])
+                            @include('components.memorandum.affiliates._article16', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -296,7 +305,7 @@
                 <div class="form-section hidden" id="step-17">
                     <div class="memorandum_container_preview">
                         <div class="article17-preview previewStyle" id="article17-preview">
-                            @include('components.memorandum._article17', ['link' => $link])
+                            @include('components.memorandum.affiliates._article17', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -305,7 +314,7 @@
                 <div class="form-section hidden" id="step-18">
                     <div class="memorandum_container_preview">
                         <div class="article18-preview previewStyle" id="article18-preview">
-                            @include('components.memorandum._article18', ['link' => $link])
+                            @include('components.memorandum.affiliates._article18', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -314,7 +323,7 @@
                 <div class="form-section hidden" id="step-19">
                     <div class="memorandum_container_preview">
                         <div class="article19-preview previewStyle" id="article19-preview">
-                            @include('components.memorandum._article19', ['link' => $link])
+                            @include('components.memorandum.affiliates._article19', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -324,9 +333,9 @@
                     <div class="memorandum_container_preview">
                         <div class="previewStyle">
                             <div class="article20-preview" id="article20-preview">
-                                @include('components.memorandum._article20', ['link' => $link])
+                                @include('components.memorandum.affiliates._article20', ['link' => $document])
                             </div>
-                            @include('components.memorandum._article20_contacts', ['link' => $link])
+                            @include('components.memorandum.affiliates._article20_contacts', ['link' => $document])
                         </div>
                     </div>
                 </div>
@@ -336,9 +345,9 @@
                     <div class="memorandum_container_preview">
                         <div class="previewStyle">
                             <div class="article21-preview" id="article21-preview">
-                                @include('components.memorandum._article21', ['link' => $link])
+                                @include('components.memorandum.affiliates._article21', ['link' => $document])
                             </div>
-                            @include('components.memorandum._lastPage')
+                            @include('components.memorandum.affiliates._lastPage')
                         </div>
                     </div>
                 </div>
@@ -497,6 +506,36 @@
 
                         <!-- Add New Clause Button -->
                         <button type="button" class="btn btn-secondary" id="add-article3-btn">Add Another Entry</button>
+                    </div>
+                </div>
+
+                <!-- Option for Step #05 -->
+                <div class="menu-container">
+                    <div class="menu" id="article4Menu" style="display: none;">
+                        <!-- Program Overview Container -->
+                        <div id="article4MenuContainer">
+                            <small class="error-message text-danger" id="article4ErrorMessage"></small>
+                            <!-- First Entry -->
+                            <div class="form-group">
+                                <label>Entry</label>
+                                @if($document->memorandum->article_4)
+                                    @foreach (json_decode($memorandum->article_4) as $index => $article)
+                                        <div class="form-group article4Item">
+                                            <textarea class="form-control" name="article4[]" required>{{ $article }}</textarea>
+                                            <button type="button" class="btn btn-danger mt-3">Remove</button>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="form-group article4Item">
+                                        <textarea class="form-control" name="article4[]" required></textarea>
+                                        <button type="button" class="btn btn-danger mt-3">Remove</button>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Add New Clause Button -->
+                        <button type="button" class="btn btn-secondary" id="add-article4-btn">Add Another Entry</button>
                     </div>
                 </div>
 
@@ -948,7 +987,7 @@
     </form>
     <div class="menu-container">
         <div class="menu">
-            <form action="{{ route('prospectPartnerViewLink', ['link' => $link->link]) }}">
+            <form action="{{ route('affiliateShowDocument', ["id"=>$document->id, "name"=>$document->proposalForm->institution_name]) }}">
                 <button type="submit"> CANCEL </button>
             </form>
         </div>
@@ -1399,88 +1438,93 @@
                     optionsContainerId: 'article3Menu'
                 },
                 {
+                    id: 'step-05',
+                    header: 'Step 5: Responsibilities of AUF',
+                    optionsContainerId: 'article4Menu'
+                },
+                {
                     id: 'step-5',
-                    header: 'Step 5: Responsibilities of <?php echo $link->proposalForm->institution_name_acronym; ?>',
+                    header: 'Step 6: Responsibilities of <?php echo $document->proposalForm->institution_name_acronym; ?>',
                     optionsContainerId: 'article5Menu'
                 },
                 {
                     id: 'step-6',
-                    header: 'Step 6: Responsibilities of AUF and <?php echo $link->proposalForm->institution_name_acronym; ?>',
+                    header: 'Step 7: Responsibilities of AUF and <?php echo $document->proposalForm->institution_name_acronym; ?>',
                     optionsContainerId: 'article6Menu'
                 },
                 {
                     id: 'step-7',
-                    header: 'Step 7: Intellectual Property Rights',
+                    header: 'Step 8: Intellectual Property Rights',
                     optionsContainerId: 'article7Menu'
                 },
                 {
                     id: 'step-8',
-                    header: 'Step 8: Employment Relations',
+                    header: 'Step 9: Employment Relations',
                     optionsContainerId: 'article8Menu'
                 },
                 {
                     id: 'step-9',
-                    header: 'Step 9: Exclusivity',
+                    header: 'Step 10: Exclusivity',
                     optionsContainerId: 'article9Menu'
                 },
                 {
                     id: 'step-10',
-                    header: 'Step 10: Material Adverse Change Clause',
+                    header: 'Step 11: Material Adverse Change Clause',
                     optionsContainerId: 'article10Menu'
                 },
                 {
                     id: 'step-11',
-                    header: 'Step 11: Confidentiality',
+                    header: 'Step 12: Confidentiality',
                     optionsContainerId: 'article11Menu'
                 },
                 {
                     id: 'step-12',
-                    header: 'Step 12: Compliance with Law',
+                    header: 'Step 13: Compliance with Law',
                     optionsContainerId: 'article12Menu'
                 },
                 {
                     id: 'step-13',
-                    header: 'Step 13: Non-Assignment of Rights',
+                    header: 'Step 14: Non-Assignment of Rights',
                     optionsContainerId: 'article13Menu'
                 },
                 {
                     id: 'step-14',
-                    header: 'Step 14: Severability',
+                    header: 'Step 15: Severability',
                     optionsContainerId: 'article14Menu'
                 },
                 {
                     id: 'step-15',
-                    header: 'Step 15: Effectivity',
+                    header: 'Step 16: Effectivity',
                     optionsContainerId: 'article15Menu'
                 },
                 {
                     id: 'step-16',
-                    header: 'Step 16: Amendments',
+                    header: 'Step 17: Amendments',
                     optionsContainerId: 'article16Menu'
                 },
                 {
                     id: 'step-17',
-                    header: 'Step 17: Governing Law',
+                    header: 'Step 18: Governing Law',
                     optionsContainerId: 'article17Menu'
                 },
                 {
                     id: 'step-18',
-                    header: 'Step 18: Dispute Resolution',
+                    header: 'Step 19: Dispute Resolution',
                     optionsContainerId: 'article18Menu'
                 },
                 {
                     id: 'step-19',
-                    header: 'Step 19: Dispute Resolution',
+                    header: 'Step 20: Dispute Resolution',
                     optionsContainerId: 'article19Menu'
                 },
                 {
                     id: 'step-20',
-                    header: 'Step 20: Notices',
+                    header: 'Step 21: Notices',
                     optionsContainerId: 'article20Menu'
                 },
                 {
                     id: 'step-21',
-                    header: 'Step 21: Subsequent Agreements',
+                    header: 'Step 22: Subsequent Agreements',
                     optionsContainerId: 'article21Menu'
                 }
                 // Add more steps here as needed

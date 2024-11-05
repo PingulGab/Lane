@@ -1,115 +1,139 @@
-@extends('layouts.layout')
+@extends('layouts.nonAdmin')
 
 @section('content')
+<style>
+    .previewStyle {
+        font-family: 'Times New Roman', serif;
+        font-size: 18px;
+        width: 70vh;
+        height: 70vh;
+        overflow: auto;
+        text-align: justify;
+        background-color: white;
+        padding: 30px;
+        border-radius: 15px;
+    }
 
-<h2>Memorandum Details</h2>
-<p>Partner Name: {{ $memorandum->partner_name }}</p>
+    .biContainer {
+        display: flex;
+    }
 
-<h2>Proposal Form</h2>
-<p>Country: {{ $proposalForm->country }}</p>
-<p>Institution Name: {{ $proposalForm->institution_name }}</p>
+    .biContainer-area1 {
+        flex: 1;
+    }
 
+    .biContainer-area2 {
+        flex: 1;
+    }
+
+    
+    /* Optional: Styling for active button state */
+    .active {
+            background-color: #4CAF50; /* Green */
+            color: white;
+        }
+
+    textarea {
+        width: 100%;
+        height: 10vh;
+    }
+</style>
 <!--- View #1 --->
+<div class="biContainer">
+    <div class="biContainer-area1">
+        <h1>View Submitted MOA & Proposal Form</h1>
+        <div class="previewStyle">
+            <!-- Content areas for each view -->
+            <div id="memorandum-content" style="display: none;">
+                @include('components.memorandum._memorandum_preview')
+            </div>
 
-<div class="container">
-    <h1> View #1: </h1>
+            <div id="proposal-content" style="display: none;">
+                @include('components.proposal_form._proposal_form_preview')
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: row;">
+            <div style="margin-bottom: 10px;">
+                <!-- Buttons to toggle views -->
+                <button onclick="showMemorandum()" id="view-memorandum-button">View Memorandum</button>
+                <button onclick="showProposal()" id="view-proposal-button">View Proposal</button>
+            </div>
+            <div id="dropdown-container">
+                <select id="page-selector" onchange="navigateToPage()">
+                    <option value="page1">Title Page</option>
+                    <option value="page2">Introduction</option>
+                    <option value="page3">Article 1: Program Overview</option>
+                    <option value="page4">Article 2: Representation and Warranties</option>
+                    <option value="page5">Article 3: Scope of Collaboration</option>
+                    <option value="page6">Article 4: Responsibilities of AUF</option>
+                    <option value="page7">Article 5: Responsibilities of {{ $proposalForm->institution_name_acronym }}</option>
+                    <option value="page8">Article 6: Responsibilities of AUF and {{ $proposalForm->institution_name_acronym }}</option>
+                    <option value="page9">Article 7: Intellectual Property Rights</option>
+                    <option value="page10">Article 8: Employment Relations</option>
+                    <option value="page11">Article 9: Exclusivity</option>
+                    <option value="page12">Article 10: Material Adverse Change Clause</option>
+                    <option value="page13">Article 11: Confidentiality</option>
+                    <option value="page14">Article 12: Compliance with Law</option>
+                    <option value="page15">Article 13: Non-Assignment of Rights</option>
+                    <option value="page16">Article 14: Severability</option>
+                    <option value="page17">Article 15: Effectivity</option>
+                    <option value="page18">Article 16: Amendments</option>
+                    <option value="page19">Article 17: Governing Law</option>
+                    <option value="page20">Article 18: Dispute Resolution</option>
+                    <option value="page21">Article 19: Venue of Action</option>
+                    <option value="page22">Article 20: Notices</option>
+                    <option value="page23">Article 21: Subsequent Agreements</option>
+                </select>
+            </div>
+        </div>
+    </div>
 
-    <!-- PDF Viewer Container -->
-    <div id="pdf-viewer" style="width: 100%; height: 300px;"></div>
-
-    <!-- Pagination Controls -->
-    <div style="text-align: center; margin-top: 10px;">
-        <button id="prev-page">Previous Page</button>
-        <span>Page: <span id="page-num">1</span> / <span id="page-count">1</span></span>
-        <button id="next-page">Next Page</button>
+    <div class="biContainer-area2">
+        <h1> Endorsement Form </h1>
+        <div class="previewStyle">
+            @include('components.endorsement_form._endorsement_form_preview')
+        </div>
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var pdfUrl = "{{ asset('storage/endorsement-form/AUF-EndorsementForm-' . str_replace(' ', '-', $endorsement->description_1) . '-' . $endorsement->created_at->format('Ymd') . '.pdf') }}";
-        var pdfjsLib = window['pdfjs-dist/build/pdf'];
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+    // Show Memorandum content and show the dropdown
+    function showMemorandum() {
+        document.getElementById('memorandum-content').style.display = 'block';
+        document.getElementById('proposal-content').style.display = 'none';
+        document.getElementById('view-memorandum-button').classList.add('active');
+        document.getElementById('view-proposal-button').classList.remove('active');
 
-        let pdfDoc = null;
-        let pageNum = 1;
-        let pageRendering = false;
-        let pageNumPending = null;
-        const scale = 0.8;
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        document.getElementById('pdf-viewer').appendChild(canvas);
+        // Show the dropdown container
+        document.getElementById('dropdown-container').style.display = 'block';
+    }
 
-        // Load PDF document
-        pdfjsLib.getDocument(pdfUrl).promise.then(function(pdfDoc_) {
-            pdfDoc = pdfDoc_;
-            document.getElementById('page-count').textContent = pdfDoc.numPages;
-            renderPage(pageNum);
-        });
+    // Show Proposal content and hide the dropdown
+    function showProposal() {
+        document.getElementById('proposal-content').style.display = 'block';
+        document.getElementById('memorandum-content').style.display = 'none';
+        document.getElementById('view-proposal-button').classList.add('active');
+        document.getElementById('view-memorandum-button').classList.remove('active');
 
-        // Render the page
-        function renderPage(num) {
-            pageRendering = true;
-            pdfDoc.getPage(num).then(function(page) {
-                const viewport = page.getViewport({ scale: scale });
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
+        // Hide the dropdown container
+        document.getElementById('dropdown-container').style.display = 'none';
+    }
 
-                const renderContext = {
-                    canvasContext: ctx,
-                    viewport: viewport
-                };
+    function navigateToPage() {
+        const selector = document.getElementById('page-selector');
+        const pageId = selector.value;
 
-                const renderTask = page.render(renderContext);
-                renderTask.promise.then(function() {
-                    pageRendering = false;
-                    if (pageNumPending !== null) {
-                        renderPage(pageNumPending);
-                        pageNumPending = null;
-                    }
-                });
+        if (pageId) {
+            document.getElementById(pageId).scrollIntoView({
+                behavior: 'smooth'
             });
-
-            // Update page counters
-            document.getElementById('page-num').textContent = num;
         }
+    }
 
-        // Queue rendering of next page if a page is already being rendered
-        function queueRenderPage(num) {
-            if (pageRendering) {
-                pageNumPending = num;
-            } else {
-                renderPage(num);
-            }
-        }
-
-        // Go to previous page
-        document.getElementById('prev-page').addEventListener('click', function() {
-            if (pageNum <= 1) return;
-            pageNum--;
-            queueRenderPage(pageNum);
-        });
-
-        // Go to next page
-        document.getElementById('next-page').addEventListener('click', function() {
-            if (pageNum >= pdfDoc.numPages) return;
-            pageNum++;
-            queueRenderPage(pageNum);
-        });
+    // Initialize with Memorandum view (or Proposal if you prefer)
+    document.addEventListener("DOMContentLoaded", function() {
+        showMemorandum(); // Set default view to Memorandum
     });
 </script>
-
-<!--- View #2 --->
-<!--- <div class="container">
-    <h1>View #2</h1>
-
-    <iframe src="{{ asset('storage/endorsement-form/AUF-EndorsementForm-' . str_replace(' ', '-', $endorsement->description_1) . '-' . $endorsement->created_at->format('Ymd') . '.pdf') }}" width="100%" height="600px"></iframe>
-
-    <a href="{{ route('downloadEndorsement', ['id' => $endorsement->id, 'format' => 'docx']) }}" class="btn btn-primary">Download as .docx</a>
-    <a href="{{ route('downloadEndorsement', ['id' => $endorsement->id, 'format' => 'pdf']) }}" class="btn btn-primary">Download as .pdf</a>
-
-    <a href="{{ route('editEndorsement', ['id' => $endorsement->id]) }}" class="btn btn-warning">Edit</a>
-</div> --->
 
 @endsection

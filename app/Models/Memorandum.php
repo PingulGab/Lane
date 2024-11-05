@@ -37,6 +37,7 @@ class Memorandum extends Model
         'article_20',
         'article_21',
 
+        'valid_until',
         'locked_by',
         'locked_at',
         'version',

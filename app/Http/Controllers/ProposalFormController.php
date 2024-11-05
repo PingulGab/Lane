@@ -170,6 +170,141 @@ class ProposalFormController extends Controller
         return $proposal->id;
     }    
 
+    public function partnerUpdateProposal(Request $request, $id, $link)
+    {
+        // Validate all the inputs from the multi-step form
+        $validatedData = $request->validate([
+            'institution_name' => 'required|string|max:255',
+            'institution_name_acronym' => 'required|string|max:255',
+            'institution_head' => 'required|string|max:255',
+            'institution_head_title' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+            'accreditations' => 'array|nullable',
+            'accreditations.*' => 'nullable|string|max:1000',
+            'type_of_institution' => 'required|string|in:Private Higher Educational Institution,Public Higher Educational Institution,Private Company,Public Company,Organization,Government Agency',
+            'email' => 'required|email|max:255',
+            'telephone_number' => 'nullable|string|max:20',
+            'mobile_number' => 'nullable|string|max:20',
+            'website' => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:500',
+            'institution_overview' => 'nullable|string',
+            'target_participant' => 'required|string|in:Student,Faculty,Researcher',
+            'target_level' => 'required|string|in:Elementary,Junior High School,Senior High School,Undergraduate,Graduate School,Certification Program (ESL)',
+            'selected_institutionalUnit' => 'nullable|exists:institutional_units,id',
+            'type_of_partnership' => 'required|string',
+            'partnership_overview' => 'required|string',
+            'partnership_expected_outcome' => 'required|string',
+            'partnership_target_participants' => 'required|string',
+            'contact_person_name' => 'required|string|max:255',
+            'contact_person_email' => 'required|email|max:255',
+            'contact_person_position' => 'required|string|max:255',
+            'contact_person_office' => 'required|string|max:255',
+            'contact_person_telephone_number' => 'nullable|string|max:20',
+            'contact_person_mobile_number' => 'nullable|string|max:20',
+        
+            // Validate each partner_linkages entry
+            'partner_linkagess' => 'array|nullable',
+            'partner_linkagess.*.institution_name' => 'string|max:255|nullable',
+            'partner_linkagess.*.nature_of_partnership' => 'string|max:255|nullable',
+            'partner_linkagess.*.validity_period' => 'date|nullable',
+        ]);
+
+        $proposalModel = ProposalForm::findOrFail($id);
+
+        $contactPersonModel = $proposalModel->contactPerson;
+
+        $contactPersonModel->update([
+            'email' => $validatedData['contact_person_email'],
+            'name' => $validatedData['contact_person_name'],
+            'position' => $validatedData['contact_person_position'],
+            'office' => $validatedData['contact_person_office'],
+            'telephone_number' => $validatedData['contact_person_telephone_number'],
+            'mobile_number' => $validatedData['contact_person_mobile_number'],
+        ]);
+        
+        // Check if 'accreditations' is set and is an array
+        if (isset($validatedData['accreditations']) && is_array($validatedData['accreditations'])) {
+            // Filter out null or empty values
+            $filteredAccreditations = array_filter($validatedData['accreditations'], function($value) {
+                return !is_null($value) && trim($value) !== '';
+            });
+
+            // Convert to JSON or null if empty
+            $institution_accreditation = empty($filteredAccreditations) ? null : json_encode($filteredAccreditations);
+        } else {
+            $institution_accreditation = null; // Set to null if not present
+        }
+
+        $proposalModel->update([
+            'institution_name' => $validatedData['institution_name'],
+            'institution_name_acronym' => $validatedData['institution_name_acronym'],
+            'institution_head' => $validatedData['institution_head'],
+            'institution_head_title' => $validatedData['institution_head_title'],
+            'country' => $validatedData['country'],
+            'institution_accreditation' => $institution_accreditation,
+            'type_of_institution' => $validatedData['type_of_institution'],
+            'email' => $validatedData['email'],
+            'telephone_number' => $validatedData['telephone_number'],
+            'mobile_number' => $validatedData['mobile_number'],
+            'website' => $validatedData['website'],
+            'address' => $validatedData['address'],
+            'institution_overview' => $validatedData['institution_overview'],
+            'target_participant' => $validatedData['target_participant'],
+            'target_level' => $validatedData['target_level'],
+            'institutional_unit_id' => $validatedData['selected_institutionalUnit'],
+            'type_of_partnership' => $validatedData['type_of_partnership'],
+            'partnership_overview' => $validatedData['partnership_overview'],
+            'partnership_expected_outcome' => $validatedData['partnership_expected_outcome'],
+            'partnership_target_participants' => $validatedData['partnership_target_participants'],
+            'contact_person_id' => $contactPersonModel->id
+        ]);
+        
+        if (empty($validatedData['partner_linkagess']))
+        {
+            $proposalModel->partnerLinkages()->delete();
+        }
+
+        // Step 3: Store each partner_linkages in the PartnerLinkage table
+        if (!empty($validatedData['partner_linkagess'])) { // Check if partner_linkagess is not empty
+            // Step 1: Delete all existing partner linkages for this proposal
+            $proposalModel->partnerLinkages()->delete();
+        
+            // Step 2: Create new partner linkages based on the request
+            foreach ($validatedData['partner_linkagess'] as $partner_linkages) {
+                // Check if necessary fields are not empty
+                if (!empty($partner_linkages['institution_name']) || 
+                    !empty($partner_linkages['nature_of_partnership']) || 
+                    !empty($partner_linkages['validity_period'])) {
+        
+                    // Create new partner linkage associated with this proposal
+                    $proposalModel->partnerLinkages()->create([
+                        'institution_name' => $partner_linkages['institution_name'],
+                        'nature_of_partnership' => $partner_linkages['nature_of_partnership'],
+                        'validity_period' => $partner_linkages['validity_period'],
+                    ]);
+                }
+            }
+        }
+        // Generate the file name: AUF-MOA-[partner_name]-[datecreated]
+        $dateCreated = Carbon::now()->format('Ymd');
+        $fileName = 'AUF-ProposalForm-' . str_replace(' ', '-', $proposalModel->institution_name) . '-' . $dateCreated;
+        
+        //Sync to institutional_unit_link
+        $link->institutionalUnits()->sync($validatedData['selected_institutionalUnit']);
+        
+        // Generate the PDF using DOMPDF        
+        $dompdf = new Dompdf();
+        $html = view('components.proposal_form._proposal_form_preview', [
+            'link' => $link
+        ])->render();    
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+        Storage::put('public/proposal-form/' . $fileName . '.pdf', $dompdf->output());
+    
+        // Redirect to the view page after generating the document
+        return $proposalModel->id;
+    }    
+
     public function viewDocument($id)
     {
         $proposal = ProposalForm::findOrFail($id);

@@ -111,7 +111,7 @@ $aufLogo = 'data:image/png;base64,' . $imageData;
 
     <div class="biContainer-area2">
         <h1>Create Endorsement Form</h1>
-        <form id="multi-step-form" action="{{ route('generateEndorsement', ['link' => $link->link])}}" method="POST">
+        <form id="multi-step-form" action="{{ route('submitEndorsementForm', ['link' => $link->link])}}" method="POST">
             @csrf
             <div class="previewStyle">
                 <div class="endorsement-form-container">

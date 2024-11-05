@@ -72,7 +72,7 @@
         </div>
         <div>
             <!-- Button with JavaScript for a simple redirect -->
-            <button onclick="window.location.href='{{ route('partnerEditMemorandum', $link->link) }}';">
+            <button onclick="redirectToEditPage()">
                 Edit
             </button>
         </div>
@@ -80,6 +80,20 @@
 </div>
 
 <script>
+    function redirectToEditPage() {
+        // Check if Memorandum is active
+        const isMemorandumActive = document.getElementById('view-memorandum-button').classList.contains('active');
+
+        // Determine which route to redirect to based on the active view
+        if (isMemorandumActive) {
+            // Redirect to the Memorandum edit route
+            window.location.href = '{{ route('partnerEditMemorandum', $link->link) }}';
+        } else {
+            // Redirect to the Proposal edit route
+            window.location.href = '{{ route('partnerEditProposal', $link->link) }}';
+        }
+    }
+
     // Show Memorandum content and show the dropdown
     function showMemorandum() {
         document.getElementById('memorandum-content').style.display = 'block';
