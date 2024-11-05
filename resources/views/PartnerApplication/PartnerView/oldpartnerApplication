@@ -1,0 +1,1211 @@
+@extends('layouts.layout')
+
+@section('title', 'LANE - Dashboard')
+
+@section('content')
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    @if (!$link->proposal_form_fk)
+        <!--- Proposal Form --->
+        <form method="POST" action="{{ route('submitProspectPartnerForm', $link->link) }}">
+            @csrf
+
+            <h1> Proposal Form </h1>
+            <div class="proposal_form_group">
+                <label for="institution_name">Institution Name</label>
+                <input type="text" name="institution_name" placeholder="Institution Name" required>
+            </div>
+
+            <div class="proposal_form_group">
+                <label for="institution_name_acronym">Institution Acronym</label>
+                <input type="text" name="institution_name_acronym" placeholder="Institution Acronym" required>
+            </div>
+
+            <div class="proposal_form_group">
+                <label for="country">Select Country:</label>
+                <select name="country" id="country">
+                    @foreach ($countriesList as $code => $name)
+                        <option value="{{ $name }}">{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="proposal_form_group">
+                <label for="type_of_institution">Type of Institution</label>
+                <select name="type_of_institution" id="type_of_institution" class="form-control" required>
+                    <option value="">Select Type</option>
+                    <option value="Private Higher Educational Institution">Private Higher Educational Institution</option>
+                    <option value="Public Higher Educational Institution">Public Higher Educational Institution</option>
+                    <option value="Private Company">Private Company</option>
+                    <option value="Public Company">Public Company</option>
+                    <option value="Organization">Organization</option>
+                    <option value="Government Agency">Government Agency</option>
+                </select>
+            </div>
+
+            <div class="proposal_form_group">
+                <label for="email">Email</label>
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+
+            <div class="proposal_form_group">
+                <label for="telephone_number">Telephone Number</label>
+                <input type="text" name="telephone_number" placeholder="Telephone Number">
+            </div>
+
+            <div class="proposal_form_group">
+                <label for="mobile_number">Mobile Number</label>
+                <input type="text" name="mobile_number" placeholder="Mobile Number">
+            </div>
+
+            <div class="proposal_form_group">
+                <label for="website">Website</label>
+                <input type="text" name="website" placeholder="Website">
+            </div>
+
+            <div class="proposal_form_group">
+                <label for="institution_overview">Overview of Institution</label>
+                <textarea name="institution_overview" placeholder="Overview of Institution"> </textarea>
+            </div>
+
+            <!-- Accreditation Container -->
+            <div class="proposal_form_group" id="accreditation_container">
+                <label>Accreditations</label>
+                <br>
+                <small class="error-message text-danger" id="accreditation_error"></small>
+
+                <!-- First Accreditation Form -->
+                <div class="accreditation_form">
+                    <div class="proposal_form_group">
+                        <label for="accreditation_institution_name">Institution Name</label>
+                        <input type="text" name="accreditations[0][institution_name]" placeholder="Institution Name"
+                            required>
+                    </div>
+
+                    <div class="proposal_form_group">
+                        <label for="accreditation_nature_of_partnership">Nature of Partnership</label>
+                        <input type="text" name="accreditations[0][nature_of_partnership]"
+                            placeholder="Nature of Partnership" required>
+                    </div>
+
+                    <div class="proposal_form_group">
+                        <label for="accreditation_validity_period">Validity Period</label>
+                        <input type="date" name="accreditations[0][validity_period]" placeholder="Validity Period"
+                            required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="proposal_form_group">
+                <label for="target_participant">Type of Institution</label>
+                <select name="target_participant" id="target_participant" class="form-control" required>
+                    <option value="">Select Type</option>
+                    <option value="Student">Student</option>
+                    <option value="Faculty">Faculty</option>
+                    <option value="Researcher">Researcher</option>
+                </select>
+            </div>
+
+            <div class="proposal_form_group">
+                <label for="target_level">Type of Institution</label>
+                <select name="target_level" id="target_level" class="form-control" required>
+                    <option value="">Select Type</option>
+                    <option value="Elementary">Elementary</option>
+                    <option value="Junior High School">Junior High School</option>
+                    <option value="Senior High School">Senior High School</option>
+                    <option value="Undergraduate">Undergraduate</option>
+                    <option value="Graduate School">Graduate School</option>
+                    <option value="Certification Program (ESL)">Certification Program (ESL)</option>
+                </select>
+            </div>
+
+            <div class="proposal_form_group">
+                <h3>Select Affiliate</h3>
+                <select name="selected_institutionalUnit" id="institutionalUnit" class="form-control">
+                    <option value="">Select an Institution</option>
+                    @foreach ($institutionalUnitList as $institutionalUnit)
+                        <option value="{{ $institutionalUnit->id }}">{{ $institutionalUnit->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Button to Add New Accreditation Form -->
+            <button type="button" id="add_accreditation_btn" class="btn btn-secondary mt-3">Add Accreditation</button>
+
+            <!-- Category Dropdown -->
+            <div>
+                <div class="form-group">
+                    <label for="partnership_category">Select Category</label>
+                    <select id="partnership_category" class="form-control">
+                        <option value="">-- Choose a Category --</option>
+                        <option value="Non-Degree Program">Non-Degree Program</option>
+                        <option value="Degree Program">Degree Program</option>
+                        <option value="Mobility Program">Mobility Program</option>
+                        <option value="Research Program">Research Program</option>
+                    </select>
+                </div>
+
+                <!-- Partnership Types (Radio Buttons) -->
+                <div id="partnership_options" class="mt-3">
+                    <!-- Dynamic radio buttons will be loaded here based on the selected category -->
+                </div>
+            </div>
+
+            <div class="proposal_form_group">
+                <label for="partnership_overview">Overview of the Proposed Partnership</label>
+                <textarea class="partnership_overview" name="partnership_overview" placeholder="Overview of the Proposed Partnership"
+                    required></textarea>
+            </div>
+
+            <div class="proposal_form_group">
+                <label for="partnership_expected_outcome">Expected Outcome of the Proposed Partnership</label>
+                <textarea class="partnership_expected_outcome" name="partnership_expected_outcome"
+                    placeholder="Expected Outcome of the Proposed Partnership" required></textarea>
+            </div>
+
+            <div class="proposal_form_group">
+                <label for="partnership_target_participants">Target of the Proposed Partnership</label>
+                <textarea class="partnership_target_participants" name="partnership_target_participants"
+                    placeholder="Target of the Proposed Partnership" required></textarea>
+            </div>
+
+            <div class="proposal_form_group">
+                <h2> Prepared by: </h2>
+                <label for="contact_person_name">Name</label>
+                <input type="text" name="contact_person_name" placeholder="Name" required>
+
+                <label for="contact_person_email">Email</label>
+                <input type="email" name="contact_person_email" placeholder="Email" required>
+
+                <label for="contact_person_position">Position</label>
+                <input type="text" name="contact_person_position" placeholder="Position" required>
+
+                <label for="contact_person_office">Office</label>
+                <input type="text" name="contact_person_office" placeholder="Office" required>
+
+                <label for="contact_person_telephone_number">Telephone Number</label>
+                <input type="text" name="contact_person_telephone_number" placeholder="Telephone Number">
+
+                <label for="contact_person_mobile_number">Mobile Number</label>
+                <input type="text" name="contact_person_mobile_number" placeholder="Mobile Number">
+            </div>
+
+            <button type="submit" class="btn btn-success" onclick="prepareSubmission()">Submit</button>
+        </form>
+
+        <!--- Script for Type of Partnership --->
+        <script>
+            // Partnership options grouped by category
+            const partnershipOptions = {
+                'Non-Degree Program': [{
+                        value: 'English as Second Language (ESL)',
+                        label: 'English as Second Language (ESL)'
+                    },
+                    {
+                        value: 'Audit Class / Sit-in Class',
+                        label: 'Audit Class / Sit-in Class'
+                    },
+                    {
+                        value: 'Study and Tour Program',
+                        label: 'Study and Tour Program'
+                    },
+                    {
+                        value: 'Conference / Seminar',
+                        label: 'Conference / Seminar'
+                    },
+                    {
+                        value: 'Others',
+                        label: 'Others',
+                        input: true
+                    }
+                ],
+                'Degree Program': [{
+                        value: 'Academic Franchising',
+                        label: 'Academic Franchising'
+                    },
+                    {
+                        value: 'Program Articulation',
+                        label: 'Program Articulation'
+                    },
+                    {
+                        value: 'Branch or International Campus',
+                        label: 'Branch or International Campus'
+                    },
+                    {
+                        value: 'Double Degree',
+                        label: 'Double Degree'
+                    },
+                    {
+                        value: 'Dual Degree',
+                        label: 'Dual Degree'
+                    },
+                    {
+                        value: 'Joint Degree',
+                        label: 'Joint Degree'
+                    },
+                    {
+                        value: 'Online, Blended, and Distance Learning',
+                        label: 'Online, Blended, and Distance Learning'
+                    },
+                    {
+                        value: 'Others',
+                        label: 'Others',
+                        input: true
+                    }
+                ],
+                'Mobility Program': [{
+                        value: 'Inbound Student',
+                        label: 'Inbound Student'
+                    },
+                    {
+                        value: 'Outbound Student',
+                        label: 'Outbound Student'
+                    },
+                    {
+                        value: 'Others',
+                        label: 'Others',
+                        input: true
+                    }
+                ],
+                'Research Program': [{
+                        value: 'Collaborative Research',
+                        label: 'Collaborative Research'
+                    },
+                    {
+                        value: 'Capacity Building Program',
+                        label: 'Capacity Building Program'
+                    },
+                    {
+                        value: 'Research Dissemination Program',
+                        label: 'Research Dissemination Program'
+                    },
+                    {
+                        value: 'Others',
+                        label: 'Others',
+                        input: true
+                    }
+                ]
+            };
+
+            let accreditationCount = 1; // To track number of accreditation forms
+
+            document.getElementById('add_accreditation_btn').addEventListener('click', function() {
+                // Create new accreditation form container
+                const newAccreditationDiv = document.createElement('div');
+                newAccreditationDiv.classList.add('accreditation_form', 'mt-3');
+
+                // Institution Name field
+                const institutionDiv = document.createElement('div');
+                institutionDiv.classList.add('proposal_form_group');
+                const institutionLabel = document.createElement('label');
+                institutionLabel.innerText = 'Institution Name';
+                const institutionInput = document.createElement('input');
+                institutionInput.type = 'text';
+                institutionInput.name = `accreditations[${accreditationCount}][institution_name]`;
+                institutionInput.placeholder = 'Institution Name';
+                institutionInput.required = true;
+                institutionDiv.appendChild(institutionLabel);
+                institutionDiv.appendChild(institutionInput);
+
+                // Nature of Partnership field
+                const partnershipDiv = document.createElement('div');
+                partnershipDiv.classList.add('proposal_form_group');
+                const partnershipLabel = document.createElement('label');
+                partnershipLabel.innerText = 'Nature of Partnership';
+                const partnershipInput = document.createElement('input');
+                partnershipInput.type = 'text';
+                partnershipInput.name = `accreditations[${accreditationCount}][nature_of_partnership]`;
+                partnershipInput.placeholder = 'Nature of Partnership';
+                partnershipInput.required = true;
+                partnershipDiv.appendChild(partnershipLabel);
+                partnershipDiv.appendChild(partnershipInput);
+
+                // Validity Period field
+                const validityDiv = document.createElement('div');
+                validityDiv.classList.add('proposal_form_group');
+                const validityLabel = document.createElement('label');
+                validityLabel.innerText = 'Validity Period';
+                const validityInput = document.createElement('input');
+                validityInput.type = 'date';
+                validityInput.name = `accreditations[${accreditationCount}][validity_period]`;
+                validityInput.required = true;
+                validityDiv.appendChild(validityLabel);
+                validityDiv.appendChild(validityInput);
+
+                // Remove button
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.classList.add('btn', 'btn-danger', 'mt-2');
+                removeBtn.innerText = 'Remove';
+                removeBtn.addEventListener('click', function() {
+                    newAccreditationDiv.remove();
+                });
+
+                // Append elements to the new accreditation form container
+                newAccreditationDiv.appendChild(institutionDiv);
+                newAccreditationDiv.appendChild(partnershipDiv);
+                newAccreditationDiv.appendChild(validityDiv);
+                newAccreditationDiv.appendChild(removeBtn);
+
+                // Append the new accreditation form container to the main container
+                document.getElementById('accreditation_container').appendChild(newAccreditationDiv);
+
+                // Increment accreditation count
+                accreditationCount++;
+            });
+
+            const categorySelect = document.getElementById('partnership_category');
+            const partnershipOptionsContainer = document.getElementById('partnership_options');
+
+            // Load relevant options based on category selection
+            categorySelect.addEventListener('change', function() {
+                const selectedCategory = categorySelect.value;
+                partnershipOptionsContainer.innerHTML = ''; // Clear previous options
+
+                if (selectedCategory && partnershipOptions[selectedCategory]) {
+                    // Generate radio buttons based on the selected category
+                    partnershipOptions[selectedCategory].forEach(option => {
+                        const radioDiv = document.createElement('div');
+                        radioDiv.classList.add('form-check');
+
+                        const radioInput = document.createElement('input');
+                        radioInput.type = 'radio';
+                        radioInput.classList.add('form-check-input');
+                        radioInput.name = 'type_of_partnership';
+                        radioInput.value = option.input ? '' :
+                        `${selectedCategory} - ${option.value}`; // Set prefixed value if not "Others"
+                        radioInput.id = `option_${option.value}`;
+                        radioInput.required = true;
+
+                        const label = document.createElement('label');
+                        label.classList.add('form-check-label');
+                        label.htmlFor = radioInput.id;
+                        label.textContent = option.label;
+
+                        // Append radio input and label to the div
+                        radioDiv.appendChild(radioInput);
+                        radioDiv.appendChild(label);
+
+                        // If "Others" option, add an additional input field
+                        if (option.input) {
+                            const othersInput = document.createElement('input');
+                            othersInput.type = 'text';
+                            othersInput.classList.add('form-control', 'mt-2');
+                            othersInput.name = 'type_of_partnership_other';
+                            othersInput.placeholder = 'Please specify';
+                            othersInput.required = false; // Make required only if "Others" selected
+                            radioDiv.appendChild(othersInput);
+
+                            // Event listener to toggle required status and update value with user input
+                            radioInput.addEventListener('change', () => {
+                                othersInput.required = radioInput.checked;
+                                othersInput.addEventListener('input', () => {
+                                    radioInput.value =
+                                        `${selectedCategory} - ${othersInput.value}`;
+                                });
+                            });
+                        }
+
+                        partnershipOptionsContainer.appendChild(radioDiv);
+                    });
+                }
+            });
+
+            // Prepare data before submission
+            function prepareSubmission() {
+                const othersInput = document.querySelector('input[name="type_of_partnership_other"]');
+                const selectedRadio = document.querySelector('input[name="type_of_partnership"]:checked');
+
+                if (selectedRadio && selectedRadio.nextSibling && selectedRadio.value === '') {
+                    // Use the "Others" input value if filled
+                    selectedRadio.value = `${categorySelect.value} - ${othersInput.value}`;
+                }
+            }
+        </script>
+    @elseif($link->proposal_form_fk)
+        <style>
+            .memorandum_container_preview {
+                display: flex;
+                justify-content: center;
+            }
+
+            .memorandum_container_preview h2 {
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .previewStyle {
+                font-family: 'Times New Roman', serif;
+                font-size: 18px;
+                width: 70vh;
+                height: 80vh;
+                overflow: auto;
+                text-align: justify;
+                background-color: white;
+                padding: 30px;
+                border-radius: 15px;
+            }
+
+            .witnesseth-section-preview {
+                font-family: 'Times New Roman', serif;
+                font-size: 18px;
+                width: 70vh;
+                height: 80vh;
+                overflow: auto;
+                text-align: justify;
+                background-color: white;
+                padding: 30px;
+                border-radius: 15px;
+            }
+
+            .leading-paragraph {
+                text-align: justify;
+                margin-bottom: 15px;
+            }
+
+            .indented-paragraph {
+                text-indent: 40px;
+                margin-bottom: 15px;
+                line-height: 1.5;
+            }
+
+            .numbered-paragraph {
+                text-align: justify;
+                margin-bottom: 15px;
+                line-height: 1.5;
+                text-indent: -20px;  /* Indent the number out of the paragraph */
+                padding-left: 20px;  /* Offset the paragraph text to align after the number */
+            }
+
+            .numbered-paragraphChild {
+                text-align: justify;
+                margin-bottom: 15px;
+                line-height: 1.5;
+                text-indent: 0px;  /* Indent the number out of the paragraph */
+                padding-left: 70px;  /* Offset the paragraph text to align after the number */
+            }
+
+            .text-center {
+                text-align: center;
+            }
+
+            .bold {
+                font-weight: bold;
+            }
+
+            .navigator-container {
+                display: flex;
+                justify-content: center;
+            }
+
+            .navigator {
+                background-color: white;
+                border-radius: 20px;
+                padding: 20px;
+                width: 70vh;
+            }
+
+            .menu-container {
+                display: flex;
+                justify-content: center;
+            }
+
+            .menu {
+                background-color: white;
+                margin-top: 25px;
+
+                border-radius: 20px;
+                padding: 20px;
+                width: 70vh;
+            }
+        </style>
+        <!--- Memorandum (Agreement) --->
+        <form method="POST" action="{{ route('submitProspectPartnerForm', $link->link) }}">
+            @csrf
+            <h1> Memorandum </h1>
+            <div class="memorandum-form-container">
+                <div class="memorandum-form-container-area1">
+
+                    <!-- Section 1: Witnesseth Section -->
+                    <div class="form-section" id="step-1">
+                        <input type="hidden" class="form-control" id="partner_name" name="partner_name"
+                            value="{{ $link->proposalform->institution_name_acronym }}" disabled>
+                        <!--- First Page + Witnesseth Section Preview --->
+                        <div class="memorandum_container_preview">
+                            <div class="witnesseth-section-preview" id="witnesseth-section-preview">
+                                @include('components.memorandum._witnessethSection', ['link' => $link])
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Program Overview -->
+                    <div class="form-section hidden" id="step-2">
+                        <div class="memorandum_container_preview">
+                            <div class="article1-preview previewStyle" id="article1-preview">
+                                @include('components.memorandum._article1')
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Article Clauses -->
+                    <div class="form-section hidden" id="step-3">
+                        <div class="memorandum_container_preview">
+                            <div class="article2-preview previewStyle" id="article2-preview">
+                                @include('components.memorandum._article2', ['link' => $link])
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="memorandum-form-container-area2">
+                    <!-- Dropdown to Navigate between Sections -->
+                    <div class="navigator-container">
+                        <div class="form-group navigator">
+                            <h2 id="section-navigation-header">Step 1: Witnesseth Section</h2>
+                            <label for="section-navigator">Jump to Section:</label>
+                            <select id="section-navigator" class="form-control">
+                                <option value="step-1">Section 1: Witnesseth Section</option>
+                                <option value="step-2">Section 2: Program Overview</option>
+                                <option value="step-3">Section 3: Representation and Warranties</option>
+                            </select>
+
+                            <!-- Move Navigation Buttons Here -->
+                            <div id="navigation-buttons">
+                                <button type="button" class="btn btn-secondary" id="previous-step">Previous</button>
+                                <button type="button" class="btn btn-primary" id="next-step">Next</button>
+                                <button type="submit" class="btn btn-success" id="submit-form"
+                                    style="display: none;">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Options for Step #1 -->
+                    <div class="menu-container">
+                        <div class="menu" id="whereas-section-options" style="display: none;">
+                            <!-- Edit Dropdown Options with Tag-like Input -->
+                            <div class="form-group">
+                                <label for="custom_options">Edit Dropdown Options</label>
+                                <div style="display: flex;">
+                                    <div id="tags-container" class="form-control"
+                                        style="display: flex; min-height: 30px;">
+                                        <!-- Tags will appear here -->
+                                    </div>
+                                    <button type="button" class="btn btn-secondary" id="edit-options-btn">Edit</button>
+                                    <button type="button" class="btn btn-secondary" id="save-options-btn"
+                                        style="display: none;">Save</button>
+                                </div>
+                                <input type="text" class="form-control" id="tag-input"
+                                    placeholder="Type and press comma (,) to add"
+                                    style="display: none; margin-top: 5px; min-width:300px;">
+                            </div>
+
+                            <!-- Whereas Clauses Container -->
+                            <div id="whereas-clauses-container">
+                                <br><label>Whereas Clauses</label>
+                                <br>
+                                <small class="error-message text-danger" id="whereas_clause_error"></small>
+                                <!-- First Whereas Clause -->
+                                <div class="form-group whereas-clause-item">
+                                    <label>Whereas,</label>
+                                    <select class="whereas-clause-select form-control" name="whereas_clauses[]">
+                                        <option value="the AUF">the AUF</option>
+                                        <option value="AUF">AUF</option>
+                                        <option value="{{ $link->proposalform->institution_name_acronym }}">
+                                            {{ $link->proposalform->institution_name_acronym }}</option>
+                                        <option value="the {{ $link->proposalform->institution_name_acronym }}">the
+                                            {{ $link->proposalform->institution_name_acronym }}</option>
+                                        <option value="the AUF and {{ $link->proposalform->institution_name_acronym }}">
+                                            The AUF and {{ $link->proposalform->institution_name_acronym }}</option>
+                                    </select>
+                                    <textarea class="form-control" name="whereas_clause_texts[]" placeholder="Enter full Whereas Clause" required></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Add New Clause Button -->
+                            <button type="button" class="btn btn-secondary" id="add-whereas-clause-btn">Add Another
+                                Whereas Clause</button>
+                        </div>
+                    </div>
+
+                    <!-- Options for Step #2 -->
+                    <div class="menu-container">
+                        <div class="menu" id="program-overview-options" style="display: none;">
+                            <!-- Program Overview Container -->
+                            <div id="article1MenuContainer">
+                                <small class="error-message text-danger" id="program_overview_error"></small>
+                                <!-- First Entry -->
+                                <div class="form-group article1Item">
+                                    <label>Entry</label>
+                                    <textarea class="form-control" name="article1[]" placeholder="Enter full Whereas Clause" required></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Add New Clause Button -->
+                            <button type="button" class="btn btn-secondary" id="article1Btn">Add Another
+                                Entry</button>
+                        </div>
+                    </div>
+
+                    <!-- Option for Step #3 -->
+                    <div class="menu-container">
+                        <div class="menu" id="article2-options" style="display: none;">
+                            <!-- Program Overview Container -->
+                            <div id="article2-container">
+                                <small class="error-message text-danger" id="article2_error"></small>
+                                <!-- First Entry -->
+                                <div class="form-group article2-item">
+                                    <label>Entry</label>
+                                    <textarea class="form-control" name="article2[]" placeholder="Enter full Whereas Clause" required></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Add New Clause Button -->
+                            <button type="button" class="btn btn-secondary" id="add-article2-btn">Add Another Entry</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <script>
+            //Add Whereas Clause
+            document.addEventListener('DOMContentLoaded', function() {
+                const partnerNameInput = document.getElementById('partner_name');
+                const tagInput = document.getElementById('tag-input');
+                const tagsContainer = document.getElementById('tags-container');
+                const editOptionsBtn = document.getElementById('edit-options-btn');
+                const saveOptionsBtn = document.getElementById('save-options-btn');
+                let isEditing = false;
+                let debounceTimeout;
+                let previousPartnerName = partnerNameInput.value; // Preload the initial partner name
+                let tags = ['the AUF', 'AUF', `the ${previousPartnerName}`, `${previousPartnerName}`,
+                    `the AUF and ${previousPartnerName}`
+                ]; // Default tags
+
+                // Render initial tags (non-editable)
+                renderTags();
+
+                // Function to update the tags based on partner name input
+                function updatePartnerNameTags(partnerName) {
+                    // Remove previous partner name-related tags
+                    tags = tags.filter(tag => tag !== previousPartnerName && tag !==
+                        `the AUF and ${previousPartnerName}`);
+
+                    // Add new partner name tags if partnerName is not empty
+                    if (partnerName) {
+                        tags.push(partnerName);
+                        tags.push(`the AUF and ${partnerName}`);
+                    }
+
+                    // Update the previous partner name to the current one
+                    previousPartnerName = partnerName;
+
+                    // Re-render tags after updating
+                    renderTags();
+
+                    //Update Dropdown Menu
+                    updateDropdownOptions();
+                }
+
+                // Debounced function for partner name input
+                function updatePartnerNameTagsDebounced() {
+                    clearTimeout(debounceTimeout);
+                    debounceTimeout = setTimeout(() => {
+                        const partnerName = partnerNameInput.value.trim();
+                        updatePartnerNameTags(partnerName); // Call the function to update tags
+                    }, 300); // Debounce delay (300ms)
+                }
+
+                // Listen to partner name input with debouncing
+                partnerNameInput.addEventListener('input', updatePartnerNameTagsDebounced);
+
+
+                // Toggle between Edit and Save modes
+                editOptionsBtn.addEventListener('click', function() {
+                    if (!isEditing) {
+                        // Enable editing
+                        tagInput.style.display = 'block'; // Show input box
+                        editOptionsBtn.style.display = 'none'; // Hide "Edit" button
+                        saveOptionsBtn.style.display = 'block'; // Show "Save" button
+                        isEditing = true;
+                        renderTags(true); // Make tags removable
+                    }
+                });
+
+                saveOptionsBtn.addEventListener('click', function() {
+                    // Save changes, disable editing
+                    tagInput.style.display = 'none'; // Hide input box
+                    saveOptionsBtn.style.display = 'none'; // Hide "Save" button
+                    editOptionsBtn.style.display = 'block'; // Show "Edit" button
+                    isEditing = false;
+                    renderTags(); // Make tags non-removable
+                });
+
+                // Listen for input in the tag input box
+                tagInput.addEventListener('keypress', function(e) {
+                    if (e.key === ',' || e.key === 'Enter') {
+                        e.preventDefault();
+                        const tagValue = tagInput.value.trim();
+                        if (tagValue) {
+                            addTag(tagValue);
+                            tagInput.value = ''; // Clear input after adding the tag
+                        }
+                    }
+                });
+
+                // Function to add a new tag
+                function addTag(tagValue) {
+                    // Prevent duplicate tags
+                    if (!tags.includes(tagValue)) {
+                        tags.push(tagValue);
+                        renderTags(isEditing);
+                    }
+                }
+
+                // Function to render tags in the tags container
+                function renderTags(removable = false) {
+                    tagsContainer.innerHTML = ''; // Clear the container
+
+                    tags.forEach(tag => {
+                        const tagElement = document.createElement('span');
+                        tagElement.classList.add('tag');
+                        tagElement.style =
+                            'background-color: #e0e0e0; border-radius: 4px; padding: 5px 10px; margin-right: 5px; display: flex; align-items: center; font-size: 0.8rem;';
+
+                        // Tag text
+                        const tagText = document.createElement('span');
+                        tagText.innerText = tag;
+                        tagElement.appendChild(tagText);
+
+                        // Remove button (x) if in editing mode
+                        if (removable) {
+                            const removeBtn = document.createElement('button');
+                            removeBtn.innerText = 'x';
+                            removeBtn.style =
+                                'border: none; background: transparent; color: red; margin-left: 10px; cursor: pointer;';
+                            removeBtn.addEventListener('click', function() {
+                                removeTag(tag);
+                            });
+                            tagElement.appendChild(removeBtn);
+                        }
+
+                        tagsContainer.appendChild(tagElement);
+                    });
+                }
+
+                // Function to remove a tag
+                function removeTag(tag) {
+                    tags = tags.filter(t => t !== tag);
+                    renderTags(isEditing);
+                }
+
+                // Save the tags and update the dropdown options
+                saveOptionsBtn.addEventListener('click', function() {
+                    updateDropdownOptions();
+                });
+
+                // Function to update the dropdown options based on tags
+                function updateDropdownOptions() {
+                    // Loop through all dropdowns and preserve their selected values
+                    document.querySelectorAll('.whereas-clause-select').forEach(dropdown => {
+                        const selectedValue = dropdown.value; // Preserve selected value
+
+                        dropdown.innerHTML = ''; // Clear the current options
+
+                        // Add new options from the tags
+                        tags.forEach(tag => {
+                            const opt = document.createElement('option');
+                            opt.value = tag;
+                            opt.innerText = tag;
+                            dropdown.appendChild(opt);
+                        });
+
+                        // Restore the previously selected value if it exists in the updated options
+                        if (tags.includes(selectedValue)) {
+                            dropdown.value = selectedValue;
+                        }
+                    });
+                }
+
+                const witnessethSectionTemplate = document.getElementById('witnesseth-section-preview').innerHTML;
+                const witnessethSectionPreview = document.querySelector('.witnesseth-section-preview');
+                const whereasClausesContainer = document.getElementById('whereas-clauses-container');
+                const partnerAcronym = document.getElementById('partner_name').value;
+
+                // Function to format the dropdown text with selective bolding
+                function formatDropdownText(text) {
+                    if (text === 'the AUF') {
+                        return '<span class="bold">WHEREAS,</span> the <span class="bold">AUF</span>';
+                    } else if (text === `the AUF and ${partnerAcronym}`) {
+                        return `<span class="bold">WHEREAS,</span> the <span class="bold">AUF and ${partnerAcronym}</span>`;
+                    } else if (text === `the ${partnerAcronym}`) {
+                        return `<span class="bold">WHEREAS,</span> the <span class="bold">${partnerAcronym}</span>`;
+                    } else {
+                        return `<span class="bold">WHEREAS,</span> <span class="bold">${text}</span>`;
+                    }
+                }
+
+                // Function to update the introduction memorandum with all Whereas clauses
+                function updateWitnessethSectionPreview() {
+                    const whereasItems = Array.from(document.querySelectorAll('.whereas-clause-item')).map(item => {
+                        const dropdown = item.querySelector('.whereas-clause-select');
+                        const textarea = item.querySelector('[name="whereas_clause_texts[]"]');
+                        const selectedValue = dropdown ? dropdown.value : '';
+                        const clauseText = textarea ? textarea.value.trim() : '';
+                        return clauseText ?
+                            `<p class="whereas-clause">${formatDropdownText(selectedValue)} ${clauseText}</p>` :
+                            '';
+                    }).filter(clause => clause); // Filter out empty clauses
+
+                    // Format and update the introduction memorandum content
+                    witnessethSectionPreview.innerHTML = `
+                        ${witnessethSectionTemplate}
+                        ${whereasItems.join('')}
+                    `;
+                                        }
+                // Attach input event listeners to dynamically added textareas and dropdowns for Whereas clauses
+                whereasClausesContainer.addEventListener('input', function(e) {
+                    if (e.target.matches('[name="whereas_clause_texts[]"]') || e.target.matches(
+                            '.whereas-clause-select')) {
+                        updateWitnessethSectionPreview();
+                    }
+                });
+
+                // Add another Whereas clause dynamically
+                const addWhereasBtn = document.getElementById('add-whereas-clause-btn');
+                addWhereasBtn.addEventListener('click', function() {
+                    // Create new Whereas clause container
+                    const newClauseDiv = document.createElement('div');
+                    newClauseDiv.classList.add('form-group', 'whereas-clause-item');
+
+                    // Add label for Whereas
+                    const newLabel = document.createElement('label');
+                    newLabel.innerText = 'Whereas,';
+                    newClauseDiv.appendChild(newLabel);
+
+                    // Create dropdown for Whereas clause options
+                    const newSelect = document.createElement('select');
+                    newSelect.classList.add('form-control', 'whereas-clause-select');
+                    newSelect.setAttribute('name', 'whereas_clauses[]');
+
+                    // Populate the new dropdown with options from tags
+                    tags.forEach(tag => {
+                        const newOption = document.createElement('option');
+                        newOption.value = tag;
+                        newOption.innerText = tag;
+                        newSelect.appendChild(newOption);
+                    });
+
+                    // Add textarea for the clause content
+                    const newTextarea = document.createElement('textarea');
+                    newTextarea.classList.add('form-control', 'mt-2');
+                    newTextarea.setAttribute('name', 'whereas_clause_texts[]');
+                    newTextarea.setAttribute('placeholder', 'Enter full Whereas Clause');
+                    newTextarea.required = true;
+
+                    // Add a "Remove" button for the clause
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.classList.add('btn', 'btn-danger', 'mt-2');
+                    removeBtn.innerText = 'Remove';
+                    removeBtn.addEventListener('click', function() {
+                        newClauseDiv.remove();
+                        updateWitnessethSectionPreview(); // Update memorandum after removing clause
+                    });
+
+                    // Append the new select, textarea, and remove button to the new clause div
+                    newClauseDiv.appendChild(newSelect);
+                    newClauseDiv.appendChild(newTextarea);
+                    newClauseDiv.appendChild(removeBtn);
+
+                    // Append the new clause div to the container
+                    document.getElementById('whereas-clauses-container').appendChild(newClauseDiv);
+                });
+
+                // Article #1
+                const article1Template = document.getElementById('article1-preview').innerHTML;
+                const article1Preview = document.querySelector('.article1-preview');
+                const article1Container = document.getElementById('article1MenuContainer');
+
+                // Function to update the introduction memorandum with all Whereas clauses
+                function updateArticle1Preview() {
+                    const article1Items = Array.from(document.querySelectorAll('.article1Item')).map(
+                        (item, index) => {
+                            const textarea = item.querySelector('[name="article1[]"]');
+                            const clauseText = textarea ? textarea.value.trim() : '';
+                            return clauseText ? `<p class="numbered-paragraph">1.${index + 1} ${clauseText}</p>` : '';
+                        }).filter(clause => clause); // Filter out empty clauses
+
+                    // Format and update the introduction memorandum content
+                    article1Preview.innerHTML = `
+                        ${article1Template}
+                        ${article1Items.join('')}
+                    `;
+                }
+                // Attach input event listeners to dynamically added textareas and dropdowns for Whereas clauses
+                article1Container.addEventListener('input', function(e) {
+                    if (e.target.matches('[name="article1[]"]')) {
+                        updateArticle1Preview();
+                    }
+                });
+
+                // Add another entry dynamically
+                const addArticle1Btn = document.getElementById('article1Btn');
+                addArticle1Btn.addEventListener('click', function() {
+                    // Create new entry container
+                    const newClauseDiv = document.createElement('div');
+                    newClauseDiv.classList.add('form-group', 'article1Item');
+
+                    // Add label for Entry
+                    const newLabel = document.createElement('label');
+                    newLabel.innerText = 'Entry';
+                    newClauseDiv.appendChild(newLabel);
+
+                    // Add textarea
+                    const newTextarea = document.createElement('textarea');
+                    newTextarea.classList.add('form-control', 'mt-2');
+                    newTextarea.setAttribute('name', 'article1[]');
+                    newTextarea.setAttribute('placeholder', 'Enter text here.');
+                    newTextarea.required = true;
+
+                    // Add a "Remove" button
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.classList.add('btn', 'btn-danger', 'mt-2');
+                    removeBtn.innerText = 'Remove';
+                    removeBtn.addEventListener('click', function() {
+                        newClauseDiv.remove();
+                        updateArticle1Preview(); // Update memorandum after removing clause
+                    });
+
+                    // Append the new select, textarea, and remove button to the new clause div
+                    newClauseDiv.appendChild(newTextarea);
+                    newClauseDiv.appendChild(removeBtn);
+
+                    // Append the new clause div to the container
+                    document.getElementById('article1MenuContainer').appendChild(newClauseDiv);
+                });
+
+                // Article #2
+                const article2Template = document.getElementById('article2-preview').innerHTML;
+                const article2Preview = document.querySelector('.article2-preview');
+                const article2Container = document.getElementById('article2-container');
+
+                // Function to update the preview with the entry texts
+                function updateArticle2Preview() {
+                    const article2Items = Array.from(document.querySelectorAll('.article2-item')).map(
+                        (item, index) => {
+                            const textarea = item.querySelector('[name="article2[]"]');
+                            const clauseText = textarea ? textarea.value.trim() : '';
+                            return clauseText ? `<p class="article2 numbered-paragraphChild">2.1.${index + 1} ${clauseText}</p>` : '';
+                        }).filter(clause => clause); // Filter out empty clauses
+
+                    // Format and update the introduction memorandum content
+                    article2Preview.innerHTML = `
+                        ${article2Template}
+                        ${article2Items.join('')}
+                    `;
+                }
+                // Attach input event listeners to dynamically added textareas and dropdowns for Whereas clauses
+                article2Container.addEventListener('input', function(e) {
+                    if (e.target.matches('[name="article2[]"]')) {
+                        updateArticle2Preview();
+                    }
+                });
+
+                // Add another entry dynamically
+                const addArticle2Btn = document.getElementById('add-article2-btn');
+                addArticle2Btn.addEventListener('click', function() {
+                    // Create new entry container
+                    const newClauseDiv = document.createElement('div');
+                    newClauseDiv.classList.add('form-group', 'article2-item');
+
+                    // Add label for Entry
+                    const newLabel = document.createElement('label');
+                    newLabel.innerText = 'Entry';
+                    newClauseDiv.appendChild(newLabel);
+
+                    // Add textarea
+                    const newTextarea = document.createElement('textarea');
+                    newTextarea.classList.add('form-control', 'mt-2');
+                    newTextarea.setAttribute('name', 'article2[]');
+                    newTextarea.setAttribute('placeholder', 'Enter textx here.');
+                    newTextarea.required = true;
+
+                    // Add a "Remove" button
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.classList.add('btn', 'btn-danger', 'mt-2');
+                    removeBtn.innerText = 'Remove';
+                    removeBtn.addEventListener('click', function() {
+                        newClauseDiv.remove();
+                        updateArticle2Preview(); // Update memorandum after removing clause
+                    });
+
+                    // Append the new select, textarea, and remove button to the new clause div
+                    newClauseDiv.appendChild(newTextarea);
+                    newClauseDiv.appendChild(removeBtn);
+
+                    // Append the new clause div to the container
+                    document.getElementById('article2-container').appendChild(newClauseDiv);
+                });
+            });
+
+            // Function to validate based on the current step
+            function validateCurrentStep(currentStep) {
+                switch (currentStep) {
+                    case 'step-1':
+                        return validateStep1();
+                    case 'step-2':
+                        return validateStep2();
+                    default:
+                        return true; // No validation needed for other steps
+                }
+            }
+
+            // Handle dropdown selection and validate before navigating
+            document.getElementById('section-navigator').addEventListener('change', function() {
+                var currentStep = document.querySelector('.form-section:not(.hidden)').id;
+                var selectedSection = this.value;
+                var selectedOptionText = this.options[this.selectedIndex].text; // Get the selected option text
+
+                // Validate the current step before switching
+                if (validateCurrentStep(currentStep)) {
+                    // Hide all sections
+                    document.querySelectorAll('.form-section').forEach(function(section) {
+                        section.classList.add('hidden');
+                    });
+
+                    // Show the selected section
+                    document.getElementById(selectedSection).classList.remove('hidden');
+                    document.getElementById('section-navigation-header').textContent =
+                    selectedOptionText; // Set the header text
+                } else {
+                    // Reset dropdown back to the current step if validation fails
+                    document.getElementById('section-navigator').value = currentStep;
+                }
+            });
+
+            // Validate Step 1: Partner Name and Whereas Clauses
+            function validateStep1() {
+                let isValid = true;
+
+                // Get partner name and first whereas clause (assuming it's the first one in the form)
+                const partnerName = document.getElementById('partner_name') ? document.getElementById('partner_name').value :
+                '';
+                const whereasClauseElements = document.querySelectorAll('[name="whereas_clauses[]"]');
+
+                // Clear error messages (check if the error elements exist)
+                const partnerNameError = document.getElementById('partner_name_error');
+                if (partnerNameError) partnerNameError.innerText = '';
+
+                const whereasClauseError = document.getElementById('whereas_clause_error');
+                if (whereasClauseError) whereasClauseError.innerText = '';
+
+                // Validate Partner Name
+                if (partnerName.trim() === '') {
+                    if (partnerNameError) partnerNameError.innerText = 'Partner name is required.';
+                    isValid = false;
+                }
+
+                // Validate each Whereas Clause
+                whereasClauseElements.forEach((clause, index) => {
+                    if (clause.value.trim() === '') {
+                        if (whereasClauseError) whereasClauseError.innerText =
+                            `Whereas clause #${index + 1} is required.`;
+                        isValid = false;
+                    }
+                });
+
+                return isValid;
+            }
+
+            // Validate Step 2: Contact Person and Contact Email
+            function validateStep2() {
+                let isValid = true;
+
+                return isValid;
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const stepIds = ['step-1', 'step-2', 'step-3'];
+                let currentStepIndex = 0; // Track current step
+                const navigationHeader = document.getElementById('section-navigation-header');
+                const sectionNavigator = document.getElementById('section-navigator');
+                const nextStepBtn = document.getElementById('next-step');
+                const previousStepBtn = document.getElementById('previous-step');
+                const submitBtn = document.getElementById('submit-form');
+                const witnessethSectionOptions = document.getElementById('whereas-section-options');
+                const programOverviewSectionOptions = document.getElementById('program-overview-options');
+                const article2Options = document.getElementById('article2-options')
+
+                // Update visibility of buttons based on current step
+                function updateButtonVisibility() {
+                    previousStepBtn.style.display = currentStepIndex === 0 ? 'none' : 'block';
+                    nextStepBtn.style.display = currentStepIndex === stepIds.length - 1 ? 'none' : 'block';
+                    submitBtn.style.display = currentStepIndex === stepIds.length - 1 ? 'block' : 'none';
+
+                    // Show Witnesseth Section options only on Step 1
+                    witnessethSectionOptions.style.display = currentStepIndex === 0 ? 'block' : 'none';
+
+                    // Show Program Overview options only on Step 2
+                    programOverviewSectionOptions.style.display = currentStepIndex === 1 ? 'block' : 'none';
+
+                    // Show Article 2 options only on Step 3
+                    article2Options.style.display = currentStepIndex === 2 ? 'block' : 'none';
+                }
+
+                // Show the current step and update navigation header
+                function showStep(index) {
+                    document.querySelectorAll('.form-section').forEach(section => section.classList.add('hidden'));
+                    document.getElementById(stepIds[index]).classList.remove('hidden');
+                    navigationHeader.textContent = sectionNavigator.options[index].text;
+                    sectionNavigator.value = stepIds[index];
+                    updateButtonVisibility();
+                }
+
+                // Event listeners for buttons
+                nextStepBtn.addEventListener('click', function() {
+                    if ((currentStepIndex === 0 && validateStep1()) || (currentStepIndex === 1 &&
+                        validateStep2())) {
+                        currentStepIndex++;
+                        showStep(currentStepIndex);
+                    }
+                });
+
+                previousStepBtn.addEventListener('click', function() {
+                    currentStepIndex--;
+                    showStep(currentStepIndex);
+                });
+
+                sectionNavigator.addEventListener('change', function() {
+                    const selectedStepIndex = stepIds.indexOf(this.value);
+                    if (selectedStepIndex !== -1) {
+                        if ((currentStepIndex === 0 && validateStep1()) || (currentStepIndex === 1 &&
+                                validateStep2()) || currentStepIndex === 2) {
+                            currentStepIndex = selectedStepIndex;
+                            showStep(currentStepIndex);
+                        } else {
+                            sectionNavigator.value = stepIds[
+                            currentStepIndex]; // Revert to current step if validation fails
+                        }
+                    }
+                });
+
+                // Initial setup
+                showStep(currentStepIndex);
+            });
+        </script>
+    @endif
+
+@endsection

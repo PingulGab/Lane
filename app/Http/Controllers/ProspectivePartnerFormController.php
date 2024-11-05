@@ -10,6 +10,7 @@ use App\Models\Link;
 use App\Models\Memorandum;
 use App\Models\ProposalForm;
 use App\Models\EndorsementForm;
+use Dompdf\Options;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Affiliate;
@@ -23,6 +24,7 @@ use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\SimpleType\Jc;
 use PhpOffice\PhpWord\Style\Font;
 use PhpOffice\PhpWord\IOFactory;
+use Vite;
 
 class ProspectivePartnerFormController extends Controller
 {    
@@ -45,8 +47,9 @@ class ProspectivePartnerFormController extends Controller
                 // Session is valid, show protected content
                 if ($link->isActive == false)
                 {
-                    return redirect()->route('prospectPartnerViewSubmittedForm', $link->link);
-                } else {
+                    $data = $this->prospectPartnerViewSubmittedForm($link->link);
+                    return view('PartnerApplication.PartnerView.submittedForm_View', $data);
+                } elseif ($link->isActive == true) {
                     return view('PartnerApplication.PartnerView.partnershipApplicationForm_View', ['link' => $link, 'institutionalUnitList' => $institutionalUnitList, 'countriesList' => $countriesList]);
                 }
             } else {
@@ -82,75 +85,69 @@ class ProspectivePartnerFormController extends Controller
     }
 
     // Display the link page
-    public function prospectPartnerViewSubmittedForm($link)
+    private function prospectPartnerViewSubmittedForm($link)
     {
         $link = Link::where('link', $link)->firstOrFail();
+        $memorandumModel = $link->memorandum;
+
+        $combinedWhereasClausesForPdf = [];
+        $partnerAcronym = $link->proposalForm->institution_name_acronym;
+        foreach (json_decode($memorandumModel->whereas_clauses) as $index => $clauseData) {
+            $dropdownText = $clauseData->dropdown;
+            $textContent = ucfirst($clauseData->text); // Capitalize the first letter of the text
+        
+            // Define logic for conditional bolding
+            if ($dropdownText === 'the AUF') {
+                $formattedClause = '<span class="bold">WHEREAS,</span> the <span class="bold">AUF</span> ' . $textContent;
+            } elseif ($dropdownText === "the AUF and {$partnerAcronym}") {
+                $formattedClause = '<span class="bold">WHEREAS,</span> the <span class="bold">AUF and ' . $partnerAcronym . '</span> ' . $textContent;
+            } elseif ($dropdownText === "the {$partnerAcronym}") {
+                $formattedClause = '<span class="bold">WHEREAS,</span> the <span class="bold">' . $partnerAcronym . '</span> ' . $textContent;
+            } else {
+                $formattedClause = '<span class="bold">WHEREAS,</span> <span class="bold">' . $dropdownText . '</span> ' . $textContent;
+            }
+        
+            // Add the formatted clause to the array for PDF rendering
+            $combinedWhereasClausesForPdf[] = $formattedClause;
+        }
 
         $data = [
             'link' => $link,
             'memorandum' => $link->memorandum,
             'proposalForm' => $link->proposalForm,
+            'partnership_title' => $memorandumModel->partnership_title,
+            'sign_date' => 'TBA',
+            'sign_location' => 'TBA',
+            'validity_period' => $memorandumModel->validity_period,
+            'article1' => json_decode($memorandumModel->article_1),
+            'article2' => json_decode($memorandumModel->article_2_partner),
+            'article3' => json_decode($memorandumModel->article_3),
+            'article4' => json_decode($memorandumModel->article_4),
+            'article5' => json_decode($memorandumModel->article_5),
+            'article6' => json_decode($memorandumModel->article_6),
+            'article7' => json_decode($memorandumModel->article_7),
+            'article8' => json_decode($memorandumModel->article_8),
+            'article9' => json_decode($memorandumModel->article_9),
+            'article10' => json_decode($memorandumModel->article_10),
+            'article11' => json_decode($memorandumModel->article_11),
+            'article12' => json_decode($memorandumModel->article_12),
+            'article13' => json_decode($memorandumModel->article_13),
+            'article14' => json_decode($memorandumModel->article_14),
+            'article15' => json_decode($memorandumModel->article_15),
+            'article16' => json_decode($memorandumModel->article_16),
+            'article17' => json_decode($memorandumModel->article_17),
+            'article18' => json_decode($memorandumModel->article_18),
+            'article19' => json_decode($memorandumModel->article_19),
+            'article20' => json_decode($memorandumModel->article_20),
+            'article21' => json_decode($memorandumModel->article_21),
+            'whereasClauses' => $combinedWhereasClausesForPdf, // Send combined whereas clauses
         ];
 
-        // Check if the user is authenticated and if session timestamp exists
-        $authSessionKey = "authenticated_{$link->id}";
-        $authTimestampKey = "authenticated_{$link->id}_time";
-
-        if (Session::has($authSessionKey) && Session::has($authTimestampKey)) {
-            $authenticatedTime = Carbon::parse(Session::get($authTimestampKey));
-
-            // Check if the session has expired (after 1 hour)
-            if ($authenticatedTime->diffInMinutes(now()) <= 180) {
-                // Session is valid, show protected content
-                return view('PartnerApplication.PartnerView.submittedForm_View', $data);
-            } else {
-                // Session expired, remove the session variables
-                Session::forget($authSessionKey);
-                Session::forget($authTimestampKey);
-            }
-        }
-
-        // If not authenticated or session expired, show the password form
-        return view('PartnerApplication.PartnerView.submittedForm_Password', ['link' => $link]);
+        return $data;
     }
     
-    // Validate the password entered by the user
-    public function validatePasswordSubmittedForm(Request $request, $link)
-    {
-        $link = Link::where('link', $link)->firstOrFail();
 
-        if (password_verify($request->password, $link->password)) {
-            // Password is correct, store authentication status in session
-            $authSessionKey = "authenticated_{$link->id}";
-            $authTimestampKey = "authenticated_{$link->id}_time";
-
-            Session::put($authSessionKey, true);
-            Session::put($authTimestampKey, now()); // Store the current time for expiry check
-
-            // Redirect back to the same link (so the content is displayed)
-            return redirect()->route('prospectPartnerViewSubmittedForm', $link->link);
-        }
-
-        // Password is incorrect, return back with an error
-        return back()->withErrors(['password' => 'Invalid password.']);
-    }
-
-    // Form is Submitted
-    public function submitProspectPartnerForm(Request $request, $link)
-    {
-        $memorandumController = new MemorandumController();
-        
-        $memorandumID = $memorandumController->generateMemorandum($request);
-        $this->generateProposalForm($request, $link, $memorandumID);
-        // Optionally send email after submission
-        //TODO Mail::to('janjanpingul@gmail.com')->send(new ProspectivePartnerFormSubmitted($link));
-    
-        return response()->json(['message' => 'Form submitted successfully, and approval tracking initiated.']);
-    }
-
-
-
-    public function generateProposalForm(Request $request, $link)
+    public function submitProspectPartnerFormProposal(Request $request, $link)
     {
         $validatedData = $request->validate([
             'selected_institutionalUnit' => 'nullable|exists:institutional_units,id',
@@ -158,21 +155,53 @@ class ProspectivePartnerFormController extends Controller
 
         $link = Link::where('link', $link)->firstOrFail();
 
-        // Call the generateProposalForm method and capture the proposal form ID
+        session(['link_id' => $link->id]);
         $proposalFormId = (new ProposalFormController())->generateProposalForm($request);
-    
+        
+        return redirect()->route('prospectPartnerViewLink', $link->link);
+    }
+
+    public function submitProspectPartnerFormMemorandum(Request $request, $link)
+    {
+        $link = Link::where('link', $link)->firstOrFail();
+
+        session(['link_id' => $link->id]);
+        $memorandumAgreementId = (new MemorandumController())->generateMemorandum($request);
+
         // Step 2: Link Memorandum and Proposal Form to the Link model
         $link->update([
-            'proposal_form_fk' => $proposalFormId,
+            'memorandum_fk' => $memorandumAgreementId,
             'isActive' => false,
         ]);
-    
-        // Sync selected institutional units with the link
-        $link->institutionalUnits()->sync($validatedData['selected_institutionalUnit']);
 
         return redirect()->route('prospectPartnerViewLink', $link->link);
     }
 
+    public function test($link)
+    {
+        $linkModel = Link::where('link', $link)->firstOrFail();
+
+        return view('PartnerApplication.PartnerView.temp', ['link' => $linkModel]);
+    }
+
+    public function test2($link)
+    {
+        $link = Link::where('link', $link)->firstOrFail();
+        $memorandum = $link->memorandum;
+        // Generate the file name: AUF-MOA-[partner_name]-[datecreated]
+        $dateCreated = Carbon::now()->format('Ymd');
+        $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $memorandum->partnership_title) . '-' . $dateCreated;
+
+        $dompdf = new Dompdf();
+        $html = view('components.memorandum._memorandum_preview', [
+            'link' => $link,
+            'memorandum' => $memorandum,
+        ])->render();    
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+        Storage::put('public/memorandum/' . $fileName . '.pdf', $dompdf->output());
+
+    }
     //Generate Memorandum
     // public function generateMemorandum(Request $request)
     // {

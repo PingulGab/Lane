@@ -1,6 +1,6 @@
 @php
     $whereasClauses = is_string($memorandum->whereas_clauses) ? json_decode($memorandum->whereas_clauses, true) : $memorandum->whereas_clauses;
-    $articles = is_string($memorandum->articles) ? json_decode($memorandum->articles, true) : $memorandum->articles;
+    $article_1 = is_string($memorandum->article_1) ? json_decode($memorandum->article_1, true) : $memorandum->article_1;
 
     if (is_array($whereasClauses)) {
         foreach ($whereasClauses as $index => $clause) {
@@ -11,8 +11,8 @@
         }
     }
 
-    if (is_array($articles)) {
-        foreach ($articles as $index => $article) {
+    if (is_array($article_1)) {
+        foreach ($article_1 as $index => $article) {
             if (is_array($article)) {
                 // Convert nested arrays to string (customize this as needed for your specific structure)
                 $articles[$index] = implode(', ', $article);
@@ -62,7 +62,7 @@
             <!-- Article Clauses -->
             <div id="article-3" class="form-group">
                 <label>Article 3 Clauses</label>
-                @foreach($articles as $index => $article)
+                @foreach($article_1 as $index => $article)
                     <div class="article-group mt-2">
                         <textarea class="form-control" name="articles[]" required>{{ $article }}</textarea>
                         <button type="button" class="btn btn-danger remove-article mt-2">Remove</button>

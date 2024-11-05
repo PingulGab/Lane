@@ -63,6 +63,10 @@ Route::middleware(['auth', 'role:Superadmin,Employee'])->group(function () {
     Route::post('/documents/{id}/{name}/view/approve-signed-document', [DocumentsPageController::class, 'approveSignedDocument'])->name('approveSignedDocument');
 });
 
+// TODO REMOVE THIS AFTER TEST
+Route::get('test/{link}', [ProspectivePartnerFormController::class, 'test'])->name('test');
+Route::get('test/{link}/pdf', [ProspectivePartnerFormController::class, 'test2'])->name('test2');
+
 //TODO Compare Version
 Route::get('/memorandum/{id}/compare/{version}', [MemorandumController::class, 'compareVersion'])->name('compareVersion');
 Route::get('/memorandum/{id}/compare/{version}/view', [MemorandumController::class, 'displayMemorandumComparison'])->name('displayMemorandumComparison');
@@ -83,11 +87,11 @@ Route::get('/partner/application/{link}', [ProspectivePartnerFormController::cla
 Route::post('/partner/application/{link}', [ProspectivePartnerFormController::class, 'validateProspectPartnerPassword'])->name('validateProspectPartnerPassword');
 
 // Submission of Form
-Route::post('/partner/application/{link}/submitted', [ProspectivePartnerFormController::class, 'generateProposalForm'])->name('generateProposalForm');
+Route::post('/partner/application/{link}/submitted-proposal', [ProspectivePartnerFormController::class, 'submitProspectPartnerFormProposal'])->name('submitProspectPartnerFormProposal');
+Route::post('/partner/application/{link}/submitted-memorandum', [ProspectivePartnerFormController::class, 'submitProspectPartnerFormMemorandum'])->name('submitProspectPartnerFormMemorandum');
 
-// View of Submitted Information
-Route::get('/partner/application/{link}/view', [ProspectivePartnerFormController::class, 'prospectPartnerViewSubmittedForm'])->name('prospectPartnerViewSubmittedForm');
-Route::post('/partner/application/{link}/view', [ProspectivePartnerFormController::class, 'validatePasswordSubmittedForm'])->name('validatePasswordSubmittedForm');
+// Edit of Memorandum and Proposal Form
+Route::get('/partner/application/{link}/edit-memorandum',[MemorandumController::class,'partnerEditMemorandum'])->name('partnerEditMemorandum');
 
 //! Route for: Institutional Unit's
 // View of Submitted Information (From Prospective Partner)

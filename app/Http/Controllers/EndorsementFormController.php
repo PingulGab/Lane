@@ -38,14 +38,27 @@ class EndorsementFormController extends Controller
     {
         //! Validate all the inputs from the multi-step form
         $validatedData = $request->validate([
-            'Description_1' => 'required|string|max:255',
-            'Description_2' => 'required|string|max:255',
+            'endorsement_1_1' => 'required|string',
+            'endorsement_1_2' => 'required|string',
+            'endorsement_1_3' => 'required|string',
+            'endorsement_1_4' => 'required|string',
+            'endorsement_1_5' => 'required|string',
+            'endorsement_1_6' => 'required|string',
+            'endorsement_1_7' => 'required|string',
+            'endorsement_1_8' => 'required|string',
+            'selected_affiliates' => 'required',
         ]);
     
         //! Create a new Memorandum entry in the database
         $endorsement = new EndorsementForm();
-        $endorsement->Description_1 = $validatedData['Description_1'];
-        $endorsement->Description_2 = $validatedData['Description_2'];
+        $endorsement->endorsement_1_1 = $validatedData['endorsement_1_1'];
+        $endorsement->endorsement_1_2 = $validatedData['endorsement_1_2'];
+        $endorsement->endorsement_1_3 = $validatedData['endorsement_1_3'];
+        $endorsement->endorsement_1_4 = $validatedData['endorsement_1_4'];
+        $endorsement->endorsement_1_5 = $validatedData['endorsement_1_5'];
+        $endorsement->endorsement_1_6 = $validatedData['endorsement_1_6'];
+        $endorsement->endorsement_1_7 = $validatedData['endorsement_1_7'];
+        $endorsement->endorsement_1_8 = $validatedData['endorsement_1_8'];
         $endorsement->save();
 
         //! Establish the Relationship of the created Endorsement Form to the Link Table
@@ -53,63 +66,15 @@ class EndorsementFormController extends Controller
         $linkModel->update([
             'endorsement_form_fk' => $endorsement->id,
         ]);
-    
-        //! PHP WORD: Setting Capitalizations
-        $Description1 = strtoupper($endorsement->Description_1);
-
-        //! PHP WORD: Generate the Word document using PHPWord
-        $phpWord = new PhpWord();
-        
-        //! PHP WORD:Global Styles
-        $phpWord->setDefaultFontName('Times New Roman');
-        $phpWord->setDefaultFontSize(14);
-
-        $sectionStyle = [
-            'marginLeft' => 1799.887,  // 1.25 inch
-            'marginRight' => 1799.887, // 1.25 inch
-            'marginTop' => 1440,   // Default (1 inch)
-            'marginBottom' => 1440 // Default (1 inch)
-        ];
-
-        //! PHP WORD:Custom Styles
-        $phpWord->addTitleStyle(1, ['bold' => true, 'size' => 16, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
-        $phpWord->addTitleStyle(2, ['bold' => true, 'size' => 14, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
-        $phpWord->addParagraphStyle('leadingParagraph', ['alignment'=>Jc::BOTH]);
-        $phpWord->addParagraphStyle('indentedParagraph', [
-            'alignment' => Jc::BOTH,
-            'indentation' => ['firstLine' => 720],
-        ]);
-        $phpWord->addParagraphStyle('indentedSpacedParagraph', [
-            'alignment' => Jc::BOTH,
-            'lineHeight' => 1.5,
-            'indentation' => ['firstLine' => 720],
-        ]);
-
-        //! PHP WORD:Creation of Section for FIRST PAGE
-        $firstPageSection = $phpWord->addSection([
-            'marginTop' => 4000,
-            'marginBottom' => 1000,
-        ]);
-
-        //! PHP WORD: Content of the First Page
-        $firstPageSection->addTextBreak(2);
-        $firstPageSection->addTitle('ENDORSEMENT FORM', 1);
-        $firstPageSection->addTitle('Description #1' . $Description1, 1);
-        $firstPageSection->addTitle('Description #2:'. $endorsement->Description_2, 1);
 
         //! Generatin of File Name
         $dateCreated = Carbon::now()->format('Ymd');
-        $fileName = 'AUF-EndorsementForm-' . str_replace(' ', '-', $endorsement->Description_1) . '-' . $dateCreated;
+        $fileName = 'AUF-EndorsementForm-' . str_replace(' ', '-', $linkModel->memorandum->partnership_title) . '-' . $dateCreated;
 
-        //! Save the .docx file
-        $docxFilePath = storage_path('app/public/endorsement-form/' . $fileName . '.docx');
-        $phpWord->save($docxFilePath, 'Word2007');
-    
         //! Generate the PDF using DOMPDF        
         $dompdf = new Dompdf();
-        $html = view('generate_endorsementForm.endorsement_pdf_view', [
-            'Description_1' => $endorsement->Description_1,
-            'Description_2' => $endorsement->Description_2,
+        $html = view('components.endorsement_form._endorsement_form_preview', [
+            'endorsement' => $endorsement
         ])->render();    
         $dompdf->loadHtml($html);
         $dompdf->render();

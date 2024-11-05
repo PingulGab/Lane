@@ -37,15 +37,72 @@ class MemorandumController extends Controller
     {
         // Validate all the inputs from the multi-step form
         $validatedData = $request->validate([
-            'partner_name' => 'required|string|max:255',
+            'partnership_title' => 'string',
+            'combined_duration' => 'string|max:255',
             'whereas_clauses' => 'nullable|array',
-            'whereas_clauses.*' => 'required|string|max:1000',
+            'whereas_clauses.*' => 'required|string',
             'whereas_clause_texts' => 'nullable|array',
-            'whereas_clause_texts.*' => 'required|string|max:1000',
-            'contact_person' => 'required|string|max:255',
-            'contact_email' => 'required|email|max:255',
-            'articles' => 'nullable|array',
-            'articles.*' => 'required|string|max:1000',
+            'whereas_clause_texts.*' => 'required|string',
+
+            'article1' => 'nullable|array',
+            'article1.*' => 'required|string',
+
+            'article2' => 'required|array',
+            'article2.*' => 'required|string',
+
+            'article3' => 'required|array',
+            'article3.*' => 'required|string',
+
+            'article5' => 'required|array',
+            'article5.*' => 'required|string',
+
+            'article6' => 'required|array',
+            'article6.*' => 'required|string',
+
+            'article7' => 'required|array',
+            'article7.*' => 'required|string',
+
+            'article8' => 'required|array',
+            'article8.*' => 'required|string',
+
+            'article9' => 'required|array',
+            'article9.*' => 'required|string',
+
+            'article10' => 'required|array',
+            'article10.*' => 'required|string',
+
+            'article11' => 'required|array',
+            'article11.*' => 'required|string',
+
+            'article12' => 'required|array',
+            'article12.*' => 'required|string',
+
+            'article13' => 'required|array',
+            'article13.*' => 'required|string',
+
+            'article14' => 'required|array',
+            'article14.*' => 'required|string',
+
+            'article15' => 'required|array',
+            'article15.*' => 'required|string',
+
+            'article16' => 'required|array',
+            'article16.*' => 'required|string',
+
+            'article17' => 'required|array',
+            'article17.*' => 'required|string',
+
+            'article18' => 'required|array',
+            'article18.*' => 'required|string',
+
+            'article19' => 'required|array',
+            'article19.*' => 'required|string',
+
+            'article20' => 'required|array',
+            'article20.*' => 'required|string',
+
+            'article21' => 'required|array',
+            'article21.*' => 'required|string',
         ]);
     
         // Combine the Whereas dropdown and textarea into a structured array
@@ -60,131 +117,91 @@ class MemorandumController extends Controller
 
         // Create a new Memorandum entry in the database
         $memorandum = new Memorandum();
-        $memorandum->partner_name = $validatedData['partner_name'];
-        $memorandum->contact_person = $validatedData['contact_person'];
-        $memorandum->contact_email = $validatedData['contact_email'];
+        $memorandum->partnership_title = $validatedData['partnership_title'];
         $memorandum->whereas_clauses = json_encode($combinedWhereasClauses); // Save both dropdown and text
-        $memorandum->articles = json_encode($validatedData['articles']);
+        $memorandum->validity_period = $validatedData['combined_duration'];
+        $memorandum->article_1 = json_encode($validatedData['article1']);
+        $memorandum->article_2_partner = json_encode($validatedData['article2']);
+        $memorandum->article_3 = json_encode($validatedData['article3']);
+        $memorandum->article_5 = json_encode($validatedData['article5']);
+        $memorandum->article_6 = json_encode($validatedData['article6']);
+        $memorandum->article_7 = json_encode($validatedData['article7']);
+        $memorandum->article_8 = json_encode($validatedData['article8']);
+        $memorandum->article_9 = json_encode($validatedData['article9']);
+        $memorandum->article_10 = json_encode($validatedData['article10']);
+        $memorandum->article_11 = json_encode($validatedData['article11']);
+        $memorandum->article_12 = json_encode($validatedData['article12']);
+        $memorandum->article_13 = json_encode($validatedData['article13']);
+        $memorandum->article_14 = json_encode($validatedData['article14']);
+        $memorandum->article_15 = json_encode($validatedData['article15']);
+        $memorandum->article_16 = json_encode($validatedData['article16']);
+        $memorandum->article_17 = json_encode($validatedData['article17']);
+        $memorandum->article_18 = json_encode($validatedData['article18']);
+        $memorandum->article_19 = json_encode($validatedData['article19']);
+        $memorandum->article_20 = json_encode($validatedData['article20']);
+        $memorandum->article_21 = json_encode($validatedData['article21']);
         $memorandum->save();
     
+        // Call the Link Model from Session (Set in ProspectivePartnerFormController@SubmittedProposalForm)
+        $link_id = session('link_id');
+        $linkModel = Link::where('id', $link_id)->firstOrFail();
+        session()->forget('link_id');
+
         // Generate the file name: AUF-MOA-[partner_name]-[datecreated]
         $dateCreated = Carbon::now()->format('Ymd');
-        $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $memorandum->partner_name) . '-' . $dateCreated;
-    
-        //Setting Capitalizations
-        $partnerName = strtoupper($memorandum->partner_name);
-        $partnerRepresentative = strtoupper($memorandum->contact_person);
-
-        // Generate the Word document using PHPWord
-        $phpWord = new PhpWord();
-        
-        //Global Styles
-        $phpWord->setDefaultFontName('Times New Roman');
-        $phpWord->setDefaultFontSize(14);
-
-        $sectionStyle = [
-            'marginLeft' => 1799.887,  // 1.25 inch
-            'marginRight' => 1799.887, // 1.25 inch
-            'marginTop' => 1440,   // Default (1 inch)
-            'marginBottom' => 1440 // Default (1 inch)
-        ];
-
-        //Custom Styles
-        $phpWord->addTitleStyle(1, ['bold' => true, 'size' => 16, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
-        $phpWord->addTitleStyle(2, ['bold' => true, 'size' => 14, 'name' => 'Times New Roman'], ['alignment' => Jc::CENTER]);
-        $phpWord->addParagraphStyle('leadingParagraph', ['alignment'=>Jc::BOTH]);
-        $phpWord->addParagraphStyle('indentedParagraph', [
-            'alignment' => Jc::BOTH,
-            'indentation' => ['firstLine' => 720],
-        ]);
-        $phpWord->addParagraphStyle('indentedSpacedParagraph', [
-            'alignment' => Jc::BOTH,
-            'lineHeight' => 1.5,
-            'indentation' => ['firstLine' => 720],
-        ]);
-
-        //Creation of Section for FIRST PAGE
-        $firstPageSection = $phpWord->addSection([
-            'marginTop' => 4000,
-            'marginBottom' => 1000,
-        ]);
-
-        //Title (First Page)
-        $firstPageSection->addTextBreak(2);
-        $firstPageSection->addTitle('ANGELES UNIVERSITY FOUNDATION (PHILIPPINES)', 1);
-        $firstPageSection->addTitle('AND', 1);
-        $firstPageSection->addTitle($memorandum->partner_name, 1);
-        //Space
-        $firstPageSection->addTextBreak(5,['size'=>16]);
-        //Description (First Page)
-        $firstPageSection->addTitle('MEMORANDUM OF AGREEMENT FOR {Reason, change this to be dynamic}', 1);
-    
-        // Memorandum of Agreement Section
-        $moaPageSection = $phpWord->addSection($sectionStyle);
-        
-        $moaPageSection->addTitle('MEMORANDUM OF AGREEMENT', 2);
-        $moaPageSection->addTextBreak(2);
-        $moaPageSection->addText('KNOW ALL MEN BY THESE PRESENTS:', null, 'leadingParagraph');
-        $moaPageSection->addTextBreak();
-        $moaPageSection->addText('This Memorandum of Agreement ("Agreement") is executed on {Date}, in Angeles City, Philippines, by and between:', null, 'indentedParagraph');
-        $moaPageSection->addTextBreak();
-        $moaSection_auf_TextRun = $moaPageSection->addTextRun('indentedSpacedParagraph');
-        $moaSection_auf_TextRun->addText('ANGELES UNIVERSITY FOUNDATION (PHILIPPINES)',['bold'=>true]);
-        $moaSection_auf_TextRun->addText(', a higher education institution duly organized and existing under the laws of the Republic of the Philippines, with principal address at MacArthur Highway, Angeles City, Philippines, duly represented herein by its President, ');
-        $moaSection_auf_TextRun->addText('DR. JOSEPH EMMANUEL L. ANGELES ',['bold'=>true]);
-        $moaSection_auf_TextRun->addText('(hereafter referred to as ');
-        $moaSection_auf_TextRun->addText('"AUF"', ['bold'=>true]);
-        
-        $moaPageSection->addTextBreak();
-        $moaPageSection->addText('and', null,['alignment'=>Jc::CENTER]);
-        $moaPageSection->addTextBreak();
-
-        $moaSection_partner_TextRun = $moaPageSection->addTextRun('indentedSpacedParagraph');
-        $moaSection_partner_TextRun->addText($partnerName. ', ',['bold'=>true]);
-        $moaSection_partner_TextRun->addText('a time-honored and well-acclaimed institution of higher learning duly organized and existing under the laws of the People’s Republic of China, with principal address at No.1 Keji Road, Shangjie, Minhou, Fuzhou, Fujian, People’s Republic of China, herein represented by its President, ');
-        $moaSection_partner_TextRun->addText($partnerRepresentative . ' ',['bold'=>true]);
-        $moaSection_partner_TextRun->addText('(hereafter referred to as ');
-        $moaSection_partner_TextRun->addText('"{PartnerName_Abbreviation}"', ['bold'=>true]);
-
-        // Witnesseth That Section
-        $witnessethPageSection = $phpWord->addSection($sectionStyle);
-
-        // !Add Whereas Clauses
-        $witnessethPageSection->addTitle('WITNESSETH THAT:', 1);
-        foreach ($validatedData['whereas_clauses'] as $index => $dropdownClause) {
-            $textClause = $validatedData['whereas_clause_texts'][$index] ?? '';
-            $combinedClause = "WHEREAS, " . $dropdownClause . " " . ucfirst($textClause); // Combining both
-            $witnessethPageSection->addText($combinedClause, null, ['align' => 'both']); // Justify alignment
-        }
-
-        // !Add Contact Information
-        /*$section->addText('Contact Person: ' . $memorandum->contact_person, 'paragraphStyle');
-        $section->addText('Contact Email: ' . $memorandum->contact_email, 'paragraphStyle');
-    
-        // !Add Article Clauses
-        $section->addText('Article 3: Scope of Collaboration', 'paragraphStyle');
-        foreach (json_decode($memorandum->articles, true) as $index => $article) {
-            $section->addText('3.' . ($index + 1) . ' ' . $article, 'paragraphStyle', 'justify');
-        }*/
-    
-        // Save the .docx file
-        $docxFilePath = storage_path('app/public/memorandum/' . $fileName . '.docx');
-        $phpWord->save($docxFilePath, 'Word2007');
+        $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $linkModel->proposalForm->institution_name) . '-' . $dateCreated;
     
         // Generate the PDF using DOMPDF
         $combinedWhereasClausesForPdf = [];
+        $partnerAcronym = $linkModel->proposalForm->institution_name_acronym;
         foreach ($combinedWhereasClauses as $index => $clauseData) {
-            // Combine the dropdown and textarea content for PDF view
-            $combinedWhereasClausesForPdf[] = "WHEREAS, " . $clauseData['dropdown'] . " " . ucfirst($clauseData['text']) . ".";
+            $dropdownText = $clauseData['dropdown'];
+            $textContent = ucfirst($clauseData['text']); // Capitalize the first letter of the text
+        
+            // Define logic for conditional bolding
+            if ($dropdownText === 'the AUF') {
+                $formattedClause = '<span class="bold">WHEREAS,</span> the <span class="bold">AUF</span> ' . $textContent;
+            } elseif ($dropdownText === "the AUF and {$partnerAcronym}") {
+                $formattedClause = '<span class="bold">WHEREAS,</span> the <span class="bold">AUF and ' . $partnerAcronym . '</span> ' . $textContent;
+            } elseif ($dropdownText === "the {$partnerAcronym}") {
+                $formattedClause = '<span class="bold">WHEREAS,</span> the <span class="bold">' . $partnerAcronym . '</span> ' . $textContent;
+            } else {
+                $formattedClause = '<span class="bold">WHEREAS,</span> <span class="bold">' . $dropdownText . '</span> ' . $textContent;
+            }
+        
+            // Add the formatted clause to the array for PDF rendering
+            $combinedWhereasClausesForPdf[] = $formattedClause;
         }
         
         $dompdf = new Dompdf();
-        $html = view('generate_moa.memorandum_pdf_view', [
-            'partner_name' => $memorandum->partner_name,
-            'contact_person' => $memorandum->contact_person,
-            'contact_email' => $memorandum->contact_email,
+        $html = view('components.memorandum.memorandum_template', [
+            'link' => $linkModel,
+            'partnership_title' => $validatedData['partnership_title'],
+            'sign_date' => 'TBA',
+            'sign_location' => 'TBA',
+            'validity_period' => $memorandum->validity_period,
+            'article1' => json_decode($memorandum->article_1),
+            'article2' => json_decode($memorandum->article_2_partner),
+            'article3' => json_decode($memorandum->article_3),
+            'article4' => json_decode($memorandum->article_4),
+            'article5' => json_decode($memorandum->article_5),
+            'article6' => json_decode($memorandum->article_6),
+            'article7' => json_decode($memorandum->article_7),
+            'article8' => json_decode($memorandum->article_8),
+            'article9' => json_decode($memorandum->article_9),
+            'article10' => json_decode($memorandum->article_10),
+            'article11' => json_decode($memorandum->article_11),
+            'article12' => json_decode($memorandum->article_12),
+            'article13' => json_decode($memorandum->article_13),
+            'article14' => json_decode($memorandum->article_14),
+            'article15' => json_decode($memorandum->article_15),
+            'article16' => json_decode($memorandum->article_16),
+            'article17' => json_decode($memorandum->article_17),
+            'article18' => json_decode($memorandum->article_18),
+            'article19' => json_decode($memorandum->article_19),
+            'article20' => json_decode($memorandum->article_20),
+            'article21' => json_decode($memorandum->article_21),
             'whereasClauses' => $combinedWhereasClausesForPdf, // Send combined whereas clauses
-            'articles' => json_decode($memorandum->articles)
         ])->render();    
         $dompdf->loadHtml($html);
         $dompdf->render();
@@ -215,6 +232,14 @@ class MemorandumController extends Controller
 
         session()->forget('documentID');
         return response()->download($filePath);
+    }
+
+    public function partnerEditMemorandum($link)
+    {    
+        $linkModel = Link::where('link', $link)->firstOrFail();
+        $memorandumModel = $linkModel->memorandum;
+
+        return view('PartnerApplication.PartnerView.editMemorandum', ['link' => $linkModel, 'memorandum' => $memorandumModel]);
     }
 
     public function editDocument($id)
@@ -256,10 +281,6 @@ class MemorandumController extends Controller
                 'locked_at' => now(),
             ]);
         }
-
-        // Decode JSON data for whereas_clauses and articles
-        $memorandum->whereas_clauses = json_decode($memorandum->whereas_clauses, true);
-        $memorandum->articles = json_decode($memorandum->articles, true);
     
         return view('generate_moa.memorandum_edit', compact('memorandum'));
     }
@@ -272,9 +293,9 @@ class MemorandumController extends Controller
             'contact_person' => 'required|string|max:255',
             'contact_email' => 'required|string|max:255',
             'whereas_clauses' => 'nullable|array',
-            'whereas_clauses.*' => 'required|string|max:1000',
+            'whereas_clauses.*' => 'required|string',
             'articles' => 'nullable|array',
-            'articles.*' => 'required|string|max:1000',
+            'articles.*' => 'required|string',
         ]);
     
         // Fetch the memorandum
@@ -317,34 +338,6 @@ class MemorandumController extends Controller
         // Regenerate the file names with the updated partner name and creation date
         $dateCreated = $memorandum->created_at->format('Ymd');
         $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $memorandum->partner_name) . '-' . $dateCreated;
-    
-        // Regenerate the Word document using PHPWord
-        $phpWord = new \PhpOffice\PhpWord\PhpWord();
-        $section = $phpWord->addSection();
-        $phpWord->addTitleStyle(1, ['bold' => true, 'size' => 16, 'name' => 'Times New Roman'], ['alignment' => 'center']);
-        $phpWord->addFontStyle('paragraphStyle', ['size' => 12, 'name' => 'Times New Roman']);
-        $phpWord->addParagraphStyle('justify', ['alignment' => 'both']);
-    
-        // Add title and partner name
-        $section->addTitle('Memorandum of Agreement', 1);
-        $section->addText('This Memorandum of Agreement is made by and between:', 'paragraphStyle');
-        $section->addText($memorandum->partner_name, ['bold' => true, 'size' => 12, 'name' => 'Times New Roman']);
-    
-        // Add Whereas Clauses
-        $section->addText('Whereas Clauses', 'paragraphStyle');
-        foreach (json_decode($memorandum->whereas_clauses, true) as $index => $clause) {
-            $section->addText(($index + 1) . ". " . $clause, 'paragraphStyle', 'justify');
-        }
-    
-        // Add Article Clauses
-        $section->addText('Article 3: Scope of Collaboration', 'paragraphStyle');
-        foreach (json_decode($memorandum->articles, true) as $index => $article) {
-            $section->addText('3.' . ($index + 1) . ' ' . $article, 'paragraphStyle', 'justify');
-        }
-    
-        // Save the updated .docx file
-        $docxFilePath = storage_path('app/public/memorandum/' . $fileName . '.docx');
-        $phpWord->save($docxFilePath, 'Word2007');
     
         // Generate the updated PDF using DOMPDF
         $dompdf = new \Dompdf\Dompdf();

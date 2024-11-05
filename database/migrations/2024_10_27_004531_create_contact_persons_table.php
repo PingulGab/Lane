@@ -14,8 +14,8 @@ class CreateContactPersonsTable extends Migration
             $table->string('email');
             $table->string('position');
             $table->string('office');
-            $table->string('telephone_number');
-            $table->string('mobile_number');
+            $table->string('telephone_number')->nullable();
+            $table->string('mobile_number')->nullable();
 
             $table->timestamps();
         });

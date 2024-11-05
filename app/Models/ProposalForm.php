@@ -12,12 +12,16 @@ class ProposalForm extends Model
     // Add the new fields to the fillable array
     protected $fillable = [
         'institution_name',
+        'institution_name_acronym',
+        'institution_head',
+        'institution_head_title',
         'country',
         'type_of_institution',
         'email',
         'telephone_number',
         'mobile_number',
         'website',
+        'address',
         'institution_overview',
         'institution_accreditation',
         'target_participant',
@@ -42,5 +46,10 @@ class ProposalForm extends Model
     public function contactPerson()
     {
         return $this->belongsTo(ContactPerson::class);
+    }
+
+    public function partnerLinkages()
+    {
+        return $this->hasMany(PartnerLinkage::class);
     }
 }

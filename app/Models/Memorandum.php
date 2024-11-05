@@ -9,11 +9,34 @@ class Memorandum extends Model
     protected $table = 'memorandums';
     // Add the new fields to the fillable array
     protected $fillable = [
-        'partner_name',
-        'contact_person',  // New field for contact person
-        'contact_email',   // New field for contact email
+        'partnership_title',
+        'validity_period',
+        'sign_date',
+        'sign_location',
         'whereas_clauses',
-        'articles',
+        'article_1',
+        'article_2_AUF',
+        'article_2_partner',
+        'article_3',
+        'article_4',
+        'article_5',
+        'article_6',
+        'article_7',
+        'article_8',
+        'article_9',
+        'article_10',
+        'article_11',
+        'article_12',
+        'article_13',
+        'article_14',
+        'article_15',
+        'article_16',
+        'article_17',
+        'article_18',
+        'article_19',
+        'article_20',
+        'article_21',
+
         'locked_by',
         'locked_at',
         'version',
