@@ -144,6 +144,7 @@ class EndorsementFormController extends Controller
 
         // Send email after submission
         //TODO Mail::to('janjanpingul@gmail.com')->send(new EndorsementFormCreated($document));
+        Mail::to("lane.ogr.auf@gmail.com")->send(new EndorsementFormCreated($document));
     }    
 
     public function viewEndorsement($link)

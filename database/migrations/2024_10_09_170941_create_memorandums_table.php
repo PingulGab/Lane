@@ -14,6 +14,7 @@ class CreateMemorandumsTable extends Migration
             $table->longText('partnership_title');
             $table->string('sign_date')->default('TBA');
             $table->string('sign_location')->default('TBA');
+            $table->date('valid_until')->nullable();
             $table->string('validity_period');
             $table->json('article_1')->nullable();
             $table->json('article_2_AUF')->nullable()->default(json_encode([

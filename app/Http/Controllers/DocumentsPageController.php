@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\nextApproval;
+use App\Mail\partnershipRegistered;
+use App\Mail\readyForSigning;
 use App\Mail\startAdminApproval;
 use App\Models\Document;
 use App\Models\DocumentApproval;
 use App\Models\Memorandum;
+use App\Models\Partnership;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\EndorsementFormCreated;
 use Mail;
+use Storage;
 
 class DocumentsPageController extends Controller
 {
@@ -27,6 +32,22 @@ class DocumentsPageController extends Controller
     public function showDocument($id)
     {
         $document = Document::with(['memorandum', 'endorsementForm', 'proposalForm', 'approvals.affiliate'])->findOrFail($id);
+        $memorandum = $document->memorandum;
+
+        $dateCreated = $memorandum->created_at->format('Ymd');
+        $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $document->proposalForm->institution_name) . '-' . $dateCreated;
+
+        // Generate the updated PDF using DOMPDF
+        $dompdf = new \Dompdf\Dompdf();
+        $html = view('components.documents_preview.moa', [
+            'document' => $document,
+            'memorandum' => $memorandum,
+        ])->render();
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+
+        // Save the updated PDF fileStorage::put('public/memorandum/' . $fileName . '.pdf', $dompdf->output());
+        Storage::put('public/memorandum/' . $fileName . '.pdf', $dompdf->output());
         
         if($document->is_ogr_approved && !$document->is_signed){
             return view('Documents.viewDocument', [ 'document' => $document, 'id' => $id]);
@@ -50,7 +71,7 @@ class DocumentsPageController extends Controller
             'is_ogr_approved' => true,
         ]);
 
-        /* //TODO Email Sending
+        //TODO Email Sending
         // Fetch affiliates related to the document approvals
         $affiliates = $document->approvals->map(function ($approval) {
             return $approval->affiliate;
@@ -59,7 +80,7 @@ class DocumentsPageController extends Controller
         // Send email notification to each affiliate
         foreach ($affiliates as $affiliate) {
             Mail::to($affiliate->email)->send(new startAdminApproval($document));
-        } */
+        }
 
         return redirect()->route('showDocument', ['id' => $id, 'name' => $document->proposalForm->institution_name]);
     }
@@ -128,9 +149,8 @@ class DocumentsPageController extends Controller
                 ->get();
     
             foreach ($nextApprovals as $nextApproval) {
-                // Send email to next affiliate
                 $affiliateToNotify = $nextApproval->affiliate;
-                //Mail::to($affiliateToNotify->email)->send(new EndorsementFormCreated($document));
+                Mail::to($affiliateToNotify->email)->send(new nextApproval($document));
     
                 // Mark as notified
                 $nextApproval->update(['is_notified' => true]);
@@ -145,7 +165,7 @@ class DocumentsPageController extends Controller
         // Send final email notification if this was the last required approval (Legal office)
         if ($isLastApproval && $affiliate->name === 'Legal Counsel') {
             // Customize and send a final approval completed email notification
-            Mail::to($document->institutionalUnits->email)->send(new EndorsementFormCreated($document));
+            Mail::to($document->institutionalUnits->email)->send(new readyForSigning($document));
         }
     
         return redirect()->route('affiliateShowDocument', ['id' => $id, 'name' => $name]);
@@ -154,5 +174,18 @@ class DocumentsPageController extends Controller
     public function approveSignedDocument($id, $name)
     {
         //TODO This is where the function that registers the document as a PARTNERSHIP.
+        $document = Document::findOrFail($id);
+
+        $partnership = Partnership::create([
+            'partnership_title' => $document->memorandum->partnership_title,
+            'memorandum_id' => $document->memorandum->id,
+            'endorsement_form_id' => $document->endorsementForm->id,
+            'proposal_form_id' => $document->proposalForm->id,
+            'institutional_unit_id' => $document->institutionalUnits->id,
+        ]);
+
+        Mail::to($document->institutionalUnits->email)->send(new partnershipRegistered($document));
+
+        return redirect()->route('viewPartnership', ['id' => $partnership->id, 'name' => $partnership->proposalForm->institution_name]);
     }
 }

@@ -175,6 +175,9 @@ class ProspectivePartnerFormController extends Controller
         ]);
 
         //TODO Send Email to Institutional Unit
+        $institutional_unit_email = $link->proposalForm->institutionalUnit->email;
+        Mail::to($institutional_unit_email)->send(new ProspectivePartnerFormSubmitted($link));
+
 
         return redirect()->route('prospectPartnerViewLink', $link->link);
     }

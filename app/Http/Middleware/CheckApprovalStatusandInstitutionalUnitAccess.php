@@ -26,7 +26,7 @@ class CheckApprovalStatusandInstitutionalUnitAccess
 
         if (!$institutionalUnit) {
             // Redirect to login if user is not authenticated
-            return redirect()->route('signPendingLogin',['id' => $documentId, 'name' => $document->memorandum->partner_name]);
+            return redirect()->route('signPendingLogin',['id' => $documentId, 'name' => $document->proposalForm->institution_name]);
         }
 
         // Check if the logged-in user is the one assigned in the document's institutional_unit_id

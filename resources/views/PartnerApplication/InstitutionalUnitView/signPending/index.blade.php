@@ -201,6 +201,17 @@
     // CSRF token
     var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+    function navigateToPage() {
+        const selector = document.getElementById('page-selector');
+        const pageId = selector.value;
+
+        if (pageId) {
+            document.getElementById(pageId).scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+    }
+
     function downloadDocument(url) {
         // Create a hidden link element
         var link = document.createElement('a');

@@ -14,7 +14,6 @@ class CreateMemorandumVersionsTable extends Migration
             $table->unsignedBigInteger('edited_by');       // The user who made the edit
             $table->decimal('version', 3, 1);              // Version number
             $table->timestamps();                          // Timestamps for the version
-            $table->date('valid_until')->nullable();
             //Original Content of the Memorandum Table
             $table->longText('partnership_title');
             $table->string('validity_period');

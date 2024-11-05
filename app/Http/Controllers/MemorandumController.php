@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\signedDocumentUploaded;
 use App\Models\Document;
 use App\Models\Link;
 use App\Models\MemorandumVersion;
@@ -782,17 +783,6 @@ class MemorandumController extends Controller
 
         $dateCreated = $memorandum->created_at->format('Ymd');
         $fileName = 'AUF-Memorandum-' . str_replace(' ', '-', $documentModel->proposalForm->institution_name) . '-' . $dateCreated;
-    
-        // Generate the updated PDF using DOMPDF
-        $dompdf = new \Dompdf\Dompdf();
-        $html = view('components.documents_preview.moa', [
-            'document' => $documentModel
-        ])->render();
-        $dompdf->loadHtml($html);
-        $dompdf->render();
-    
-        // Save the updated PDF fileStorage::put('public/memorandum/' . $fileName . '.pdf', $dompdf->output());
-        Storage::put('public/memorandum/' . $fileName . '.pdf', $dompdf->output());
 
         // File paths for existing files
         $pdfFilePath = storage_path('app/public/memorandum/' . $fileName . '.pdf');
@@ -806,20 +796,23 @@ class MemorandumController extends Controller
             $uploadedFilePath = $uploadedFile->getRealPath();
             $this->appendPdf($pdfFilePath, $uploadedFilePath);
 
+            //Todo Notify OGR
+            Mail::to('lane.ogr.auf@gmail.com')->send(new signedDocumentUploaded($documentModel));
+
             // Redirect back with success message
             return redirect()->route('showSignPendingView', [
-                'id' => $memorandum->id,
+                'id' => $documentModel->id,
                 'name' => $documentModel->proposalForm->institution_name
             ])->with('success', 'Document appended successfully.');
         } else {
             // Redirect back with error message if not a PDF
             return redirect()->route('showSignPendingView', [
-                'id' => $memorandum->id,
+                'id' => $documentModel->id,
                 'name' => $documentModel->proposalForm->institution_name
             ])->withErrors(['error' => 'File must be a PDF.']);
         }
 
-        //Todo Notify OGR
+        
     }
 
     /**

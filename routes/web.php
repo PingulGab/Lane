@@ -61,6 +61,9 @@ Route::middleware(['auth', 'role:Superadmin,Employee'])->group(function () {
     Route::post('/documents/{id}/{name}/view', [DocumentsPageController::class, 'approveDocument'])->name('approveDocument');
 
     Route::post('/documents/{id}/{name}/view/approve-signed-document', [DocumentsPageController::class, 'approveSignedDocument'])->name('approveSignedDocument');
+
+    //! Route for Partnerships
+    Route::get('/partnerships/{id}/{name}/view', [PartnershipsPageController::class, 'viewPartnership'])->name('viewPartnership');
 });
 
 // TODO REMOVE THIS AFTER TEST

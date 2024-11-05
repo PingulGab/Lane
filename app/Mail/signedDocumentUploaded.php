@@ -4,13 +4,13 @@ namespace App\Mail;
 
 use App\Models\Document;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class EndorsementFormCreated extends Mailable
+class signedDocumentUploaded extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -31,8 +31,7 @@ class EndorsementFormCreated extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('lane.ogr.auf@gmail.com', 'OGR'),
-            subject: 'AUF OGR - Your Approval Awaits',
+            subject: 'Signed Document Uploaded',
         );
     }
 
@@ -42,7 +41,7 @@ class EndorsementFormCreated extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.endorsementFormSubmitted',
+            view: 'emails.signedDocumentUploaded',
         );
     }
 

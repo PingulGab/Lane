@@ -40,6 +40,11 @@ class Link extends Model
         return $this->belongsToMany(InstitutionalUnit::class, 'institutional_unit_link');
     }
 
+    public function singleInstitutionalUnit()
+    {
+        return $this->belongsTo(InstitutionalUnit::class, 'institutional_unit_id');
+    }
+
     public function affiliates()
     {
         return $this->belongsToMany(Affiliate::class, 'affiliate_link');
