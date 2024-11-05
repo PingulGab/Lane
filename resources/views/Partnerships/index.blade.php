@@ -132,81 +132,24 @@
             <div class="partnerships-table-content">
                 <table class="partnerships-table">
                     <tbody>
-                        <tr>
-                            <td>Microsoft 1</td>
-                            <td>
-                                <div class="partnerships-table-col-affiliation">
-                                    <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="Icon"/>
-                                    <p> CCS </p> 
-                                </div>
-                            </td>
-                            <td>MONTH DD, YYYY</td>
-                            <td>MONTH DD, YYYY</td>
-                            <td><button class="view-btn">View</button></td>
-                        </tr>
-                        <tr>
-                            <td>Microsoft 1</td>
-                            <td>
-                                <div class="partnerships-table-col-affiliation">
-                                    <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="Icon"/>
-                                    <p> CCS </p> 
-                                </div>
-                            </td>
-                            <td>MONTH DD, YYYY</td>
-                            <td>MONTH DD, YYYY</td>
-                            <td><button class="view-btn">View</button></td>
-                        </tr>
-                        <tr>
-                            <td>Microsoft 1</td>
-                            <td>
-                                <div class="partnerships-table-col-affiliation">
-                                    <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="Icon"/>
-                                    <p> CCS </p> 
-                                </div>
-                            </td>
-                            <td>MONTH DD, YYYY</td>
-                            <td>MONTH DD, YYYY</td>
-                            <td><button class="view-btn">View</button></td>
-                        </tr>
-                        <tr>
-                            <td>Microsoft 1</td>
-                            <td>
-                                <div class="partnerships-table-col-affiliation">
-                                    <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="Icon"/>
-                                    <p> CCS </p> 
-                                </div>
-                            </td>
-                            <td>MONTH DD, YYYY</td>
-                            <td>MONTH DD, YYYY</td>
-                            <td><button class="view-btn">View</button></td>
-                        </tr>
-                        <tr>
-                            <td>Microsoft 1</td>
-                            <td>
-                                <div class="partnerships-table-col-affiliation">
-                                    <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="Icon"/>
-                                    <p> CCS </p> 
-                                </div>
-                            </td>
-                            <td>MONTH DD, YYYY</td>
-                            <td>MONTH DD, YYYY</td>
-                            <td><button class="view-btn">View</button></td>
-                        </tr>
-                        <tr>
-                            <td>Microsoft 1</td>
-                            <td>
-                                <div class="partnerships-table-col-affiliation">
-                                    <img src="{{ Vite::asset('resources/images/test_images/test_ccs.png')}}" alt="Icon"/>
-                                    <p> CCS </p> 
-                                </div>
-                            </td>
-                            <td>MONTH DD, YYYY</td>
-                            <td>MONTH DD, YYYY</td>
-                            <td><button class="view-btn">View</button></td>
-                        </tr>
-                        
-                        <!-- Add more rows as needed -->
+                        @foreach ($partnership as $partnership)
+                            <tr>
+                                <td>{{ $partnership->partnership_title }}</td>
+                                <td>
+                                    <div class="partnerships-table-col-affiliation">
+                                        <img src="" alt="Icon"/>
+                                        <p> {{ $partnership->institutionalUnits->name }} </p> 
+                                    </div>
+                                </td>
+                                <td>{{ \Carbon\Carbon::parse($partnership->memorandum->sign_date)->format('F d, Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($partnership->memorandum->valid_until)->format('F d, Y') }}</td>
+                                <td><a href="{{ route('viewPartnership', ['id' => $partnership->id, 'name' => $partnership->proposalForm->institution_name]) }}">
+                                    <button class="view-btn">View</button>
+                                </a></td>
+                            </tr>
+                        @endforeach
                     </tbody>
+                    
                 </table>
             </div>
             

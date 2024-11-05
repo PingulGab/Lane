@@ -11,7 +11,7 @@ class ProspectivePartnerResultController extends Controller
 {
     public function resultProspectivePartnerForm($link)
     {
-        $affiliateList = Affiliate::all();
+        $affiliateList = Affiliate::whereNotIn('id', [1, 2])->get();
 
         $link = Link::with([
             'memorandum', 
@@ -19,7 +19,11 @@ class ProspectivePartnerResultController extends Controller
             'endorsementForm'
             ])->where('link', $link)->firstOrFail();
 
-        // Load related data if available
+        if ($link->endorsementForm) {
+            return view('PartnerApplication.InstitutionalUnitView.submitted_view', ['link' => $link, 'memorandum' => $link->memorandum, 'proposalForm'=>$link->proposalForm, 'endorsement'=>$link->endorsementForm]);
+        }
+
+        // Load related data if endorsement_form_fk is not present
         $data = [
             'link' => $link,
             'memorandum' => $link->memorandum,
@@ -27,12 +31,8 @@ class ProspectivePartnerResultController extends Controller
             'affiliateList' => $affiliateList,
         ];
 
-        if ($link->endorsement_form_fk)
-        {
-            return redirect()->route('viewEndorsement', ['link' => $link->link]);
-        }
-        
         return view('PartnerApplication.InstitutionalUnitView.index', $data);
+
     }
 
     public function showResultLoginPage($link)
@@ -43,5 +43,14 @@ class ProspectivePartnerResultController extends Controller
         ];
 
         return view('PartnerApplication.InstitutionalUnitView.login', $data);
+    }
+    
+    public function submitEndorsementForm(Request $request, $link)
+    {
+        (new EndorsementFormController())->generateEndorsement($request, $link);
+
+        //TODO Send email to OGR
+
+        return redirect()->route('resultProspectivePartnerForm', $link);
     }
 }

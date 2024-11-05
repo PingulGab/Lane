@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckAffiliatesAccess;
+use App\Http\Middleware\CheckApprovalStatusandInstitutionalUnitAccess;
 use App\Http\Middleware\CheckInstitutionalUnitAccess;
 use App\Http\Middleware\RoleMiddleWare;
 use Illuminate\Foundation\Application;
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleWare::class,
             'checkAffiliateAccess' => CheckAffiliatesAccess::class,
             'checkInstitutionalUnitAccess' => CheckInstitutionalUnitAccess::class,
+            'checkApprovalStatusandInstitutionalUnitAccess' => CheckApprovalStatusandInstitutionalUnitAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -33,8 +33,8 @@ class ProspectivePartnerFormSubmitted extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('janjanpingul@gmail.com', 'Jan'),
-            subject: 'Order Shipped',
+            from: new Address('lane.ogr.auf@gmail.com', 'OGR'),
+            subject: 'AUF OGR - ' . $this->link->proposalForm->institution_name . 'wants to be a partner',
         );
     }
 

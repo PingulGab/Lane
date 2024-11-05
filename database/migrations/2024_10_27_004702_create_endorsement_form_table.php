@@ -10,8 +10,14 @@ class CreateEndorsementFormTable extends Migration
     {
         Schema::create('endorsement_forms', function (Blueprint $table) {
             $table->id();
-            $table->text('description_1');
-            $table->text('description_2');
+            $table->longText('endorsement_1_1');
+            $table->longText('endorsement_1_2');
+            $table->longText('endorsement_1_3');
+            $table->longText('endorsement_1_4');
+            $table->longText('endorsement_1_5');
+            $table->longText('endorsement_1_6');
+            $table->longText('endorsement_1_7');
+            $table->longText('endorsement_1_8');
             $table->timestamps();
         });        
     }

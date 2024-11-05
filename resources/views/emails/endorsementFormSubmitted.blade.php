@@ -1,7 +1,3 @@
-<h1>New Prospective Partner Form Submission</h1>
-
-<p>A new form has been submitted.</p>
-<p><strong>Link Name:</strong> {{ $document->id }}</p>
-<p><strong>Link URL:</strong> <a href="{{ url('/documents/' . $document->id . '/' . $document->memorandum->partner_name) }}"> {{ url('/documents/' . $document->id . '/' . $document->memorandum->partner_name) }} </a></p>
-
-<p>Please log in to view the full submission details.</p>
+<h1> A Partnership is about to take off </h1>
+<p> Partnership between {{$document->proposalForm->institution_name}} and {{$document->institutionalUnits->name}} is awaiting your approval </p>
+<p> Please view the documents <a href="{{url('/documents/' . $document->id . '/' . $document->proposalForm->institution_name . '/view')}}"> here </a>. </p>

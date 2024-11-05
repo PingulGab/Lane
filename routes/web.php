@@ -59,7 +59,19 @@ Route::middleware(['auth', 'role:Superadmin,Employee'])->group(function () {
     //! Route for OGR Approving the 3 Documents
     Route::get('/documents/{id}/{name}/view', [DocumentsPageController::class, 'showDocument'])->name('showDocument');
     Route::post('/documents/{id}/{name}/view', [DocumentsPageController::class, 'approveDocument'])->name('approveDocument');
+
+    Route::post('/documents/{id}/{name}/view/approve-signed-document', [DocumentsPageController::class, 'approveSignedDocument'])->name('approveSignedDocument');
+
+    //! Route for Partnerships
+    Route::get('/partnerships/{id}/{name}/view', [PartnershipsPageController::class, 'viewPartnership'])->name('viewPartnership');
 });
+
+// TODO REMOVE THIS AFTER TEST
+Route::get('test/{link}', [ProspectivePartnerFormController::class, 'test'])->name('test');
+Route::get('test/{link}/pdf', [ProspectivePartnerFormController::class, 'test2'])->name('test2');
+
+//TODO Compare Version
+Route::get('/memorandum/{id}/compare/{version}/view', [MemorandumController::class, 'compareVersion'])->name('compareVersion');
 
 //! Route for: Affiliates' Approval Process
 Route::get('/documents/application/{id}/{name}/approval', [DocumentsPageController::class, 'affiliateShowDocument'])->name('affiliateShowDocument')->middleware('checkAffiliateAccess');
@@ -77,29 +89,35 @@ Route::get('/partner/application/{link}', [ProspectivePartnerFormController::cla
 Route::post('/partner/application/{link}', [ProspectivePartnerFormController::class, 'validateProspectPartnerPassword'])->name('validateProspectPartnerPassword');
 
 // Submission of Form
-Route::post('/partner/application/{link}/submitted', [ProspectivePartnerFormController::class, 'submitProspectPartnerForm'])->name('submitProspectPartnerForm');
+Route::post('/partner/application/{link}/submitted-proposal', [ProspectivePartnerFormController::class, 'submitProspectPartnerFormProposal'])->name('submitProspectPartnerFormProposal');
+Route::post('/partner/application/{link}/submitted-memorandum', [ProspectivePartnerFormController::class, 'submitProspectPartnerFormMemorandum'])->name('submitProspectPartnerFormMemorandum');
 
-// View of Submitted Information
-Route::get('/partner/application/{link}/view', [ProspectivePartnerFormController::class, 'prospectPartnerViewSubmittedForm'])->name('prospectPartnerViewSubmittedForm');
-Route::post('/partner/application/{link}/view', [ProspectivePartnerFormController::class, 'validatePasswordSubmittedForm'])->name('validatePasswordSubmittedForm');
+// Edit of Memorandum and Proposal Form
+Route::get('/partner/application/{link}/edit-memorandum',[ProspectivePartnerFormController::class,'partnerEditMemorandum'])->name('partnerEditMemorandum');
+Route::post('/partner/application/{link}/edit-memorandum',[ProspectivePartnerFormController::class,'partnerUpdateMemorandum'])->name('partnerUpdateMemorandum');
+
+Route::get('/partner/application/{link}/edit-proposal',[ProspectivePartnerFormController::class,'partnerEditProposal'])->name('partnerEditProposal');
+Route::post('/partner/application/{link}/edit-proposal',[ProspectivePartnerFormController::class,'partnerUpdateProposal'])->name('partnerUpdateProposal');
 
 //! Route for: Institutional Unit's
 // View of Submitted Information (From Prospective Partner)
-Route::get('/partner/result/{link}/review', [ProspectivePartnerResultController::class, 'resultProspectivePartnerForm'])->name('resultProspectivePartnerForm')->middleware(['checkInstitutionalUnitAccess']);
+Route::get('/partner/application/{link}/review', [ProspectivePartnerResultController::class, 'resultProspectivePartnerForm'])->name('resultProspectivePartnerForm')->middleware(['checkInstitutionalUnitAccess']);
+Route::post('/partner/application/{link}/review', [ProspectivePartnerResultController::class, 'submitEndorsementForm'])->name('submitEndorsementForm');
 
 // Login
-Route::get('/partner/result/{link}/login', [ProspectivePartnerResultController::class, 'showResultLoginPage'])->name('showResultLoginPage');
-Route::post('/partner/result/{link}/login', [InstitutionalUnitLogin::class, 'resultLogin'])->name('resultLogin');
+Route::get('/partner/application/{link}/login', [ProspectivePartnerResultController::class, 'showResultLoginPage'])->name('showResultLoginPage');
+Route::post('/partner/application/{link}/login', [InstitutionalUnitLogin::class, 'resultLogin'])->name('resultLogin');
 
 // Change Password
-Route::get('partner/result/{link}/change-password', [InstitutionalUnitLogin::class, 'showInstitutionalUnitChangePassword'])->name('showInstitutionalUnitChangePassword');
-Route::post('partner/result/{link}/change-password', [InstitutionalUnitLogin::class, 'institutionalUnitChangePassword'])->name('institutionalUnitChangePassword');
+Route::get('partner/application/{link}/change-password', [InstitutionalUnitLogin::class, 'showInstitutionalUnitChangePassword'])->name('showInstitutionalUnitChangePassword');
+Route::post('partner/application/{link}/change-password', [InstitutionalUnitLogin::class, 'institutionalUnitChangePassword'])->name('institutionalUnitChangePassword');
 
-// Creation of Endorsement Form
-Route::post('/partner/result/{link}/review', [EndorsementFormController::class, 'generateEndorsement'])->name('generateEndorsement');
-
-// View of Submitted Endorsement Form + Prospective Partner's Submitted Information
-Route::get('/partner/result/{link}/view', [EndorsementFormController::class, 'viewEndorsement'])->name('viewEndorsement');
+// View of Sign Pending
+Route::get('/documents/application/{id}/{name}/sign', [InstitutionalUnitController::class, 'showSignPendingView'])->name('showSignPendingView')->middleware(['checkApprovalStatusandInstitutionalUnitAccess']);
+Route::get('/documents/application/{id}/{name}/sign/login', [InstitutionalUnitLogin::class, 'showSignPendingLogin'])->name('showSignPendingLogin');
+Route::post('/documents/application/{id}/{name}/sign/login', [InstitutionalUnitLogin::class, 'signPendingLogin'])->name('signPendingLogin');
+Route::get('/documents/application/{id}/{name}/sign/download/{file}', [MemorandumController::class, 'actualDownload'])->name('actualDownload');
+Route::post('/documents/application/{id}/{name}/sign/upload', [MemorandumController::class, 'appendDocument'])->name('appendDocument');
 
 // ? Routes for Endorsement Form Creation
 Route::get('/endorsement-form/create', [EndorsementFormController::class, 'create'])->name('createEndorsement');

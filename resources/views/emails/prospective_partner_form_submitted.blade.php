@@ -1,9 +1,5 @@
-<!-- resources/views/emails/form_submitted.blade.php -->
+<h1> {{$link->proposalForm->institution_name}} wants to establish a partnership with your unit </h1>
+<p> Please view the documents <a href="{{url('/partner/application/' . $link->link . '/review')}}"> here </a></p>
 
-<h1>New Prospective Partner Form Submission</h1>
-
-<p>A new form has been submitted.</p>
-<p><strong>Link Name:</strong> {{ $link->name }}</p>
-<p><strong>Link URL:</strong> <a href="{{ url('/result/' . $link->link) }}">{{ url('/result/' . $link->link) }}</a></p>
-
-<p>Please log in to view the full submission details.</p>
+<p> Please login using your credentials. Thank you very much </p>
+<p> From, Office of Global Relations </p>

@@ -25,7 +25,7 @@ class CheckAffiliatesAccess
 
         if (!$affiliate) {
             // Redirect unauthenticated affiliates to the custom affiliate login page
-            return redirect()->route('showAffiliateLoginDocument', ['id' => $document->id, 'name' => $document->memorandum->partner_name]);
+            return redirect()->route('showAffiliateLoginDocument', ['id' => $document->id, 'name' => $document->proposalForm->institution_name]);
         }
 
         // Check if the authenticated affiliate has permission to access this link
@@ -36,7 +36,7 @@ class CheckAffiliatesAccess
 
         //  Check if password change is required
         if ($affiliate->must_change_password) {
-            return redirect()->route('showAffiliateChangePasswordDocument', ['id' => $document->id, 'name' => $document->memorandum->partner_name]);
+            return redirect()->route('showAffiliateChangePasswordDocument', ['id' => $document->id, 'name' => $document->proposalForm->institution_name]);
         }
 
         // Allow access if authenticated and has permission

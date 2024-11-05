@@ -17,6 +17,7 @@ class CreateLinksTable extends Migration
             $table->foreignId('memorandum_fk')->nullable()->constrained('memorandums')->onDelete('cascade');
             $table->foreignId('proposal_form_fk')->nullable()->constrained('proposal_forms')->onDelete('cascade');
             $table->foreignId('endorsement_form_fk')->nullable()->constrained('endorsement_forms')->onDelete('cascade');
+            $table->foreignId('institutional_unit_id')->nullable()->constrained('institutional_units')->onDelete('cascade');
             $table->timestamps();
         });
     }

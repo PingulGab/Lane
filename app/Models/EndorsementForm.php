@@ -9,7 +9,13 @@ class EndorsementForm extends Model
     protected $table = 'endorsement_forms';
     // Add the new fields to the fillable array
     protected $fillable = [
-        'Description_1',
-        'Description_2'
+        'endorsement_1.1',
+        'endorsement_1.2',
+        'endorsement_1.3',
+        'endorsement_1.4',
+        'endorsement_1.5',
+        'endorsement_1.6',
+        'endorsement_1.7',
+        'endorsement_1.8',
     ];
 }

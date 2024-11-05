@@ -9,7 +9,7 @@ class Document extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['memorandum_id', 'endorsement_form_id', 'proposal_form_id', 'institutional_unit_id', 'is_ogr_approved'];
+    protected $fillable = ['memorandum_id', 'endorsement_form_id', 'proposal_form_id', 'institutional_unit_id', 'is_ogr_approved', 'is_downloaded', 'is_signed'];
 
     public function memorandum()
     {

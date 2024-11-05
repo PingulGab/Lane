@@ -18,9 +18,9 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'name' => 'Admin User',
+            'name' => 'OGR Director',
             'username' => 'admin',
-            'email' => 'admin@example.com', // You can choose an appropriate email
+            'email' => 'lane.ogr.auf@gmail.com', // You can choose an appropriate email
             'password' => Hash::make('admin'), // Hash the password
             'contact_number' => '1234567890', // You can customize the contact number
             'role' => 'Superadmin',
@@ -28,58 +28,76 @@ class AdminSeeder extends Seeder
         ]);
 
         Affiliate::create([
-            'name' => 'Mother',
-            'contact_person' => 'aff0',
-            'email' => 'dummypingul@gmail.com',
-            'username' => 'aff0',
-            'password' => Hash::make('aff0'),
-            'must_change_password' => false
-        ]);
-
-        Affiliate::create([
-            'name' => 'Mother2',
-            'contact_person' => 'moth',
-            'email' => 'dummypingul2@gmail.com',
-            'username' => 'moth',
-            'password' => Hash::make('moth'),
-            'must_change_password' => false
-        ]);
-
-        Affiliate::create([
-            'name' => 'OVP1',
+            'name' => 'Legal Counsel',
             'contact_person' => 'aff1',
-            'email' => 'janjanpingul@gmail.com',
-            'username' => 'aff1',
-            'password' => Hash::make('aff1'),
+            'email' => 'dummypingul@gmail.com',
+            'username' => 'legal',
+            'password' => Hash::make('legal'),
             'must_change_password' => false
         ]);
 
         Affiliate::create([
-            'name' => 'Vice President of Finance',
-            'contact_person' => 'aff2',
-            'email' => 'jankth17@gmail.com',
-            'username' => 'aff2',
-            'password' => Hash::make('aff2'),
+            'name' => 'Data Protection Officer',
+            'contact_person' => 'dataprotection',
+            'email' => 'janjanjanpingul@gmail.com',
+            'username' => 'dpo1',
+            'password' => Hash::make('dpo1'),
             'must_change_password' => false
         ]);
 
         Affiliate::create([
-            'name' => 'Vice President of Research',
+            'name' => 'Registrar',
             'contact_person' => 'aff3',
-            'email' => 'janjanpingulstorage@gmail.com',
+            'email' => 'aff3@example.com',
             'username' => 'aff3',
             'password' => Hash::make('aff3'),
             'must_change_password' => false
         ]);
 
+        Affiliate::create([
+            'name' => 'Office of the Vice President for Administration',
+            'contact_person' => 'aff4',
+            'email' => 'aff4@example.com',
+            'username' => 'aff4',
+            'password' => Hash::make('aff4'),
+            'must_change_password' => false
+        ]);
+
+        Affiliate::create([
+            'name' => 'Office of the Vice President for Academic Affairs',
+            'contact_person' => 'aff5',
+            'email' => 'sia.sanguyo.niel@gmail.com',
+            'username' => 'ovpaa',
+            'password' => Hash::make('ovpaa'),
+            'must_change_password' => false
+        ]);
+
+        Affiliate::create([
+            'name' => 'Office of the Vice President for Finance',
+            'contact_person' => 'aff6',
+            'email' => 'aff6@example.com',
+            'username' => 'aff6',
+            'password' => Hash::make('aff6'),
+            'must_change_password' => false
+        ]);
+
+        Affiliate::create([
+            'name' => 'Office of the Vice President for Research & Innovation',
+            'contact_person' => 'aff7',
+            'email' => 'janjanpingulstorage@gmail.com',
+            'username' => 'ovpri',
+            'password' => Hash::make('ovpri'),
+            'must_change_password' => false
+        ]);
+
         InstitutionalUnit::create([
-            'name' => 'College, Mother 1',
+            'name' => 'CED',
             'contact_person' => 'qwer',
-            'email' => 'college@example.com',
-            'username' => 'qwer',
-            'password' => Hash::make('qwer'),
+            'email' => 'janjanpingul@gmail.com',
+            'username' => 'ced1',
+            'password' => Hash::make('ced1'),
             'must_change_password' => false,
-            'mother_affiliate_id' => 1
+            'mother_affiliate_id' => 5
         ]);
 
         InstitutionalUnit::create([
@@ -89,7 +107,7 @@ class AdminSeeder extends Seeder
             'username' => 'qwert',
             'password' => Hash::make('qwert'),
             'must_change_password' => false,
-            'mother_affiliate_id' => 2
+            'mother_affiliate_id' => 5
         ]);
 
         Link::create([

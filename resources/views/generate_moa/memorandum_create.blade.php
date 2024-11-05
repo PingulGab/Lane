@@ -104,206 +104,206 @@
     <script>
         //Add Whereas Clause
         document.addEventListener('DOMContentLoaded', function () {
-        const partnerNameInput = document.getElementById('partner_name');
-        const tagInput = document.getElementById('tag-input');
-        const tagsContainer = document.getElementById('tags-container');
-        const editOptionsBtn = document.getElementById('edit-options-btn');
-        const saveOptionsBtn = document.getElementById('save-options-btn');
-        let isEditing = false;
-        let debounceTimeout;
-        let previousPartnerName = '';
-        let tags = ['the AUF', 'AUF']; // Default tags
+            const partnerNameInput = document.getElementById('partner_name');
+            const tagInput = document.getElementById('tag-input');
+            const tagsContainer = document.getElementById('tags-container');
+            const editOptionsBtn = document.getElementById('edit-options-btn');
+            const saveOptionsBtn = document.getElementById('save-options-btn');
+            let isEditing = false;
+            let debounceTimeout;
+            let previousPartnerName = '';
+            let tags = ['the AUF', 'AUF']; // Default tags
 
-        // Render initial tags (non-editable)
-        renderTags();
-
-        // Function to update the tags based on partner name input
-        function updatePartnerNameTags(partnerName) {
-            // Remove previous partner name-related tags
-            tags = tags.filter(tag => tag !== previousPartnerName && tag !== `the AUF and ${previousPartnerName}`);
-
-            // Add new partner name tags if partnerName is not empty
-            if (partnerName) {
-                tags.push(partnerName);
-                tags.push(`the AUF and ${partnerName}`);
-            }
-
-            // Update the previous partner name to the current one
-            previousPartnerName = partnerName;
-
-            // Re-render tags after updating
+            // Render initial tags (non-editable)
             renderTags();
-            
-            //Update Dropdown Menu
-            updateDropdownOptions();
-        }
 
-        // Debounced function for partner name input
-        function updatePartnerNameTagsDebounced() {
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(() => {
-                const partnerName = partnerNameInput.value.trim();
-                updatePartnerNameTags(partnerName); // Call the function to update tags
-            }, 300); // Debounce delay (300ms)
-        }
+            // Function to update the tags based on partner name input
+            function updatePartnerNameTags(partnerName) {
+                // Remove previous partner name-related tags
+                tags = tags.filter(tag => tag !== previousPartnerName && tag !== `the AUF and ${previousPartnerName}`);
 
-        // Listen to partner name input with debouncing
-        partnerNameInput.addEventListener('input', updatePartnerNameTagsDebounced);
+                // Add new partner name tags if partnerName is not empty
+                if (partnerName) {
+                    tags.push(partnerName);
+                    tags.push(`the AUF and ${partnerName}`);
+                }
 
+                // Update the previous partner name to the current one
+                previousPartnerName = partnerName;
 
-        // Toggle between Edit and Save modes
-        editOptionsBtn.addEventListener('click', function () {
-            if (!isEditing) {
-                // Enable editing
-                tagInput.style.display = 'block'; // Show input box
-                editOptionsBtn.style.display = 'none'; // Hide "Edit" button
-                saveOptionsBtn.style.display = 'block'; // Show "Save" button
-                isEditing = true;
-                renderTags(true); // Make tags removable
+                // Re-render tags after updating
+                renderTags();
+                
+                //Update Dropdown Menu
+                updateDropdownOptions();
             }
-        });
 
-        saveOptionsBtn.addEventListener('click', function () {
-            // Save changes, disable editing
-            tagInput.style.display = 'none'; // Hide input box
-            saveOptionsBtn.style.display = 'none'; // Hide "Save" button
-            editOptionsBtn.style.display = 'block'; // Show "Edit" button
-            isEditing = false;
-            renderTags(); // Make tags non-removable
-        });
+            // Debounced function for partner name input
+            function updatePartnerNameTagsDebounced() {
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(() => {
+                    const partnerName = partnerNameInput.value.trim();
+                    updatePartnerNameTags(partnerName); // Call the function to update tags
+                }, 300); // Debounce delay (300ms)
+            }
 
-        // Listen for input in the tag input box
-        tagInput.addEventListener('keypress', function (e) {
-            if (e.key === ',' || e.key === 'Enter') {
-                e.preventDefault();
-                const tagValue = tagInput.value.trim();
-                if (tagValue) {
-                    addTag(tagValue);
-                    tagInput.value = ''; // Clear input after adding the tag
+            // Listen to partner name input with debouncing
+            partnerNameInput.addEventListener('input', updatePartnerNameTagsDebounced);
+
+
+            // Toggle between Edit and Save modes
+            editOptionsBtn.addEventListener('click', function () {
+                if (!isEditing) {
+                    // Enable editing
+                    tagInput.style.display = 'block'; // Show input box
+                    editOptionsBtn.style.display = 'none'; // Hide "Edit" button
+                    saveOptionsBtn.style.display = 'block'; // Show "Save" button
+                    isEditing = true;
+                    renderTags(true); // Make tags removable
+                }
+            });
+
+            saveOptionsBtn.addEventListener('click', function () {
+                // Save changes, disable editing
+                tagInput.style.display = 'none'; // Hide input box
+                saveOptionsBtn.style.display = 'none'; // Hide "Save" button
+                editOptionsBtn.style.display = 'block'; // Show "Edit" button
+                isEditing = false;
+                renderTags(); // Make tags non-removable
+            });
+
+            // Listen for input in the tag input box
+            tagInput.addEventListener('keypress', function (e) {
+                if (e.key === ',' || e.key === 'Enter') {
+                    e.preventDefault();
+                    const tagValue = tagInput.value.trim();
+                    if (tagValue) {
+                        addTag(tagValue);
+                        tagInput.value = ''; // Clear input after adding the tag
+                    }
+                }
+            });
+
+            // Function to add a new tag
+            function addTag(tagValue) {
+                // Prevent duplicate tags
+                if (!tags.includes(tagValue)) {
+                    tags.push(tagValue);
+                    renderTags(isEditing);
                 }
             }
-        });
 
-        // Function to add a new tag
-        function addTag(tagValue) {
-            // Prevent duplicate tags
-            if (!tags.includes(tagValue)) {
-                tags.push(tagValue);
+            // Function to render tags in the tags container
+            function renderTags(removable = false) {
+                tagsContainer.innerHTML = ''; // Clear the container
+
+                tags.forEach(tag => {
+                    const tagElement = document.createElement('span');
+                    tagElement.classList.add('tag');
+                    tagElement.style = 'background-color: #e0e0e0; border-radius: 4px; padding: 5px 10px; margin-right: 5px; display: flex; align-items: center;';
+
+                    // Tag text
+                    const tagText = document.createElement('span');
+                    tagText.innerText = tag;
+                    tagElement.appendChild(tagText);
+
+                    // Remove button (x) if in editing mode
+                    if (removable) {
+                        const removeBtn = document.createElement('button');
+                        removeBtn.innerText = 'x';
+                        removeBtn.style = 'border: none; background: transparent; color: red; margin-left: 10px; cursor: pointer;';
+                        removeBtn.addEventListener('click', function () {
+                            removeTag(tag);
+                        });
+                        tagElement.appendChild(removeBtn);
+                    }
+
+                    tagsContainer.appendChild(tagElement);
+                });
+            }
+
+            // Function to remove a tag
+            function removeTag(tag) {
+                tags = tags.filter(t => t !== tag);
                 renderTags(isEditing);
             }
-        }
 
-        // Function to render tags in the tags container
-        function renderTags(removable = false) {
-            tagsContainer.innerHTML = ''; // Clear the container
-
-            tags.forEach(tag => {
-                const tagElement = document.createElement('span');
-                tagElement.classList.add('tag');
-                tagElement.style = 'background-color: #e0e0e0; border-radius: 4px; padding: 5px 10px; margin-right: 5px; display: flex; align-items: center;';
-
-                // Tag text
-                const tagText = document.createElement('span');
-                tagText.innerText = tag;
-                tagElement.appendChild(tagText);
-
-                // Remove button (x) if in editing mode
-                if (removable) {
-                    const removeBtn = document.createElement('button');
-                    removeBtn.innerText = 'x';
-                    removeBtn.style = 'border: none; background: transparent; color: red; margin-left: 10px; cursor: pointer;';
-                    removeBtn.addEventListener('click', function () {
-                        removeTag(tag);
-                    });
-                    tagElement.appendChild(removeBtn);
-                }
-
-                tagsContainer.appendChild(tagElement);
+            // Save the tags and update the dropdown options
+            saveOptionsBtn.addEventListener('click', function () {
+                updateDropdownOptions();
             });
-        }
 
-        // Function to remove a tag
-        function removeTag(tag) {
-            tags = tags.filter(t => t !== tag);
-            renderTags(isEditing);
-        }
+            // Function to update the dropdown options based on tags
+            function updateDropdownOptions() {
+                // Loop through all dropdowns and preserve their selected values
+                document.querySelectorAll('.whereas-clause-select').forEach(dropdown => {
+                    const selectedValue = dropdown.value; // Preserve selected value
 
-        // Save the tags and update the dropdown options
-        saveOptionsBtn.addEventListener('click', function () {
-            updateDropdownOptions();
-        });
+                    dropdown.innerHTML = ''; // Clear the current options
 
-        // Function to update the dropdown options based on tags
-        function updateDropdownOptions() {
-            // Loop through all dropdowns and preserve their selected values
-            document.querySelectorAll('.whereas-clause-select').forEach(dropdown => {
-                const selectedValue = dropdown.value; // Preserve selected value
+                    // Add new options from the tags
+                    tags.forEach(tag => {
+                        const opt = document.createElement('option');
+                        opt.value = tag;
+                        opt.innerText = tag;
+                        dropdown.appendChild(opt);
+                    });
 
-                dropdown.innerHTML = ''; // Clear the current options
+                    // Restore the previously selected value if it exists in the updated options
+                    if (tags.includes(selectedValue)) {
+                        dropdown.value = selectedValue;
+                    }
+                });
+            }
 
-                // Add new options from the tags
+            // Add another Whereas clause dynamically
+            const addWhereasBtn = document.getElementById('add-whereas-clause-btn');
+            addWhereasBtn.addEventListener('click', function () {
+                const newClauseDiv = document.createElement('div');
+                newClauseDiv.classList.add('form-group', 'whereas-clause-item');
+
+                // Add label for Whereas
+                const newLabel = document.createElement('label');
+                newLabel.innerText = 'Whereas,';
+                newClauseDiv.appendChild(newLabel);
+
+                const newSelect = document.createElement('select');
+                newSelect.classList.add('form-control', 'whereas-clause-select');
+                newSelect.setAttribute('name', 'whereas_clauses[]');
+
+                // Populate the new dropdown with options from the tags
                 tags.forEach(tag => {
-                    const opt = document.createElement('option');
-                    opt.value = tag;
-                    opt.innerText = tag;
-                    dropdown.appendChild(opt);
+                    const newOption = document.createElement('option');
+                    newOption.value = tag;
+                    newOption.innerText = tag;
+                    newSelect.appendChild(newOption);
                 });
 
-                // Restore the previously selected value if it exists in the updated options
-                if (tags.includes(selectedValue)) {
-                    dropdown.value = selectedValue;
-                }
+                // Add textarea for the clause content
+                const newTextarea = document.createElement('textarea');
+                newTextarea.classList.add('form-control', 'mt-2');
+                newTextarea.setAttribute('name', 'whereas_clause_texts[]');
+                newTextarea.setAttribute('placeholder', 'Enter full Whereas Clause');
+                newTextarea.required = true;
+
+                // Add a "Remove" button for the clause
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.classList.add('btn', 'btn-danger', 'mt-2');
+                removeBtn.innerText = 'Remove';
+                removeBtn.addEventListener('click', function () {
+                    newClauseDiv.remove();
+                });
+
+                // Append the new select, textarea, and remove button to the new clause div
+                newClauseDiv.appendChild(newSelect);
+                newClauseDiv.appendChild(newTextarea);
+                newClauseDiv.appendChild(removeBtn);
+
+                // Append the new clause div to the container
+                document.getElementById('whereas-clauses-container').appendChild(newClauseDiv);
             });
-        }
-
-        // Add another Whereas clause dynamically
-        const addWhereasBtn = document.getElementById('add-whereas-clause-btn');
-        addWhereasBtn.addEventListener('click', function () {
-            const newClauseDiv = document.createElement('div');
-            newClauseDiv.classList.add('form-group', 'whereas-clause-item');
-
-            // Add label for Whereas
-            const newLabel = document.createElement('label');
-            newLabel.innerText = 'Whereas,';
-            newClauseDiv.appendChild(newLabel);
-
-            const newSelect = document.createElement('select');
-            newSelect.classList.add('form-control', 'whereas-clause-select');
-            newSelect.setAttribute('name', 'whereas_clauses[]');
-
-            // Populate the new dropdown with options from the tags
-            tags.forEach(tag => {
-                const newOption = document.createElement('option');
-                newOption.value = tag;
-                newOption.innerText = tag;
-                newSelect.appendChild(newOption);
-            });
-
-            // Add textarea for the clause content
-            const newTextarea = document.createElement('textarea');
-            newTextarea.classList.add('form-control', 'mt-2');
-            newTextarea.setAttribute('name', 'whereas_clause_texts[]');
-            newTextarea.setAttribute('placeholder', 'Enter full Whereas Clause');
-            newTextarea.required = true;
-
-            // Add a "Remove" button for the clause
-            const removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
-            removeBtn.classList.add('btn', 'btn-danger', 'mt-2');
-            removeBtn.innerText = 'Remove';
-            removeBtn.addEventListener('click', function () {
-                newClauseDiv.remove();
-            });
-
-            // Append the new select, textarea, and remove button to the new clause div
-            newClauseDiv.appendChild(newSelect);
-            newClauseDiv.appendChild(newTextarea);
-            newClauseDiv.appendChild(removeBtn);
-
-            // Append the new clause div to the container
-            document.getElementById('whereas-clauses-container').appendChild(newClauseDiv);
         });
-    });
 
         // Function to validate based on the current step
         function validateCurrentStep(currentStep) {

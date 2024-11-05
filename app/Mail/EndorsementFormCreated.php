@@ -31,8 +31,8 @@ class EndorsementFormCreated extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('janjanpingul@gmail.com', 'Jan'),
-            subject: 'Endorsement Form Submitted',
+            from: new Address('lane.ogr.auf@gmail.com', 'OGR'),
+            subject: 'AUF OGR - Your Approval Awaits',
         );
     }
 
